@@ -7,8 +7,7 @@ erDiagram
     USER ||--o{ COUPON_ISSUE : places
     USER ||--o{ ORDER : places
     COUPON ||--o{ COUPON_ISSUE : includes
-    COUPON_ISSUE ||--o{ COUPON_USAGE : history
-    ORDER ||--o| COUPON_USAGE : uses
+    ORDER ||--o| COUPON_ISSUE : uses
     ORDER ||--|{ ORDER_ITEM : contains
     ORDER_ITEM ||--|| ITEM : includes
     ITEM ||--o| ITEM_STATISTICS : statistics
@@ -57,16 +56,10 @@ COUPON_ISSUE {
     datetime issued_at "발급일시"
 }
 
-COUPON_USAGE {
-    int id PK
-    int order_id FK "주문식별자"
-    int coupon_issue_id FK "쿠폰 발급식별자"
-    datetime used_at "사용일자"
-}
-
 ORDER {
     int id PK
     int user_id FK "유저식별자"
+    int coupon_issue_id FK "쿠폰발급식별자"
     string order_status "주문상태"
     int total_amount "주문금액"
     int discount_amount "할인금액"
@@ -99,5 +92,4 @@ ITEM_STATISTICS {
     int order_count "주문수량"
     datetime created_at "생성일시"
 }
-
 ```
