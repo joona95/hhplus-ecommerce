@@ -1,5 +1,13 @@
 ## 프로젝트
 
+### 문서
+
+- [프로젝트 요구사항 분석](docs/requirements.md)
+- [마일스톤](docs/milestone.md)
+- [플로우 차트](docs/flow_chart.md)
+- [시퀀스 다이어그램](docs/sequence_diagram.md)
+- [ERD 문서](docs/erd.md)
+
 ## Getting Started
 
 ### Prerequisites
