@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.point;
+package kr.hhplus.be.server.coupon;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,21 +6,31 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.point.dto.PointChargeRequest;
-import kr.hhplus.be.server.point.dto.UserPointResponse;
+import kr.hhplus.be.server.coupon.dto.CouponIssueRequest;
+import kr.hhplus.be.server.coupon.dto.CouponResponse;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "잔액 API")
-public interface PointApi {
+import java.util.List;
 
-    @Operation(summary = "유저 잔액 조회", description = "유저의 잔액을 조회합니다. 로그인한 사용자만 가능합니다.")
+@Tag(name = "쿠폰 API")
+public interface CouponApiSpec {
+
+    @Operation(summary = "보유 쿠폰 목록 조회", description = "유저에게 발급된 쿠폰 목록을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", examples = {
                     @ExampleObject(name = "조회 성공", value = """
+                            [{
+                            "couponId" : 1,
+                            "couponName": "쿠폰명1",
+                            "expiredAt": "2025-04-01 18:00:00",
+                            "isUsed": false
+                            },
                             {
-                            "userId" : 1,
-                            "amount": 1000
-                            }
+                            "couponId" : 2,
+                            "couponName": "쿠폰명2",
+                            "expiredAt": "2025-04-01 18:00:00",
+                            "isUsed": true
+                            }]
                             """)
             })),
             @ApiResponse(responseCode = "400", content = @Content(mediaType = "application/json", examples = {
@@ -56,15 +66,17 @@ public interface PointApi {
                             """)
             }))
     })
-    ResponseEntity<UserPointResponse> getUserPoint(long userId);
+    ResponseEntity<List<CouponResponse>> getUserCoupons(long userId);
 
-    @Operation(summary = "유저 잔액 충전", description = "유저의 잔액을 충전합니다. 로그인한 사용자만 가능합니다.")
+    @Operation(summary = "선착순 쿠폰 발급", description = "발급 제한 수량만큼 선착순으로 유저에게 쿠폰을 발급한다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "잔액 충전 성공", value = """
+                    @ExampleObject(name = "발급 성공", value = """
                             {
-                            "userId": 1,
-                            "amount": 1000
+                            "userId" : 1,
+                            "couponId": 1,
+                            "couponName": "쿠폰명",
+                            "expiredAt": "2025-04-01 18:00:00"
                             }
                             """)
             })),
@@ -73,18 +85,6 @@ public interface PointApi {
                             {
                             "code": "400",
                             "message": "유효하지 않은 요청값입니다."
-                            }
-                            """),
-                    @ExampleObject(name = "충전 금액 음수로 인한 실패", value = """
-                            {
-                            "code": "400",
-                            "message": "충전 금액은 양수여야 합니다."
-                            }
-                            """),
-                    @ExampleObject(name = "최대 한도 초과로 인한 실패", value = """
-                            {
-                            "code": "400",
-                            "message": "충전 금액은 최대 한도를 넘을 수 없습니다."
                             }
                             """)
             })),
@@ -104,14 +104,36 @@ public interface PointApi {
                             }
                             """)
             })),
+            @ApiResponse(responseCode = "404", content = @Content(mediaType = "application/json", examples = {
+                    @ExampleObject(name = "쿠폰이 존재하지 않는 경우 실패", value = """
+                            {
+                            "code": "404",
+                            "message": "쿠폰식별자에 해당하는 쿠폰이 존재하지 않습니다."
+                            }
+                            """)
+            })),
             @ApiResponse(responseCode = "500", content = @Content(mediaType = "application/json", examples = {
                     @ExampleObject(name = "서버 오류로 실패", value = """
                             {
                             "code": "500",
                             "message": "서버 오류가 발생하였습니다."
                             }
+                            """),
+                    @ExampleObject(name = "쿠폰 유효 기간 만료로 인한 실패", value = """
+                            {
+                            "code": "500",
+                            "message": "쿠폰 발급 유효 기간이 만료하였습니다."
+                            }
+                            """),
+                    @ExampleObject(name = "쿠폰 잔여 수량 없어서 실패", value = """
+                            {
+                            "code": "500",
+                            "message": "선착순 쿠폰의 잔여 수량이 남지 않았습니다."
+                            }
                             """)
             }))
     })
-    ResponseEntity<UserPointResponse> charge(PointChargeRequest request);
+    ResponseEntity<CouponResponse> issueCoupon(CouponIssueRequest request);
+
+
 }

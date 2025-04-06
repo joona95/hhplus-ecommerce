@@ -11,7 +11,7 @@ import kr.hhplus.be.server.order.dto.OrderResponse;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "주문 API")
-public interface OrderApi {
+public interface OrderApiSpec {
 
     @Operation(summary = "주문 결제", description = "상품들에 대한 주문 및 결제를 진행합니다.")
     @ApiResponses({
