@@ -16,17 +16,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/coupons")
-public class CouponController implements CouponApi {
+public class CouponController implements CouponApiSpec {
 
     @GetMapping
     @Override
     public ResponseEntity<List<CouponResponse>> getUserCoupons(@RequestParam @Positive long userId) {
-        return null;
+        return ResponseEntity.ok(List.of(
+                new CouponResponse(1L, "쿠폰1", "2025-12-31", false),
+                new CouponResponse(2L, "쿠폰2", "2025-12-31", true),
+                new CouponResponse(3L, "쿠폰3", "2025-05-31", false)
+        ));
     }
 
     @PostMapping
     @Override
     public ResponseEntity<CouponResponse> issueCoupon(@RequestBody @Valid CouponIssueRequest request) {
-        return null;
+        return ResponseEntity.ok(new CouponResponse(1L, "쿠폰1", "2025-12-31", false));
     }
 }

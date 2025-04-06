@@ -16,23 +16,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/items")
-public class ItemController implements ItemApi {
+public class ItemController implements ItemApiSpec {
 
     @GetMapping("/{itemId}")
     @Override
     public ResponseEntity<ItemResponse> getItem(@PathVariable @Positive long itemId) {
-        return null;
+        return ResponseEntity.ok(new ItemResponse(1L, "상품1", 10000, 100));
     }
 
     @GetMapping("/popular")
     @Override
     public ResponseEntity<List<ItemResponse>> getPopularItems() {
-        return null;
+        return ResponseEntity.ok(List.of(
+                new ItemResponse(1L, "상품1", 10000, 100),
+                new ItemResponse(2L, "상품2", 10000, 100),
+                new ItemResponse(3L, "상품3", 10000, 100)
+        ));
     }
 
     @PostMapping("/popular")
     @Override
     public ResponseEntity<Void> sendPopularItemStatistics(@RequestBody @Valid PopularItemStatisticsRequest request) {
-        return null;
+        return ResponseEntity.ok().build();
     }
 }

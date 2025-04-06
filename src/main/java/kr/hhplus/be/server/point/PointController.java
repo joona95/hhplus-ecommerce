@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/points")
-public class PointController implements PointApi {
+public class PointController implements PointApiSpec {
 
     @GetMapping
     @Override
     public ResponseEntity<UserPointResponse> getUserPoint(@RequestParam @Positive long userId) {
-        return null;
+        return ResponseEntity.ok(new UserPointResponse(1L, 10000));
     }
 
     @PostMapping("/charge")
     @Override
     public ResponseEntity<UserPointResponse> charge(@RequestBody @Valid PointChargeRequest request) {
-        return null;
+        return ResponseEntity.ok(new UserPointResponse(1L, 10000));
     }
 }
