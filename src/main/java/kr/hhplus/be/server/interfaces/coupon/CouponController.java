@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.coupon;
+package kr.hhplus.be.server.interfaces.coupon;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.coupon.dto.CouponIssueRequest;
-import kr.hhplus.be.server.coupon.dto.CouponResponse;
+import kr.hhplus.be.server.interfaces.coupon.dto.CouponIssueRequest;
+import kr.hhplus.be.server.interfaces.coupon.dto.CouponResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

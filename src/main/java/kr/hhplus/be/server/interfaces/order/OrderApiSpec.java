@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.order;
+package kr.hhplus.be.server.interfaces.order;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.order.dto.OrderRequest;
-import kr.hhplus.be.server.order.dto.OrderResponse;
+import kr.hhplus.be.server.interfaces.order.dto.OrderRequest;
+import kr.hhplus.be.server.interfaces.order.dto.OrderResponse;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "주문 API")

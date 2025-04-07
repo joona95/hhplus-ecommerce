@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.point;
+package kr.hhplus.be.server.interfaces.point;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.point.dto.PointChargeRequest;
-import kr.hhplus.be.server.point.dto.UserPointResponse;
+import kr.hhplus.be.server.interfaces.point.dto.PointChargeRequest;
+import kr.hhplus.be.server.interfaces.point.dto.UserPointResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.item;
+package kr.hhplus.be.server.interfaces.item;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.item.dto.ItemResponse;
-import kr.hhplus.be.server.item.dto.PopularItemStatisticsRequest;
+import kr.hhplus.be.server.interfaces.item.dto.ItemResponse;
+import kr.hhplus.be.server.interfaces.item.dto.PopularItemStatisticsRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

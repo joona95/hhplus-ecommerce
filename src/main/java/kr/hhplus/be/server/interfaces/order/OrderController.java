@@ -1,9 +1,9 @@
-package kr.hhplus.be.server.order;
+package kr.hhplus.be.server.interfaces.order;
 
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.order.dto.OrderItemResponse;
-import kr.hhplus.be.server.order.dto.OrderRequest;
-import kr.hhplus.be.server.order.dto.OrderResponse;
+import kr.hhplus.be.server.interfaces.order.dto.OrderItemResponse;
+import kr.hhplus.be.server.interfaces.order.dto.OrderRequest;
+import kr.hhplus.be.server.interfaces.order.dto.OrderResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

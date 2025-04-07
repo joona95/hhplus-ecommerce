@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.coupon;
+package kr.hhplus.be.server.interfaces.coupon;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.coupon.dto.CouponIssueRequest;
-import kr.hhplus.be.server.coupon.dto.CouponResponse;
+import kr.hhplus.be.server.interfaces.coupon.dto.CouponIssueRequest;
+import kr.hhplus.be.server.interfaces.coupon.dto.CouponResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

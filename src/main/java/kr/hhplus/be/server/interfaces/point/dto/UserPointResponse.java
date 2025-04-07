@@ -1,7 +1,6 @@
-package kr.hhplus.be.server.point.dto;
+package kr.hhplus.be.server.interfaces.point.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Positive;
 
 @Schema(title = "유저 잔액 정보 응답값")
 public record UserPointResponse(

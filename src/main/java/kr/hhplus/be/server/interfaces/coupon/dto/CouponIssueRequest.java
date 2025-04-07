@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.coupon.dto;
+package kr.hhplus.be.server.interfaces.coupon.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
