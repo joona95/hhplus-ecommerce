@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.interfaces.item.dto.ItemResponse;
-import kr.hhplus.be.server.interfaces.item.dto.PopularItemStatisticsRequest;
+import kr.hhplus.be.server.interfaces.item.dto.ItemRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<ItemResponse> getItem(long itemId);
+    ResponseEntity<ItemResponse.ItemDetailResponse> getItem(long itemId);
 
     @Operation(summary = "인기 상품 목록 조회", description = "데이터 플랫폼에서 최근 3일간 판매량이 가장 많았던 인기 상품 5개에 대한 상세 정보를 조회합니다.")
     @ApiResponses({
@@ -106,7 +106,7 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<List<ItemResponse>> getPopularItems();
+    ResponseEntity<List<ItemResponse.ItemDetailResponse>> getPopularItems();
 
     @Operation(summary = "인기 상품 통계 데이터 저장", description = "주문 시 데이터 플랫폼에 주문 관련 통계 자료를 전송합니다. (Mock API)")
     @ApiResponses({
@@ -146,5 +146,5 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<Void> sendPopularItemStatistics(PopularItemStatisticsRequest request);
+    ResponseEntity<Void> sendPopularItemStatistics(ItemRequest.PopularItemStatisticsRequest request);
 }

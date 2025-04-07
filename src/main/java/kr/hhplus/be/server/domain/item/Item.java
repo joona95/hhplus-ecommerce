@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Item {
 
@@ -64,5 +66,9 @@ public class Item {
 
     public Item increaseStock(int count) {
         return Item.of(this.id, this.itemName, stock.increase(count), this.price);
+    }
+
+    public int getStock() {
+        return stock.getCount();
     }
 }
