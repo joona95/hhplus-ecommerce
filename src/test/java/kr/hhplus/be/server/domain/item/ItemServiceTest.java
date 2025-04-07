@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -38,6 +39,26 @@ class ItemServiceTest {
                     .hasMessageContaining("상품을 찾을 수 없습니다.");
 
             verify(itemRepository, times(1)).findById(1L);
+        }
+    }
+
+    @Nested
+    class 인기_상품_목록_조회 {
+
+        @Test
+        void 인기_상품_목록_조회_값이_없을_경우_빈_리스트_반환() {
+
+            //given
+            when(itemRepository.findPopularItems())
+                    .thenReturn(null);
+
+            //when
+            List<Item> result = itemService.findPopularItems();
+
+            //then
+            assertThat(result).isEqualTo(List.of());
+
+            verify(itemRepository, times(1)).findPopularItems();
         }
     }
 }
