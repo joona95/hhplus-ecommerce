@@ -38,11 +38,12 @@ public class ItemController implements ItemApiSpec {
     @GetMapping("/popular")
     @Override
     public ResponseEntity<List<ItemDetailResponse>> getPopularItems() {
-        return ResponseEntity.ok(List.of(
-                new ItemDetailResponse(1L, "상품1", 10000, 100),
-                new ItemDetailResponse(2L, "상품2", 10000, 100),
-                new ItemDetailResponse(3L, "상품3", 10000, 100)
-        ));
+
+        List<ItemDetailResponse> response = itemService.findPopularItems().stream()
+                .map(ItemDetailResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/popular")
