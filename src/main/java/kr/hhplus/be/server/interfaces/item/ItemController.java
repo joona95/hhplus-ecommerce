@@ -20,10 +20,19 @@ import static kr.hhplus.be.server.interfaces.item.dto.ItemResponse.*;
 @RequestMapping("/api/v1/items")
 public class ItemController implements ItemApiSpec {
 
+    private final ItemService itemService;
+
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
     @GetMapping("/{itemId}")
     @Override
     public ResponseEntity<ItemDetailResponse> getItem(@PathVariable @Positive long itemId) {
-        return ResponseEntity.ok(new ItemDetailResponse(1L, "상품1", 10000, 100));
+
+        ItemDetailResponse response = ItemDetailResponse.from(itemService.findById(itemId));
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/popular")
