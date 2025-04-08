@@ -58,11 +58,11 @@ public class PopularItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PopularItem that = (PopularItem) o;
-        return itemId == that.itemId && orderCount == that.orderCount && Objects.equals(id, that.id) && Objects.equals(orderDate, that.orderDate) && Objects.equals(createdAt, that.createdAt);
+        return itemId == that.itemId && orderCount == that.orderCount && Objects.equals(id, that.id) && Objects.equals(orderDate, that.orderDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, itemId, orderDate, orderCount, createdAt);
+        return Objects.hash(id, itemId, orderDate, orderCount);
     }
 }
