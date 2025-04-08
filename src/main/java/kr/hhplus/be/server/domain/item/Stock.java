@@ -27,20 +27,10 @@ public class Stock {
     }
 
     public Stock decrease(int count) {
-
-        if (count < 0) {
-            throw new IllegalArgumentException("재고 차감하려는 값은 0 이상이어야 합니다.");
-        }
-
         return Stock.of(this.count - count);
     }
 
     public Stock increase(int count) {
-
-        if (count < 0) {
-            throw new IllegalArgumentException("재고 증가하려는 값은 0 이상이어야 합니다.");
-        }
-
         return Stock.of(this.count + count);
     }
 

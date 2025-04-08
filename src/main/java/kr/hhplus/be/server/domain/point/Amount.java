@@ -27,20 +27,10 @@ public class Amount {
     }
 
     public Amount plus(int value) {
-
-        if (value < 0) {
-            throw new IllegalArgumentException("충전할 금액은 음수일 수 없습니다.");
-        }
-
         return Amount.of(this.value + value);
     }
 
     public Amount minus(int value) {
-
-        if (value < 0) {
-            throw new IllegalArgumentException("사용할 금액은 음수일 수 없습니다.");
-        }
-
         return Amount.of(this.value - value);
     }
 
