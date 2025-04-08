@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -70,5 +71,18 @@ public class Item {
 
     public int getStock() {
         return stock.getCount();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return price == item.price && Objects.equals(id, item.id) && Objects.equals(itemName, item.itemName) && Objects.equals(stock, item.stock);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, itemName, stock, price);
     }
 }
