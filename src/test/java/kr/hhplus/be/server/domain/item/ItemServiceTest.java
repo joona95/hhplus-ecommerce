@@ -37,6 +37,17 @@ class ItemServiceTest {
             assertThatThrownBy(() -> itemService.findById(1L))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("상품을 찾을 수 없습니다.");
+        }
+
+        @Test
+        void 상품식별자로_상품_조회_레포지토리_1회_호출() {
+
+            //given
+            when(itemRepository.findById(1L))
+                    .thenReturn(Optional.of(Item.of(1L, "상품명", Stock.of(100), 10000)));
+
+            //when, then
+            itemService.findById(1L);
 
             verify(itemRepository, times(1)).findById(1L);
         }
@@ -57,7 +68,19 @@ class ItemServiceTest {
 
             //then
             assertThat(result).isEqualTo(List.of());
+        }
 
+        @Test
+        void 인기_상품_목록_조회_레포지토리_1회_호출() {
+
+            //given
+            when(itemRepository.findPopularItems())
+                    .thenReturn(List.of());
+
+            //when
+            itemService.findPopularItems();
+
+            //then
             verify(itemRepository, times(1)).findPopularItems();
         }
     }
