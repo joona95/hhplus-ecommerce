@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.*;
 
 class PointTest {
@@ -17,7 +19,7 @@ class PointTest {
         void 유저식별자가_음수면_IllegalArgumentException_발생(long userId) {
 
             //when, then
-            assertThatThrownBy(() -> Point.of(1L, userId, Amount.of(1000)))
+            assertThatThrownBy(() -> new Point(1L, userId, Amount.of(1000), LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("유저식별자는 음수일 수 없습니다.");
         }
@@ -27,7 +29,7 @@ class PointTest {
         void 금액이_null_이면_IllegalArgumentException_발생(Amount amount) {
 
             //when, then
-            assertThatThrownBy(() -> Point.of(1L, 1L, amount))
+            assertThatThrownBy(() -> new Point(1L, 1L, amount, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("잔액 정보가 필요합니다.");
         }

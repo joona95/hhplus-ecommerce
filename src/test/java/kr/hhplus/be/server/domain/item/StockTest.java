@@ -16,7 +16,7 @@ class StockTest {
         void 재고가_음수이면_IllegalArgumentException_발생(int count) {
 
             //when, then
-            assertThatThrownBy(() -> Stock.of(count))
+            assertThatThrownBy(() -> new Stock(count))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("재고는 음수가 될 수 없습니다.");
         }
@@ -24,19 +24,6 @@ class StockTest {
 
     @Nested
     class 재고_감소 {
-
-        @ParameterizedTest
-        @ValueSource(ints = {-1000, -100, -10, -3, -2, -1})
-        void 재고_차감하려는_값이_음수면_IllegalArgumentException_발생(int count) {
-
-            //given
-            Stock stock = Stock.of(100);
-
-            //when, then
-            assertThatThrownBy(() -> stock.decrease(count))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("재고 차감하려는 값은 0 이상이어야 합니다.");
-        }
 
         @ParameterizedTest
         @ValueSource(ints = {1000, 105, 101})
@@ -61,7 +48,7 @@ class StockTest {
             //when
             Stock result = stock.decrease(count);
 
-            //when, then
+            //then
             assertThat(result).isEqualTo(Stock.of(100 - count));
         }
     }
@@ -70,8 +57,8 @@ class StockTest {
     class 재고_증가 {
 
         @ParameterizedTest
-        @ValueSource(ints = {-1000, -100, -10, -3, -2, -1})
-        void 재고_증가하려는_값이_음수면_IllegalArgumentException_발생(int count) {
+        @ValueSource(ints = {-1000, -103, -102, -101})
+        void 증가시킨_재고_값이_음수면_IllegalArgumentException_발생(int count) {
 
             //given
             Stock stock = Stock.of(100);
@@ -79,7 +66,21 @@ class StockTest {
             //when, then
             assertThatThrownBy(() -> stock.increase(count))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("재고 증가하려는 값은 0 이상이어야 합니다.");
+                    .hasMessageContaining("재고는 음수가 될 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {100, 10, 1, 0, -100})
+        void 증가시킨_재고가_0이상이면_정상_증가(int count) {
+
+            //given
+            Stock stock = Stock.of(100);
+
+            //when
+            Stock result = stock.increase(count);
+
+            //then
+            assertThat(result).isEqualTo(Stock.of(100 + count));
         }
     }
 }

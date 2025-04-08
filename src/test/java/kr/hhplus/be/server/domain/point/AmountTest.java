@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AmountTest {
@@ -16,7 +17,7 @@ class AmountTest {
         void 금액이_음수면_IllegalArgumentException_발생(int value) {
 
             //when, then
-            assertThatThrownBy(() -> Amount.of(value))
+            assertThatThrownBy(() -> new Amount(value))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("금액은 음수일 수 없습니다.");
         }
@@ -26,8 +27,8 @@ class AmountTest {
     class 금액_추가 {
 
         @ParameterizedTest
-        @ValueSource(ints = {-1000, -100, -10, -3, -2, -1})
-        void 충전하려는_금액이_음수인_경우_IllegalArgumentException_발생(int value) {
+        @ValueSource(ints = {-1001, -1002, -1003, -2000})
+        void 더한_금액이_음수인_경우_IllegalArgumentException_발생(int value) {
 
             //given
             Amount amount = Amount.of(1000);
@@ -35,7 +36,21 @@ class AmountTest {
             //when, then
             assertThatThrownBy(() -> amount.plus(value))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("충전할 금액은 음수일 수 없습니다.");
+                    .hasMessageContaining("금액은 음수일 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1000, 100, 10, 1, 0, -999, -1000})
+        void 더한_금액이_0이상이면_정상_증가(int value) {
+
+            //given
+            Amount amount = Amount.of(1000);
+
+            //when
+            Amount result = amount.plus(value);
+
+            //then
+            assertThat(result).isEqualTo(Amount.of(1000 + value));
         }
     }
 
@@ -43,8 +58,8 @@ class AmountTest {
     class 금액_차감 {
 
         @ParameterizedTest
-        @ValueSource(ints = {-1000, -100, -10, -3, -2, -1})
-        void 사용하려는_금액이_음수인_경우_IllegalArgumentException_발생(int value) {
+        @ValueSource(ints = {1001, 1002, 1003, 2000})
+        void 뺀_금액이_음수인_경우_IllegalArgumentException_발생(int value) {
 
             //given
             Amount amount = Amount.of(1000);
@@ -52,7 +67,21 @@ class AmountTest {
             //when, then
             assertThatThrownBy(() -> amount.minus(value))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("사용할 금액은 음수일 수 없습니다.");
+                    .hasMessageContaining("금액은 음수일 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1000, 999, 100, 10, 1, 0, -999, -1000})
+        void 뺀_금액이_0이상이면_정상_차감(int value) {
+
+            //given
+            Amount amount = Amount.of(1000);
+
+            //when
+            Amount result = amount.minus(value);
+
+            //then
+            assertThat(result).isEqualTo(Amount.of(1000 - value));
         }
     }
 }
