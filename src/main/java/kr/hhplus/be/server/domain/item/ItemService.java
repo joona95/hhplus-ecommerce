@@ -23,7 +23,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<Item> findPopularItems() {
+    public List<PopularItem> findPopularItems() {
         return Optional.ofNullable(itemRepository.findPopularItems())
                 .orElse(List.of());
     }

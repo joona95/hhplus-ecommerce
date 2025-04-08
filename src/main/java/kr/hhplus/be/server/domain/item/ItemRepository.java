@@ -10,5 +10,5 @@ public interface ItemRepository {
 
     Optional<Item> findById(long id);
 
-    List<Item> findPopularItems();
+    List<PopularItem> findPopularItems();
 }

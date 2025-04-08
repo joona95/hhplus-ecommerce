@@ -53,7 +53,7 @@ class ItemServiceTest {
                     .thenReturn(null);
 
             //when
-            List<Item> result = itemService.findPopularItems();
+            List<PopularItem> result = itemService.findPopularItems();
 
             //then
             assertThat(result).isEqualTo(List.of());

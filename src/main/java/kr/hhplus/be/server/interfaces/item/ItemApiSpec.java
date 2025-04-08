@@ -106,7 +106,7 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<List<ItemResponse.ItemDetailResponse>> getPopularItems();
+    ResponseEntity<List<ItemResponse.PopularItemDetailResponse>> getPopularItems();
 
     @Operation(summary = "인기 상품 통계 데이터 저장", description = "주문 시 데이터 플랫폼에 주문 관련 통계 자료를 전송합니다. (Mock API)")
     @ApiResponses({

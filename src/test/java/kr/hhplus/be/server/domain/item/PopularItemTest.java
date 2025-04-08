@@ -20,7 +20,7 @@ class PopularItemTest {
         void 상품식별자가_음수일_경우_IllegalArgumentException_발생(long itemId) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, itemId, LocalDate.now(), 100, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PopularItem(1L, itemId, "상품명", 1000, LocalDate.now(), 100, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("상품식별자는 음수일 수 없습니다.");
         }
@@ -30,7 +30,7 @@ class PopularItemTest {
         void 주문날짜가_null_인_경우_IllegalArgumentException_발생(LocalDate orderDate) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, 1L, orderDate, 100, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PopularItem(1L, 1L, "상품명", 1000, orderDate, 100, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문날짜 정보가 필요합니다.");
         }
@@ -40,7 +40,7 @@ class PopularItemTest {
         void 주문수량이_음수일_경우_IllegalArgumentException_발생(int orderCount) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, 1L, LocalDate.now(), orderCount, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PopularItem(1L, 1L, "상품명", 1000, LocalDate.now(), orderCount, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문 수량은 음수일 수 없습니다.");
         }

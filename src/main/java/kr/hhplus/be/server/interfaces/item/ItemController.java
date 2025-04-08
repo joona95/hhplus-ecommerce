@@ -37,10 +37,10 @@ public class ItemController implements ItemApiSpec {
 
     @GetMapping("/popular")
     @Override
-    public ResponseEntity<List<ItemDetailResponse>> getPopularItems() {
+    public ResponseEntity<List<PopularItemDetailResponse>> getPopularItems() {
 
-        List<ItemDetailResponse> response = itemService.findPopularItems().stream()
-                .map(ItemDetailResponse::from)
+        List<PopularItemDetailResponse> response = itemService.findPopularItems().stream()
+                .map(PopularItemDetailResponse::from)
                 .toList();
 
         return ResponseEntity.ok(response);
