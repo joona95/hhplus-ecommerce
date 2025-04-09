@@ -3,7 +3,6 @@ package kr.hhplus.be.server.interfaces.item;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.domain.item.ItemService;
-import kr.hhplus.be.server.interfaces.item.dto.ItemRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static kr.hhplus.be.server.interfaces.item.dto.ItemResponse.*;
+import static kr.hhplus.be.server.interfaces.item.ItemResponse.*;
 
 @RestController
 @RequestMapping("/api/v1/items")
