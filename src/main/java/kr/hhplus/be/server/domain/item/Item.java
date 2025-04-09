@@ -61,12 +61,12 @@ public class Item {
         this.updatedAt = updatedAt;
     }
 
-    public Item decreaseStock(int count) {
-        return Item.of(this.id, this.itemName, stock.decrease(count), this.price);
+    public void decreaseStock(int count) {
+        this.stock = stock.decrease(count);
     }
 
-    public Item increaseStock(int count) {
-        return Item.of(this.id, this.itemName, stock.increase(count), this.price);
+    public void increaseStock(int count) {
+        this.stock = stock.increase(count);
     }
 
     public int getStock() {

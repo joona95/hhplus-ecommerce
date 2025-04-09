@@ -2,19 +2,21 @@ package kr.hhplus.be.server.domain.point;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Embeddable
 @Getter
-@NoArgsConstructor
 public class Amount {
 
-    private int value;
+    private final int value;
 
     public static Amount of(int value) {
         return new Amount(value);
+    }
+
+    protected Amount() {
+        this.value = 0;
     }
 
     public Amount(int value) {

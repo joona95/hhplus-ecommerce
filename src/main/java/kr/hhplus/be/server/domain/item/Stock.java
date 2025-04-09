@@ -2,16 +2,18 @@ package kr.hhplus.be.server.domain.item;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Embeddable
 @Getter
-@NoArgsConstructor
 public class Stock {
 
-    private int count;
+    private final int count;
+
+    protected Stock() {
+        this.count = 0;
+    }
 
     public static Stock of(int count) {
         return new Stock(count);

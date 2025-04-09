@@ -48,22 +48,22 @@ public class Point {
         this.updatedAt = updatedAt;
     }
 
-    public Point charge(int value) {
+    public void charge(int value) {
 
         if (amount.getValue() + value > MAX_POINT_LIMIT) {
             throw new IllegalArgumentException("최대 한도를 초과하여 충전할 수 없습니다.");
         }
 
-        return Point.of(this.id, this.userId, this.amount.plus(value));
+        this.amount = this.amount.plus(value);
     }
 
-    public Point use(int value) {
+    public void use(int value) {
 
         if (amount.getValue() - value < 0) {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
 
-        return Point.of(this.id, this.userId, this.amount.minus(value));
+        this.amount = this.amount.minus(value);
     }
 
     @Override
