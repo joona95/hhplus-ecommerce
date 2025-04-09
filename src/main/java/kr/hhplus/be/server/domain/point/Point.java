@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Point {
 
@@ -77,5 +79,9 @@ public class Point {
     @Override
     public int hashCode() {
         return Objects.hash(id, userId, amount);
+    }
+
+    public int getAmount() {
+        return amount.getValue();
     }
 }

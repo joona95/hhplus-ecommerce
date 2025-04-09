@@ -26,8 +26,16 @@ public class PointHistory {
     @CreatedDate
     LocalDateTime createdAt;
 
+    public static PointHistory ofCharge(long pointId, int amount) {
+        return PointHistory.ofCharge(null, pointId, Amount.of(amount));
+    }
+
     public static PointHistory ofCharge(Long id, long pointId, Amount amount) {
         return new PointHistory(id, pointId, amount, TransactionType.CHARGE, LocalDateTime.now());
+    }
+
+    public static PointHistory ofUse(long pointId, int amount) {
+        return PointHistory.ofUse(null, pointId, Amount.of(amount));
     }
 
     public static PointHistory ofUse(Long id, long pointId, Amount amount) {
