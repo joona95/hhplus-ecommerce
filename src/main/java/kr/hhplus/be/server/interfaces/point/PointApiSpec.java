@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.interfaces.point.dto.PointChargeRequest;
-import kr.hhplus.be.server.interfaces.point.dto.UserPointResponse;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "잔액 API")
@@ -56,7 +54,7 @@ public interface PointApiSpec {
                             """)
             }))
     })
-    ResponseEntity<UserPointResponse> getUserPoint(long userId);
+    ResponseEntity<PointResponse.UserPointResponse> getUserPoint(long userId);
 
     @Operation(summary = "유저 잔액 충전", description = "유저의 잔액을 충전합니다. 로그인한 사용자만 가능합니다.")
     @ApiResponses({
@@ -113,5 +111,5 @@ public interface PointApiSpec {
                             """)
             }))
     })
-    ResponseEntity<UserPointResponse> charge(PointChargeRequest request);
+    ResponseEntity<PointResponse.UserPointResponse> charge(PointRequest.PointChargeRequest request);
 }

@@ -2,8 +2,7 @@ package kr.hhplus.be.server.interfaces.point;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import kr.hhplus.be.server.interfaces.point.dto.PointChargeRequest;
-import kr.hhplus.be.server.interfaces.point.dto.UserPointResponse;
+import kr.hhplus.be.server.domain.point.PointService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,19 +11,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static kr.hhplus.be.server.interfaces.point.PointResponse.*;
+
 @RestController
 @RequestMapping("/api/v1/points")
 public class PointController implements PointApiSpec {
 
+    private final PointService pointService;
+
+    public PointController(PointService pointService) {
+        this.pointService = pointService;
+    }
+
     @GetMapping
     @Override
     public ResponseEntity<UserPointResponse> getUserPoint(@RequestParam @Positive long userId) {
-        return ResponseEntity.ok(new UserPointResponse(1L, 10000));
+
+        UserPointResponse response = UserPointResponse.from(pointService.findByUserId(userId));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/charge")
     @Override
-    public ResponseEntity<UserPointResponse> charge(@RequestBody @Valid PointChargeRequest request) {
-        return ResponseEntity.ok(new UserPointResponse(1L, 10000));
+    public ResponseEntity<UserPointResponse> charge(@RequestBody @Valid PointRequest.PointChargeRequest request) {
+
+        UserPointResponse response = UserPointResponse.from(pointService.charge(request.toCommand()));
+
+        return ResponseEntity.ok(response);
     }
 }
