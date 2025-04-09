@@ -73,7 +73,7 @@ public class Point {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point point = (Point) o;
-        return userId == point.userId && amount == point.amount && Objects.equals(id, point.id);
+        return userId == point.userId && Objects.equals(amount, point.amount) && Objects.equals(id, point.id);
     }
 
     @Override
