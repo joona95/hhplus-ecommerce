@@ -35,7 +35,7 @@ class StockTest {
             //when, then
             assertThatThrownBy(() -> stock.decrease(count))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("재고는 음수가 될 수 없습니다.");
+                    .hasMessageContaining("재고가 부족합니다.");
         }
 
         @ParameterizedTest
