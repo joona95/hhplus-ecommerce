@@ -27,6 +27,11 @@ public class Stock {
     }
 
     public Stock decrease(int count) {
+
+        if (this.count - count < 0) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+
         return Stock.of(this.count - count);
     }
 
