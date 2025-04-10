@@ -20,7 +20,7 @@ class PointHistoryTest {
         void 포인트식별자가_음수면_IllegalArgumentException_발생(long pointId) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, pointId, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PointHistory(1L, pointId, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("포인트식별자는 음수일 수 없습니다.");
         }
@@ -30,7 +30,7 @@ class PointHistoryTest {
         void 금액이_null_이면_IllegalArgumentException_발생(Amount amount) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, 1L, amount, TransactionType.CHARGE, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PointHistory(1L, 1L, 1L, amount, TransactionType.CHARGE, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("금액 정보가 필요합니다.");
         }
@@ -40,7 +40,7 @@ class PointHistoryTest {
         void 거래_타입이_null_이면_IllegalArgumentException_발생(TransactionType type) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, 1L, Amount.of(1000), type, LocalDateTime.now()))
+            assertThatThrownBy(() -> new PointHistory(1L, 1L, 1L, Amount.of(1000), type, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("거래 타입 정보가 필요합니다.");
         }
@@ -56,7 +56,7 @@ class PointHistoryTest {
             PointHistory result = PointHistory.ofCharge(1L, 1L, Amount.of(1000));
 
             //then
-            assertThat(result).isEqualTo(new PointHistory(1L, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()));
+            assertThat(result).isEqualTo(new PointHistory(1L, 1L, null, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()));
         }
     }
 
@@ -67,10 +67,10 @@ class PointHistoryTest {
         void 거래_타입이_USE_이면_정상_생성() {
 
             //when
-            PointHistory result = PointHistory.ofUse(1L, 1L, Amount.of(1000));
+            PointHistory result = PointHistory.ofUse(1L, 1L, 1L, Amount.of(1000));
 
             //then
-            assertThat(result).isEqualTo(new PointHistory(1L, 1L, Amount.of(1000), TransactionType.USE, LocalDateTime.now()));
+            assertThat(result).isEqualTo(new PointHistory(1L, 1L, 1L, Amount.of(1000), TransactionType.USE, LocalDateTime.now()));
         }
     }
 }

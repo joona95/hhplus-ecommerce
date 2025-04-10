@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.point;
 
 import kr.hhplus.be.server.domain.point.PointCommand.PointChargeCommand;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static kr.hhplus.be.server.domain.point.PointCommand.*;
 
@@ -14,10 +15,12 @@ public class PointService {
         this.pointRepository = pointRepository;
     }
 
+    @Transactional(readOnly = true)
     public Point findByUserId(long userId) {
         return pointRepository.findByUserId(userId);
     }
 
+    @Transactional
     public Point charge(PointChargeCommand command) {
 
         Point point = findByUserId(command.userId());
@@ -29,12 +32,13 @@ public class PointService {
         return point;
     }
 
+    @Transactional
     public Point use(PointUseCommand command) {
 
         Point point = findByUserId(command.userId());
         point.use(command.amount());
 
-        PointHistory pointHistory = PointHistory.ofUse(point.getId(), command.amount());
+        PointHistory pointHistory = PointHistory.ofUse(point.getId(), command.orderId(), command.amount());
         pointRepository.savePointHistory(pointHistory);
 
         return point;

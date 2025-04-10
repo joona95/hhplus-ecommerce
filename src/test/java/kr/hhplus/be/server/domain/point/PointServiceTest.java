@@ -115,7 +115,7 @@ class PointServiceTest {
             when(pointRepository.findByUserId(1L))
                     .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
             //when
             pointService.use(command);
@@ -131,23 +131,24 @@ class PointServiceTest {
             when(pointRepository.findByUserId(1L))
                     .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
             //when
             pointService.use(command);
 
             //then
-            verify(pointRepository, times(1)).savePointHistory(PointHistory.ofUse(1L, 1000));
+            verify(pointRepository, times(1)).savePointHistory(PointHistory.ofUse(1L, 1L, 1000));
         }
 
         @Test
         void 포인트_사용에_실패하면_포인트_내역_저장_레포지토리를_0회_호출() {
 
             //given
+
             when(pointRepository.findByUserId(1L))
                     .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
 
-            PointUseCommand command = new PointUseCommand(1L, 2000);
+            PointUseCommand command = new PointUseCommand(1L, 1L, 2000);
 
             //when, then
             assertThatThrownBy(() -> pointService.use(command))
@@ -163,7 +164,7 @@ class PointServiceTest {
             when(pointRepository.findByUserId(1L))
                     .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
             //when
             Point result = pointService.use(command);
