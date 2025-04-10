@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
+import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemService;
 import kr.hhplus.be.server.domain.order.OrderInfo;
@@ -19,11 +20,13 @@ public class OrderFacadeService {
     private final ItemService itemService;
     private final PointService pointService;
     private final OrderService orderService;
+    private final CouponService couponService;
 
-    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService) {
+    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService, CouponService couponService) {
         this.itemService = itemService;
         this.pointService = pointService;
         this.orderService = orderService;
+        this.couponService = couponService;
     }
 
     @Transactional
@@ -32,6 +35,11 @@ public class OrderFacadeService {
         List<Item> items = itemService.decreaseStocks(command.toStockDecreaseCommands());
 
         OrderInfo orderInfo = orderService.createOrder(command.toOrderCreateCommand(items));
+
+        if (command.couponId() != null) {
+            int discountAmount = couponService.applyCoupon(command.toCouponApplyCommand(orderInfo));
+            orderInfo.applyDiscount(discountAmount);
+        }
 
         pointService.use(command.toPointUseCommand(orderInfo));
 

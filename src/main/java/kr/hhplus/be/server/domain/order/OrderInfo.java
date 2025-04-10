@@ -14,4 +14,8 @@ public record OrderInfo(
     public int getTotalAmount() {
         return order.getOrderAmountInfo().getTotalAmount();
     }
+
+    public void applyDiscount(int discountAmount) {
+        order.applyDiscount(discountAmount);
+    }
 }

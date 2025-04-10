@@ -61,4 +61,8 @@ public class OrderAmountInfo {
     public int hashCode() {
         return Objects.hash(totalAmount, itemTotalAmount, discountAmount);
     }
+
+    public OrderAmountInfo applyDiscount(int discountAmount) {
+        return OrderAmountInfo.of(this.totalAmount - discountAmount, this.itemTotalAmount, this.discountAmount + discountAmount);
+    }
 }

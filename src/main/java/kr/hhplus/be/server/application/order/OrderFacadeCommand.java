@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
+import kr.hhplus.be.server.domain.coupon.CouponCommand;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemCommand;
 import kr.hhplus.be.server.domain.order.OrderCommand;
@@ -15,11 +16,12 @@ public class OrderFacadeCommand {
 
     public record OrderCreateFacadeCommand(
             long userId,
+            Long couponId,
             List<OrderItemCreateFacadeCommand> orderItems
     ) {
 
-        public static OrderCreateFacadeCommand of(long userId, List<OrderItemCreateFacadeCommand> itemCommands) {
-            return new OrderCreateFacadeCommand(userId, itemCommands);
+        public static OrderCreateFacadeCommand of(long userId, Long couponId, List<OrderItemCreateFacadeCommand> itemCommands) {
+            return new OrderCreateFacadeCommand(userId, couponId, itemCommands);
         }
 
         public List<ItemCommand.StockDecreaseCommand> toStockDecreaseCommands() {
@@ -41,6 +43,10 @@ public class OrderFacadeCommand {
 
         public PointCommand.PointUseCommand toPointUseCommand(OrderInfo orderInfo) {
             return PointCommand.PointUseCommand.of(userId, orderInfo.order().getId(), orderInfo.getTotalAmount());
+        }
+
+        public CouponCommand.CouponApplyCommand toCouponApplyCommand(OrderInfo orderInfo) {
+            return CouponCommand.CouponApplyCommand.of(orderInfo.order(), couponId);
         }
     }
 

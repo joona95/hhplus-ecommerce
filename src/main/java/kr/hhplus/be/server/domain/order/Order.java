@@ -90,4 +90,8 @@ public class Order {
     public int hashCode() {
         return Objects.hash(id, userId, couponIssueId, orderStatus, orderAmountInfo);
     }
+
+    public void applyDiscount(int discountAmount) {
+        this.orderAmountInfo = orderAmountInfo.applyDiscount(discountAmount);
+    }
 }
