@@ -51,4 +51,21 @@ class OrderAmountInfoTest {
                     .hasMessageContaining("가격 계산이 올바르지 않습니다.");
         }
     }
+
+    @Nested
+    class 할인금액_적용 {
+
+        @Test
+        void 할인금액_저장_및_총가격에_할인금액_뺀_값_적용() {
+
+            //given
+            OrderAmountInfo orderAmountInfo = OrderAmountInfo.of(50000, 50000, 0);
+
+            //when
+            OrderAmountInfo result = orderAmountInfo.applyDiscount(10000);
+
+            //then
+            assertThat(result).isEqualTo(OrderAmountInfo.of(40000, 50000, 10000));
+        }
+    }
 }
