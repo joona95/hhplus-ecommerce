@@ -39,6 +39,10 @@ public class CouponIssue {
     @CreatedDate
     private LocalDateTime issuedAt;
 
+    public static CouponIssue of(long userId, Coupon coupon) {
+        return new CouponIssue(null, coupon.getId(), coupon.getCouponName(), coupon.getDiscountType(), coupon.getDiscountValue(), userId, coupon.getValidFrom(), false, LocalDateTime.now());
+    }
+
     public CouponIssue(Long id, long couponId, String couponName, DiscountType discountType, int discountValue, long userId, LocalDateTime expiredAt, boolean isUsed, LocalDateTime issuedAt) {
 
         if (couponId < 0) {

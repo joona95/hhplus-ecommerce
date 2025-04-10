@@ -5,6 +5,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Coupon {
 
@@ -66,5 +68,18 @@ public class Coupon {
         this.count = count;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void issue() {
+
+        LocalDateTime now = LocalDateTime.now();
+        if (validTo.isAfter(now) || validFrom.isBefore(now)) {
+            throw new RuntimeException("유효하지 않은 쿠폰입니다.");
+        }
+        if (count <= 0) {
+            throw new RuntimeException("선착순 쿠폰 발급이 이미 종료되었습니다.");
+        }
+
+        this.count--;
     }
 }
