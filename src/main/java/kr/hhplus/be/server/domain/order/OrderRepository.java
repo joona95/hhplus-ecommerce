@@ -10,4 +10,6 @@ public interface OrderRepository {
     Order saveOrder(Order order);
 
     List<OrderItem> saveOrderItems(List<OrderItem> orderItems);
+
+    List<OrderItem> findTodayOrderItems();
 }

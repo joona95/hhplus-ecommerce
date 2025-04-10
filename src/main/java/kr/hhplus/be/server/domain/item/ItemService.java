@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.item;
 
+import kr.hhplus.be.server.domain.order.OrderItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,5 +50,15 @@ public class ItemService {
         }
 
         return items;
+    }
+
+    @Transactional
+    public List<PopularItem> createPopularItemStatistics(List<OrderItem> orderItems) {
+
+        List<PopularItem> popularItems = orderItems.stream()
+                .map(PopularItem::of)
+                .toList();
+
+        return itemRepository.savePopularItems(popularItems);
     }
 }

@@ -32,4 +32,8 @@ public class OrderService {
 
         return OrderInfo.of(order, orderItems);
     }
+
+    public List<OrderItem> findTodayOrderItems() {
+        return orderRepository.findTodayOrderItems();
+    }
 }

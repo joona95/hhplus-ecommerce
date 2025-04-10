@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -35,8 +36,12 @@ public class PopularItem {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public static PopularItem of(Long id, long itemId, String itemName, int price, LocalDate orderDate, int orderCount) {
-        return new PopularItem(id, itemId, itemName, price, orderDate, orderCount, LocalDateTime.now());
+    public static PopularItem of(OrderItem orderItem) {
+        return PopularItem.of(orderItem.getItemId(), orderItem.getItemName(), orderItem.getSellPrice(), LocalDate.now(), orderItem.getCount());
+    }
+
+    public static PopularItem of(long itemId, String itemName, int price, LocalDate orderDate, int orderCount) {
+        return new PopularItem(null, itemId, itemName, price, orderDate, orderCount, LocalDateTime.now());
     }
 
     public PopularItem(Long id, long itemId, String itemName, int price, LocalDate orderDate, int orderCount, LocalDateTime createdAt) {
@@ -65,7 +70,6 @@ public class PopularItem {
         this.orderCount = orderCount;
         this.createdAt = createdAt;
     }
-
 
     @Override
     public boolean equals(Object o) {
