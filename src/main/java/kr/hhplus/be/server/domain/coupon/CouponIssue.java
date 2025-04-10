@@ -41,7 +41,7 @@ public class CouponIssue {
 
     public CouponIssue(Long id, long couponId, String couponName, DiscountType discountType, int discountValue, long userId, LocalDateTime expiredAt, boolean isUsed, LocalDateTime issuedAt) {
 
-        if(couponId < 0) {
+        if (couponId < 0) {
             throw new IllegalArgumentException("쿠폰식별자는 음수일 수 없습니다.");
         }
         if (!StringUtils.hasText(couponName)) {
@@ -53,7 +53,7 @@ public class CouponIssue {
         if (discountValue <= 0) {
             throw new IllegalArgumentException("할인율/금액은 양수여야 합니다.");
         }
-        if(userId < 0) {
+        if (userId < 0) {
             throw new IllegalArgumentException("유저식별자는 음수일 수 없습니다.");
         }
         if (expiredAt == null) {
@@ -62,9 +62,22 @@ public class CouponIssue {
 
         this.id = id;
         this.couponId = couponId;
+        this.couponName = couponName;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
         this.userId = userId;
         this.expiredAt = expiredAt;
         this.isUsed = isUsed;
         this.issuedAt = issuedAt;
+    }
+
+    public int applyDiscount(int totalAmount) {
+
+        if (isUsed || expiredAt.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("사용할 수 없는 쿠폰입니다.");
+        }
+        this.isUsed = true;
+        DiscountPolicy discountPolicy = discountType.getDiscountPolicy(discountValue);
+        return discountPolicy.calculateDiscount(totalAmount);
     }
 }
