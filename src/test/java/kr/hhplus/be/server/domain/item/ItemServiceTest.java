@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static kr.hhplus.be.server.domain.item.ItemCommand.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,6 +83,32 @@ class ItemServiceTest {
 
             //then
             verify(itemRepository, times(1)).findPopularItems();
+        }
+    }
+
+    @Nested
+    class 재고_차감 {
+
+        @Test
+        void 상품_목록_조회_레포지토리_1회_호출() {
+
+            //given
+            List<StockDecreaseCommand> commands = List.of(
+                    StockDecreaseCommand.of(1L, 1),
+                    StockDecreaseCommand.of(2L, 2)
+            );
+
+            when(itemRepository.findByIdIn(List.of(1L, 2L)))
+                    .thenReturn(List.of(
+                            Item.of(1L, "상품명1", Stock.of(10), 10000),
+                            Item.of(2L, "상품명2", Stock.of(10), 20000)
+                    ));
+
+            //when
+            itemService.decreaseStocks(commands);
+
+            //then
+            verify(itemRepository, times(1)).findByIdIn(List.of(1L, 2L));
         }
     }
 }
