@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -75,6 +76,61 @@ class CouponTest {
             assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, count, LocalDateTime.now(), LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("쿠폰 수량은 양수여야 합니다.");
+        }
+    }
+
+    @Nested
+    class 쿠폰_발급 {
+
+        @Test
+        void 유효한_시작일시가_현재_이후_이면_RuntimeException_발생() {
+
+            //given
+            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MAX, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now());
+
+            //when, then
+            assertThatThrownBy(coupon::issue)
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("유효하지 않은 쿠폰입니다.");
+        }
+
+
+        @Test
+        void 유효한_종료일시가_현재_이전_이면_RuntimeException_발생() {
+
+            //given
+            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MIN, 100, LocalDateTime.now(), LocalDateTime.now());
+
+            //when, then
+            assertThatThrownBy(coupon::issue)
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("유효하지 않은 쿠폰입니다.");
+        }
+
+        @Test
+        void 수량이_없는_경우_RuntimeException_발생() {
+
+            //given
+            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 1, LocalDateTime.now(), LocalDateTime.now());
+            coupon.issue();
+
+            //when, then
+            assertThatThrownBy(coupon::issue)
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("선착순 쿠폰 발급이 이미 종료되었습니다.");
+        }
+
+        @Test
+        void 정상_발급시_수량_하나_감소() {
+
+            //given
+            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+
+            //when
+            coupon.issue();
+
+            //then
+            assertThat(coupon.getCount()).isEqualTo(9);
         }
     }
 }
