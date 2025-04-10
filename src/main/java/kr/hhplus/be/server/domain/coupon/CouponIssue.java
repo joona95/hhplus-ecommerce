@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -83,5 +84,18 @@ public class CouponIssue {
         this.isUsed = true;
         DiscountPolicy discountPolicy = discountType.getDiscountPolicy(discountValue);
         return discountPolicy.calculateDiscount(totalAmount);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CouponIssue that = (CouponIssue) o;
+        return couponId == that.couponId && discountValue == that.discountValue && userId == that.userId && isUsed == that.isUsed && Objects.equals(id, that.id) && Objects.equals(couponName, that.couponName) && discountType == that.discountType && Objects.equals(expiredAt, that.expiredAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, couponId, couponName, discountType, discountValue, userId, expiredAt, isUsed);
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -81,5 +82,18 @@ public class Coupon {
         }
 
         this.count--;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coupon coupon = (Coupon) o;
+        return discountValue == coupon.discountValue && count == coupon.count && Objects.equals(id, coupon.id) && Objects.equals(couponName, coupon.couponName) && discountType == coupon.discountType && Objects.equals(validTo, coupon.validTo) && Objects.equals(validFrom, coupon.validFrom);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, couponName, discountType, discountValue, validTo, validFrom, count);
     }
 }
