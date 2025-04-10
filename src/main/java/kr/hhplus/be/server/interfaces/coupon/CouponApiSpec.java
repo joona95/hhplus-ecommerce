@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.interfaces.coupon.dto.CouponIssueRequest;
-import kr.hhplus.be.server.interfaces.coupon.dto.CouponResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+
+import static kr.hhplus.be.server.interfaces.coupon.CouponRequest.*;
+import static kr.hhplus.be.server.interfaces.coupon.CouponResponse.*;
 
 @Tag(name = "쿠폰 API")
 public interface CouponApiSpec {
@@ -66,7 +67,7 @@ public interface CouponApiSpec {
                             """)
             }))
     })
-    ResponseEntity<List<CouponResponse>> getUserCoupons(long userId);
+    ResponseEntity<List<UserCouponResponse>> getUserCoupons(long userId);
 
     @Operation(summary = "선착순 쿠폰 발급", description = "발급 제한 수량만큼 선착순으로 유저에게 쿠폰을 발급한다.")
     @ApiResponses({
@@ -133,7 +134,7 @@ public interface CouponApiSpec {
                             """)
             }))
     })
-    ResponseEntity<CouponResponse> issueCoupon(CouponIssueRequest request);
+    ResponseEntity<UserCouponResponse> issueCoupon(CouponIssueRequest request);
 
 
 }
