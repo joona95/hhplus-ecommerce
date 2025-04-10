@@ -78,7 +78,7 @@ ORDER_ITEM {
 
 ITEM {
     int id PK
-    int item_name "상품명"
+    string item_name "상품명"
     int stock "재고수량"
     int price "가격"
     datetime created_at "생성일시"
