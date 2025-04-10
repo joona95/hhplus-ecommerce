@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CouponIssueTest {
@@ -74,6 +76,60 @@ class CouponIssueTest {
             assertThatThrownBy(() ->  new CouponIssue(1L, 1L, "쿠폰명", DiscountType.FIXED, 10000, 1L, expiredAt, false, LocalDateTime.now()))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("만료 일시 정보가 필요합니다.");
+        }
+    }
+
+    @Nested
+    class 쿠폰_할인_적용 {
+
+        @Test
+        void 이미_사용한_쿠폰일_경우_RuntimeException_발생() {
+
+            //given
+            CouponIssue couponIssue = new CouponIssue(1L, 1L, "쿠폰명", DiscountType.FIXED, 10000, 1L, LocalDateTime.MAX, true, LocalDateTime.now());
+
+            //when, then
+            assertThatThrownBy(() -> couponIssue.applyDiscount(100000))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("사용할 수 없는 쿠폰입니다.");
+        }
+
+        @Test
+        void 만료일시가_지난_경우_RuntimeException_발생() {
+
+            //given
+            CouponIssue couponIssue = new CouponIssue(1L, 1L, "쿠폰명", DiscountType.FIXED, 10000, 1L, LocalDateTime.MIN, false, LocalDateTime.now());
+
+            //when, then
+            assertThatThrownBy(() -> couponIssue.applyDiscount(100000))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("사용할 수 없는 쿠폰입니다.");
+        }
+
+        @Test
+        void 할인타입이_정액인_경우_정액_할인금액_계산() {
+
+            //given
+            CouponIssue couponIssue = new CouponIssue(1L, 1L, "쿠폰명", DiscountType.FIXED, 10000, 1L, LocalDateTime.MAX, false, LocalDateTime.now());
+
+            //when
+            int result = couponIssue.applyDiscount(20000);
+
+            //when, then
+            assertThat(result).isEqualTo(10000);
+        }
+
+        @Test
+        void 할인타입이_정률인_경우_정률_할인금액_계산() {
+
+            //given
+            CouponIssue couponIssue = new CouponIssue(1L, 1L, "쿠폰명", DiscountType.RATE, 10, 1L, LocalDateTime.MAX, false, LocalDateTime.now());
+
+            //when
+            int result = couponIssue.applyDiscount(20000);
+
+            //when, then
+            assertThat(result).isEqualTo(2000);
         }
     }
 }
