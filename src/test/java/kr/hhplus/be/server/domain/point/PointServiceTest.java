@@ -46,7 +46,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -62,7 +62,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -78,7 +78,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, -2000);
 
@@ -94,7 +94,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -114,7 +114,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
@@ -130,7 +130,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
@@ -147,7 +147,7 @@ class PointServiceTest {
             //given
 
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 2000);
 
@@ -163,7 +163,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
+                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 

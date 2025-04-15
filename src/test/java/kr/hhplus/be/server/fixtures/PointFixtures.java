@@ -10,26 +10,30 @@ import java.time.LocalDateTime;
 public class PointFixtures {
 
     public static Point 유저식별자로_잔액_생성(long userId) {
-        return new Point(1L, userId, Amount.of(1000), LocalDateTime.now());
+        return new Point(null, userId, Amount.of(1000), LocalDateTime.now());
     }
 
     public static Point 금액으로_잔액_생성(Amount amount) {
-        return new Point(1L, 1L, amount, LocalDateTime.now());
+        return new Point(null, 1L, amount, LocalDateTime.now());
     }
 
     public static Point 금액으로_잔액_생성(int amount) {
-        return new Point(1L, 1L, Amount.of(amount), LocalDateTime.now());
+        return new Point(null, 1L, Amount.of(amount), LocalDateTime.now());
+    }
+
+    public static Point 식별자와_금액으로_잔액_생성(long id, int amount) {
+        return new Point(id, 1L, Amount.of(amount), LocalDateTime.now());
     }
 
     public static PointHistory 포인트식별자로_포인트_내역_생성(long pointId) {
-        return new PointHistory(1L, pointId, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now());
+        return new PointHistory(null, pointId, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now());
     }
 
     public static PointHistory 금액으로_포인트_내역_생성(Amount amount) {
-        return new PointHistory(1L, 1L, 1L, amount, TransactionType.CHARGE, LocalDateTime.now());
+        return new PointHistory(null, 1L, 1L, amount, TransactionType.CHARGE, LocalDateTime.now());
     }
 
     public static PointHistory 거래_타입으로_포인트_내역_생성(TransactionType type) {
-        return new PointHistory(1L, 1L, 1L, Amount.of(1000), type, LocalDateTime.now());
+        return new PointHistory(null, 1L, 1L, Amount.of(1000), type, LocalDateTime.now());
     }
 }
