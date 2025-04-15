@@ -97,10 +97,7 @@ class OrderServiceTest {
             when(orderRepository.saveOrder(Order.of(command.userId())))
                     .thenThrow(RuntimeException.class);
 
-            //when
-            ;
-
-            //then
+            //when, then
             assertThatThrownBy(() -> orderService.createOrder(command))
                     .isInstanceOf(RuntimeException.class);
 
