@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.fixtures.CouponFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,7 @@ class CouponTest {
         void 쿠폰명이_비어있으면_IllegalArgumentException_발생(String couponName) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, couponName, DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.쿠폰명으로_쿠폰_생성(couponName))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("쿠폰명을 입력해주세요.");
         }
@@ -31,7 +32,7 @@ class CouponTest {
         void 할인타입이_null_이면_IllegalArgumentException_발생(DiscountType discountType) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", discountType, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.할인타입으로_쿠폰_생성(discountType))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("할인 타입 정보가 필요합니다.");
         }
@@ -41,7 +42,7 @@ class CouponTest {
         void 유효한_시작일시_null_이면_IllegalArgumentException_발생(LocalDateTime validTo) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, validTo, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.유효시작일로_쿠폰_생성(validTo))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("쿠폰 유효 기간을 입력해주세요.");
         }
@@ -52,7 +53,7 @@ class CouponTest {
         void 유효한_종료일시_null_이면_IllegalArgumentException_발생(LocalDateTime validFrom) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, validFrom, 100, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.유효종료일로_쿠폰_생성(validFrom))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("쿠폰 유효 기간을 입력해주세요.");
         }
@@ -62,7 +63,7 @@ class CouponTest {
         void 할인율_할인금액이_0이하이면_IllegalArgumentException_발생(int discountValue) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", DiscountType.FIXED, discountValue, LocalDateTime.MIN, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.할인율_할인금액으로_쿠폰_생성(discountValue))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("할인율/금액은 양수여야 합니다.");
         }
@@ -73,7 +74,7 @@ class CouponTest {
         void 수량이_0이하이면_IllegalArgumentException_발생(int count) {
 
             //when, then
-            assertThatThrownBy(() -> new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, count, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> CouponFixtures.발급수량으로_쿠폰_생성(count))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("쿠폰 수량은 양수여야 합니다.");
         }
@@ -86,7 +87,7 @@ class CouponTest {
         void 유효한_시작일시가_현재_이후_이면_RuntimeException_발생() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MAX, LocalDateTime.MAX, 100, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.유효시작일로_쿠폰_생성(LocalDateTime.MAX);
 
             //when, then
             assertThatThrownBy(coupon::issue)
@@ -99,7 +100,7 @@ class CouponTest {
         void 유효한_종료일시가_현재_이전_이면_RuntimeException_발생() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MIN, 100, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.유효종료일로_쿠폰_생성(LocalDateTime.MIN);
 
             //when, then
             assertThatThrownBy(coupon::issue)
@@ -111,7 +112,7 @@ class CouponTest {
         void 수량이_없는_경우_RuntimeException_발생() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 1, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.발급수량으로_쿠폰_생성(1);
             coupon.issue();
 
             //when, then
@@ -124,7 +125,7 @@ class CouponTest {
         void 정상_발급시_수량_하나_감소() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.정상_쿠폰_생성();
 
             //when
             coupon.issue();
