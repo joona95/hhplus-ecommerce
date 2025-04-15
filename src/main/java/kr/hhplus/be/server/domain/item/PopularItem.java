@@ -36,8 +36,8 @@ public class PopularItem {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public static PopularItem of(OrderItem orderItem) {
-        return PopularItem.of(orderItem.getItemId(), orderItem.getItemName(), orderItem.getSellPrice(), LocalDate.now(), orderItem.getCount());
+    public static PopularItem of(OrderItem orderItem, int orderCount) {
+        return PopularItem.of(orderItem.getItemId(), orderItem.getItemName(), orderItem.getSellPrice(), LocalDate.now(), orderCount);
     }
 
     public static PopularItem of(long itemId, String itemName, int price, LocalDate orderDate, int orderCount) {

@@ -55,8 +55,13 @@ public class ItemService {
     @Transactional
     public List<PopularItem> createPopularItemStatistics(List<OrderItem> orderItems) {
 
-        List<PopularItem> popularItems = orderItems.stream()
-                .map(PopularItem::of)
+        Map<Long, OrderItem> orderItemMapByItemId = orderItems.stream().collect(Collectors.toMap(OrderItem::getItemId, Function.identity(), (o1, o2) -> o1));
+
+        Map<Long, Integer> orderCountByItemId = orderItems.stream()
+                .collect(Collectors.groupingBy(OrderItem::getItemId, Collectors.summingInt(OrderItem::getCount)));
+
+        List<PopularItem> popularItems = orderItemMapByItemId.keySet().stream()
+                .map(itemId -> PopularItem.of(orderItemMapByItemId.get(itemId), orderCountByItemId.get(itemId)))
                 .toList();
 
         return itemRepository.savePopularItems(popularItems);
