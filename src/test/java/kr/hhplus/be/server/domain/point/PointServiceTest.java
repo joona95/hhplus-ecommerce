@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.fixtures.PointFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             //when
             pointService.findByUserId(1L);
@@ -45,7 +46,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -61,7 +62,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -77,7 +78,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, -2000);
 
@@ -93,7 +94,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointChargeCommand command = new PointChargeCommand(1L, 1000);
 
@@ -101,7 +102,7 @@ class PointServiceTest {
             Point result = pointService.charge(command);
 
             //then
-            assertThat(result).isEqualTo(Point.of(1L, 1L, Amount.of(2000)));
+            assertThat(result.getAmount()).isEqualTo(2000);
         }
     }
 
@@ -113,7 +114,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
@@ -129,7 +130,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
@@ -146,7 +147,7 @@ class PointServiceTest {
             //given
 
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 2000);
 
@@ -162,7 +163,7 @@ class PointServiceTest {
 
             //given
             when(pointRepository.findByUserId(1L))
-                    .thenReturn(Point.of(1L, 1L, Amount.of(1000)));
+                    .thenReturn(PointFixtures.금액으로_잔액_생성(1000));
 
             PointUseCommand command = new PointUseCommand(1L, 1L, 1000);
 
@@ -170,7 +171,7 @@ class PointServiceTest {
             Point result = pointService.use(command);
 
             //then
-            assertThat(result).isEqualTo(Point.of(1L, 1L, Amount.of(0)));
+            assertThat(result.getAmount()).isEqualTo(0);
         }
     }
 }

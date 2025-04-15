@@ -1,11 +1,10 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.fixtures.PointFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -19,7 +18,7 @@ class PointTest {
         void 유저식별자가_음수면_IllegalArgumentException_발생(long userId) {
 
             //when, then
-            assertThatThrownBy(() -> new Point(1L, userId, Amount.of(1000), LocalDateTime.now()))
+            assertThatThrownBy(() -> PointFixtures.유저식별자로_잔액_생성(userId))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("유저식별자는 음수일 수 없습니다.");
         }
@@ -29,7 +28,7 @@ class PointTest {
         void 금액이_null_이면_IllegalArgumentException_발생(Amount amount) {
 
             //when, then
-            assertThatThrownBy(() -> new Point(1L, 1L, amount, LocalDateTime.now()))
+            assertThatThrownBy(() -> PointFixtures.금액으로_잔액_생성(amount))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("잔액 정보가 필요합니다.");
         }
@@ -43,7 +42,7 @@ class PointTest {
         void 잔액에_충전금액을_더한_값이_최대_한도_초과면_IllegalArgumentException_발생(int value) {
 
             //given
-            Point point = Point.of(1L, 1L, Amount.of(500000));
+            Point point = PointFixtures.금액으로_잔액_생성(500000);
 
             //when, then
             assertThatThrownBy(() -> point.charge(value))
@@ -60,7 +59,7 @@ class PointTest {
         void 잔액에_사용금액을_뺀_값이_음수면_IllegalArgumentException_발생(int value) {
 
             //given
-            Point point = Point.of(1L, 1L, Amount.of(500000));
+            Point point = PointFixtures.금액으로_잔액_생성(500000);
 
             //when, then
             assertThatThrownBy(() -> point.use(value))
