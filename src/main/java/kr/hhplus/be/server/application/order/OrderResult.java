@@ -32,7 +32,7 @@ public class OrderResult {
             return new OrderCreateResult(
                     order.getId(),
                     order.getOrderStatus(),
-                    null,
+                    order.getCouponIssueId(),
                     itemResults,
                     order.getOrderAmountInfo().getTotalAmount(),
                     order.getOrderAmountInfo().getItemTotalAmount(),
