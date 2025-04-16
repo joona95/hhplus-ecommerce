@@ -6,7 +6,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -67,7 +71,7 @@ public interface CouponApiSpec {
                             """)
             }))
     })
-    ResponseEntity<List<UserCouponResponse>> getUserCoupons(long userId);
+    ResponseEntity<List<UserCouponResponse>> getUserCoupons(@RequestParam @Positive long userId);
 
     @Operation(summary = "선착순 쿠폰 발급", description = "발급 제한 수량만큼 선착순으로 유저에게 쿠폰을 발급한다.")
     @ApiResponses({
@@ -134,7 +138,7 @@ public interface CouponApiSpec {
                             """)
             }))
     })
-    ResponseEntity<UserCouponResponse> issueCoupon(CouponIssueRequest request);
+    ResponseEntity<UserCouponResponse> issueCoupon(@RequestBody @Valid CouponIssueRequest request);
 
 
 }
