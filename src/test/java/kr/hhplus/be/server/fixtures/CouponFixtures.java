@@ -40,6 +40,14 @@ public class CouponFixtures {
         return new Coupon(null, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.now(), LocalDateTime.now().plusMonths(3), 10, LocalDateTime.now(), LocalDateTime.now());
     }
 
+    public static Coupon 정액_할인_쿠폰_생성(int discountValue) {
+        return new Coupon(null, "쿠폰명", DiscountType.FIXED, discountValue, LocalDateTime.now(), LocalDateTime.now().plusMonths(3), 10, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    public static Coupon 정률_할인_쿠폰_생성(int discountValue) {
+        return new Coupon(null, "쿠폰명", DiscountType.RATE, discountValue, LocalDateTime.now(), LocalDateTime.now().plusMonths(3), 10, LocalDateTime.now(), LocalDateTime.now());
+    }
+
     public static CouponIssue 쿠폰명으로_쿠폰_발급_내역_생성(String couponName) {
         return new CouponIssue(null, 1L, couponName, DiscountType.FIXED, 10000, 1L, LocalDateTime.now().plusMonths(3), false, LocalDateTime.now());
     }
