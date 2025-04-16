@@ -6,7 +6,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "잔액 API")
 public interface PointApiSpec {
@@ -54,7 +58,7 @@ public interface PointApiSpec {
                             """)
             }))
     })
-    ResponseEntity<PointResponse.UserPointResponse> getUserPoint(long userId);
+    ResponseEntity<PointResponse.UserPointResponse> getUserPoint(@RequestParam @Positive long userId);
 
     @Operation(summary = "유저 잔액 충전", description = "유저의 잔액을 충전합니다. 로그인한 사용자만 가능합니다.")
     @ApiResponses({
@@ -111,5 +115,5 @@ public interface PointApiSpec {
                             """)
             }))
     })
-    ResponseEntity<PointResponse.UserPointResponse> charge(PointRequest.PointChargeRequest request);
+    ResponseEntity<PointResponse.UserPointResponse> charge(@RequestBody @Valid PointRequest.PointChargeRequest request);
 }
