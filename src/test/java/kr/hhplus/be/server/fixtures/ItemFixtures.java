@@ -25,6 +25,10 @@ public class ItemFixtures {
         return new Item(null, "상품명", Stock.of(1000), price, LocalDateTime.now(), LocalDateTime.now());
     }
 
+    public static Item 식별자와_가격으로_상품_생성(long id, int price) {
+        return new Item(id, "상품명", Stock.of(1000), price, LocalDateTime.now(), LocalDateTime.now());
+    }
+
     public static Item 정상_상품_생성() {
         return Item.of(null, "상품명", Stock.of(100), 10000);
     }
