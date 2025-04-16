@@ -22,9 +22,7 @@ public class ItemService {
     }
 
     public Item findById(Long id) {
-        return itemRepository.findById(id).orElseThrow(() -> {
-            throw new RuntimeException("상품을 찾을 수 없습니다.");
-        });
+        return itemRepository.findById(id).orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
     }
 
     public List<PopularItem> findPopularItems() {
