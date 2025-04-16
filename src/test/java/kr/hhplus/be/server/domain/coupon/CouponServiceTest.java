@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -31,7 +32,10 @@ class CouponServiceTest {
 
             //given
             when(couponRepository.findByUserId(1L))
-                    .thenReturn(CouponFixtures.정상_쿠폰_발급_내역_목록_생성());
+                    .thenReturn(List.of(
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(1L),
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(1L)
+                    ));
 
             //when
             couponService.findByUserId(1L);
@@ -115,7 +119,7 @@ class CouponServiceTest {
         void 유저_쿠폰_보유_여부_조회_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -137,7 +141,7 @@ class CouponServiceTest {
         void 쿠폰_조회_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = CouponFixtures.정상_쿠폰_생성();
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -159,7 +163,7 @@ class CouponServiceTest {
         void 쿠폰_내역_저장_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = CouponFixtures.정상_쿠폰_생성();
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -181,7 +185,7 @@ class CouponServiceTest {
         void 쿠폰_발급_실패_시_쿠폰_발급_내역_저장_0회_호출() {
 
             //given
-            Coupon coupon = CouponFixtures.정상_쿠폰_생성();
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(true);
