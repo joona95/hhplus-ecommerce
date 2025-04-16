@@ -100,7 +100,10 @@ class ItemServiceTest {
             );
 
             when(itemRepository.findByIdIn(List.of(1L, 2L)))
-                    .thenReturn(ItemFixtures.정상_상품_목록_생성());
+                    .thenReturn(List.of(
+                            ItemFixtures.식별자로_상품_생성(1L),
+                            ItemFixtures.식별자로_상품_생성(2L)
+                    ));
 
             //when
             itemService.decreaseStocks(commands);

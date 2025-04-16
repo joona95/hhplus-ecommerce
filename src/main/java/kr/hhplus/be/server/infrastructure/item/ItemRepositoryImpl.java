@@ -27,7 +27,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<PopularItem> findPopularItems() {
-        return popularItemJpaRepository.findByOrderDateAfter(LocalDate.now().minusDays(3));
+        return popularItemJpaRepository.findByOrderDateBetween(LocalDate.now().minusDays(3), LocalDate.now().minusDays(1));
     }
 
     @Override

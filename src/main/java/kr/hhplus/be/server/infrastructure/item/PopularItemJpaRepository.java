@@ -7,5 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PopularItemJpaRepository extends JpaRepository<PopularItem, Long> {
-    List<PopularItem> findByOrderDateAfter(LocalDate orderDateAfter);
+
+    List<PopularItem> findByOrderDateBetween(LocalDate orderDateAfter, LocalDate orderDateBefore);
 }
