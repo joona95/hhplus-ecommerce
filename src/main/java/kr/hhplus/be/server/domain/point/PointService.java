@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.point.PointCommand.PointChargeCommand;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class PointService {
         Point point = findByUser(user);
         point.charge(command.amount());
 
-        PointHistory pointHistory = PointHistory.ofCharge(point.getId(), command.amount());
+        PointHistory pointHistory = PointHistory.ofCharge(point, command.amount());
         pointRepository.savePointHistory(pointHistory);
 
         return point;
@@ -36,10 +37,12 @@ public class PointService {
     @Transactional
     public Point use(User user, PointUseCommand command) {
 
-        Point point = findByUser(user);
-        point.use(command.amount());
+        Order order = command.order();
 
-        PointHistory pointHistory = PointHistory.ofUse(point.getId(), command.orderId(), command.amount());
+        Point point = findByUser(user);
+        point.use(order.getTotalAmount());
+
+        PointHistory pointHistory = PointHistory.ofUse(point, order);
         pointRepository.savePointHistory(pointHistory);
 
         return point;

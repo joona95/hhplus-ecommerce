@@ -1,8 +1,12 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderAmountInfo;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.fixtures.OrderFixtures;
 import kr.hhplus.be.server.fixtures.PointFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.order.OrderJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointHistoryJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
@@ -31,6 +35,9 @@ public class PointServiceIntegrationTest {
 
     @Autowired
     private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    private OrderJpaRepository orderJpaRepository;
 
     @BeforeEach
     void setUp() {
@@ -63,10 +70,11 @@ public class PointServiceIntegrationTest {
     void 포인트를_사용한다() {
 
         // given
+        Order order = orderJpaRepository.save(OrderFixtures.주문가격정보로_주문_생성(OrderAmountInfo.of(5000, 10000, 5000)));
         User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
         Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 10000));
 
-        PointCommand.PointUseCommand command = new PointCommand.PointUseCommand(1L, 5000);
+        PointCommand.PointUseCommand command = new PointCommand.PointUseCommand(order);
 
         // when
         Point result = pointService.use(user, command);
@@ -78,6 +86,7 @@ public class PointServiceIntegrationTest {
         assertThat(histories).hasSize(1);
         assertThat(histories.get(0).getType()).isEqualTo(TransactionType.USE);
         assertThat(histories.get(0).getAmount()).isEqualTo(Amount.of(5000));
-        assertThat(histories.get(0).getOrderId()).isEqualTo(1L);
+        assertThat(histories.get(0).getPointId()).isEqualTo(point.getId());
+        assertThat(histories.get(0).getOrderId()).isEqualTo(order.getId());
     }
 }

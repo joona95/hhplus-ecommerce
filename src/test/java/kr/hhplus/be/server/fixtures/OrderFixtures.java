@@ -10,6 +10,10 @@ import java.time.LocalDateTime;
 
 public class OrderFixtures {
 
+    public static Order 식별자로_주문_생성(long id) {
+        return new Order(id, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now());
+    }
+
     public static Order 정상_주문_생성() {
         return new Order(null, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now());
     }
@@ -24,6 +28,10 @@ public class OrderFixtures {
 
     public static Order 주문가격정보로_주문_생성(OrderAmountInfo orderAmountInfo) {
         return new Order(null, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    public static Order 식별자와_주문가격정보로_주문_생성(long id, OrderAmountInfo orderAmountInfo) {
+        return new Order(id, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now());
     }
 
     public static Order 생성일시로_주문_생성(LocalDateTime createdAt) {

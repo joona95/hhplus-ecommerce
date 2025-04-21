@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.fixtures.OrderFixtures;
 import kr.hhplus.be.server.fixtures.PointFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,11 +55,14 @@ class PointHistoryTest {
         @Test
         void 거래_타입이_CHARGE_이면_정상_생성() {
 
+            //given
+            Point point = PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000);
+
             //when
-            PointHistory result = PointHistory.ofCharge(1L, 1L, Amount.of(1000));
+            PointHistory result = PointHistory.ofCharge(point, 1000);
 
             //then
-            assertThat(result).isEqualTo(new PointHistory(1L, 1L, null, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()));
+            assertThat(result).isEqualTo(new PointHistory(null, 1L, null, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()));
         }
     }
 
@@ -67,11 +72,15 @@ class PointHistoryTest {
         @Test
         void 거래_타입이_USE_이면_정상_생성() {
 
+            //given
+            Point point = PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000);
+            Order order = OrderFixtures.식별자로_주문_생성(1L);
+
             //when
-            PointHistory result = PointHistory.ofUse(1L, 1L, 1L, Amount.of(1000));
+            PointHistory result = PointHistory.ofUse(point, order);
 
             //then
-            assertThat(result).isEqualTo(new PointHistory(1L, 1L, 1L, Amount.of(1000), TransactionType.USE, LocalDateTime.now()));
+            assertThat(result).isEqualTo(new PointHistory(null, 1L, 1L, Amount.of(order.getTotalAmount()), TransactionType.USE, LocalDateTime.now()));
         }
     }
 }

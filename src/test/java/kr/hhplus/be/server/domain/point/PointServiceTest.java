@@ -1,6 +1,9 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderAmountInfo;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.fixtures.OrderFixtures;
 import kr.hhplus.be.server.fixtures.PointFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
 import org.junit.jupiter.api.Nested;
@@ -68,7 +71,7 @@ class PointServiceTest {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
-            Point point = PointFixtures.유저와_금액으로_잔액_생성(user, 1000);
+            Point point = PointFixtures.식별자와_유저와_금액으로_잔액_생성(1L, user, 1000);
             when(pointRepository.findByUser(user))
                     .thenReturn(point);
 
@@ -126,11 +129,12 @@ class PointServiceTest {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
+            Order order = OrderFixtures.식별자와_주문가격정보로_주문_생성(1L, OrderAmountInfo.of(1000, 1000, 0));
 
             when(pointRepository.findByUser(user))
                     .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(order);
 
             //when
             pointService.use(user, command);
@@ -144,17 +148,19 @@ class PointServiceTest {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
+            Order order = OrderFixtures.식별자와_주문가격정보로_주문_생성(1L, OrderAmountInfo.of(1000, 1000, 0));
+            Point point = PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000);
 
             when(pointRepository.findByUser(user))
-                    .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
+                    .thenReturn(point);
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(order);
 
             //when
             pointService.use(user, command);
 
             //then
-            verify(pointRepository, times(1)).savePointHistory(PointHistory.ofUse(1L, 1L, 1000));
+            verify(pointRepository, times(1)).savePointHistory(PointHistory.ofUse(point, order));
         }
 
         @Test
@@ -162,11 +168,12 @@ class PointServiceTest {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
+            Order order = OrderFixtures.식별자로_주문_생성(1L);
 
             when(pointRepository.findByUser(user))
                     .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
-            PointUseCommand command = new PointUseCommand(1L, 2000);
+            PointUseCommand command = new PointUseCommand(order);
 
             //when, then
             assertThatThrownBy(() -> pointService.use(user, command))
@@ -180,11 +187,12 @@ class PointServiceTest {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
+            Order order = OrderFixtures.식별자와_주문가격정보로_주문_생성(1L, OrderAmountInfo.of(1000, 1000, 0));
 
             when(pointRepository.findByUser(user))
                     .thenReturn(PointFixtures.식별자와_금액으로_잔액_생성(1L, 1000));
 
-            PointUseCommand command = new PointUseCommand(1L, 1000);
+            PointUseCommand command = new PointUseCommand(order);
 
             //when
             Point result = pointService.use(user, command);

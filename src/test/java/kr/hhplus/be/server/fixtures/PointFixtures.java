@@ -30,6 +30,10 @@ public class PointFixtures {
         return new Point(id, UserFixtures.식별자로_유저_생성(1L), Amount.of(amount), LocalDateTime.now());
     }
 
+    public static Point 식별자와_유저와_금액으로_잔액_생성(long id, User user, int amount) {
+        return new Point(id, user, Amount.of(amount), LocalDateTime.now());
+    }
+
     public static PointHistory 포인트식별자로_포인트_내역_생성(long pointId) {
         return new PointHistory(null, pointId, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now());
     }

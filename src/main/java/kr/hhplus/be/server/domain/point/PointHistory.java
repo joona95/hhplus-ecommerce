@@ -5,6 +5,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import kr.hhplus.be.server.domain.order.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -33,20 +34,12 @@ public class PointHistory {
     @CreatedDate
     LocalDateTime createdAt;
 
-    public static PointHistory ofCharge(long pointId, int amount) {
-        return PointHistory.ofCharge(null, pointId, Amount.of(amount));
+    public static PointHistory ofCharge(Point point, int amount) {
+        return new PointHistory(null, point.getId(), null, Amount.of(amount), TransactionType.CHARGE, LocalDateTime.now());
     }
 
-    public static PointHistory ofCharge(Long id, long pointId, Amount amount) {
-        return new PointHistory(id, pointId, null, amount, TransactionType.CHARGE, LocalDateTime.now());
-    }
-
-    public static PointHistory ofUse(long pointId, long orderId, int amount) {
-        return PointHistory.ofUse(null, pointId, orderId, Amount.of(amount));
-    }
-
-    public static PointHistory ofUse(Long id, long pointId, long orderId, Amount amount) {
-        return new PointHistory(id, pointId, orderId, amount, TransactionType.USE, LocalDateTime.now());
+    public static PointHistory ofUse(Point point, Order order) {
+        return new PointHistory(null, point.getId(), order.getId(), Amount.of(order.getTotalAmount()), TransactionType.USE, LocalDateTime.now());
     }
 
     public PointHistory(Long id, long pointId, Long orderId, Amount amount, TransactionType type, LocalDateTime createdAt) {

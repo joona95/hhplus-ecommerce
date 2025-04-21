@@ -42,7 +42,7 @@ public class OrderFacadeCommand {
         }
 
         public PointCommand.PointUseCommand toPointUseCommand(OrderInfo orderInfo) {
-            return PointCommand.PointUseCommand.of(orderInfo.order().getId(), orderInfo.getTotalAmount());
+            return PointCommand.PointUseCommand.of(orderInfo.order());
         }
 
         public CouponCommand.CouponApplyCommand toCouponApplyCommand(OrderInfo orderInfo) {
