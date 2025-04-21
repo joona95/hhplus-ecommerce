@@ -1,10 +1,15 @@
 package kr.hhplus.be.server.domain.point;
 
+import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import kr.hhplus.be.server.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,7 +28,9 @@ public class Point {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private User user;
 
     @Embedded
     private Amount amount;
@@ -31,21 +38,21 @@ public class Point {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static Point of(Long id, long userId, Amount amount) {
-        return new Point(id, userId, amount, LocalDateTime.now());
+    public static Point of(User user, Amount amount) {
+        return new Point(null, user, amount, LocalDateTime.now());
     }
 
-    public Point(Long id, long userId, Amount amount, LocalDateTime updatedAt) {
+    public Point(Long id, User user, Amount amount, LocalDateTime updatedAt) {
 
-        if (userId < 0) {
-            throw new IllegalArgumentException("유저식별자는 음수일 수 없습니다.");
+        if (user == null) {
+            throw new IllegalArgumentException("유저 정보가 필요합니다.");
         }
         if (amount == null) {
             throw new IllegalArgumentException("잔액 정보가 필요합니다.");
         }
 
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.amount = amount;
         this.updatedAt = updatedAt;
     }
@@ -68,20 +75,19 @@ public class Point {
         this.amount = this.amount.minus(value);
     }
 
+    public int getAmount() {
+        return amount.getValue();
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point point = (Point) o;
-        return userId == point.userId && Objects.equals(amount, point.amount) && Objects.equals(id, point.id);
+        return Objects.equals(id, point.id) && Objects.equals(user, point.user) && Objects.equals(amount, point.amount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, amount);
-    }
-
-    public int getAmount() {
-        return amount.getValue();
+        return Objects.hash(id, user, amount);
     }
 }
