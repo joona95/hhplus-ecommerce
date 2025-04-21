@@ -1,8 +1,11 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.PointFixtures;
+import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.point.PointHistoryJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class PointServiceIntegrationTest {
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
 
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
     @BeforeEach
     void setUp() {
         pointHistoryJpaRepository.deleteAll();
@@ -36,12 +42,13 @@ public class PointServiceIntegrationTest {
     void 포인트를_충전한다() {
 
         // given
-        Point point = pointJpaRepository.save(PointFixtures.금액으로_잔액_생성(10000));
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+        Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 10000));
 
-        PointCommand.PointChargeCommand command = new PointCommand.PointChargeCommand(point.getUserId(), 10000);
+        PointCommand.PointChargeCommand command = new PointCommand.PointChargeCommand(10000);
 
         // when
-        Point result = pointService.charge(command);
+        Point result = pointService.charge(user, command);
 
         // then
         assertThat(result.getAmount()).isEqualTo(20000);
@@ -56,12 +63,13 @@ public class PointServiceIntegrationTest {
     void 포인트를_사용한다() {
 
         // given
-        Point point = pointJpaRepository.save(PointFixtures.금액으로_잔액_생성(10000));
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+        Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 10000));
 
-        PointCommand.PointUseCommand command = new PointCommand.PointUseCommand(point.getUserId(), 1L, 5000);
+        PointCommand.PointUseCommand command = new PointCommand.PointUseCommand(1L, 5000);
 
         // when
-        Point result = pointService.use(command);
+        Point result = pointService.use(user, command);
 
         // then
         assertThat(result.getAmount()).isEqualTo(5000);

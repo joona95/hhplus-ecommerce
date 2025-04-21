@@ -3,7 +3,10 @@ package kr.hhplus.be.server.infrastructure.point;
 import kr.hhplus.be.server.domain.point.Amount;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.PointFixtures;
+import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Testcontainers
 class PointRepositoryImplTest {
+
+    @Autowired
+    private UserJpaRepository userJpaRepository;
 
     @Autowired
     private PointRepositoryImpl pointRepository;
@@ -35,11 +41,11 @@ class PointRepositoryImplTest {
     void 유저_식별자로_잔액_조회() {
 
         // given
-        Point point = PointFixtures.유저식별자로_잔액_생성(1L);
-        pointJpaRepository.save(point);
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+        Point point = pointJpaRepository.save(PointFixtures.유저로_잔액_생성(user));
 
         // when
-        Point result = pointRepository.findByUserId(1L);
+        Point result = pointRepository.findByUser(user);
 
         // then
         assertThat(result).isNotNull();
