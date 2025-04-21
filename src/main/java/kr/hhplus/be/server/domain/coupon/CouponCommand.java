@@ -12,22 +12,13 @@ public class CouponCommand {
         public static CouponApplyCommand of(Order order, long couponId) {
             return new CouponApplyCommand(order, couponId);
         }
-
-        public long getUserId() {
-            return order.getUserId();
-        }
-
-        public int getTotalAmount() {
-            return order.getOrderAmountInfo().getTotalAmount();
-        }
     }
 
     public record CouponIssueCommand(
-            long userId,
             long couponId
     ) {
-        public static CouponIssueCommand of(long userId, long couponId) {
-            return new CouponIssueCommand(userId, couponId);
+        public static CouponIssueCommand of(long couponId) {
+            return new CouponIssueCommand(couponId);
         }
     }
 }

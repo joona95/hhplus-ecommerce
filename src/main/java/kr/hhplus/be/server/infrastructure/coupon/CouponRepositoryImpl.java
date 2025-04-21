@@ -3,6 +3,7 @@ package kr.hhplus.be.server.infrastructure.coupon;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,18 +21,18 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
-    public List<CouponIssue> findByUserId(long userId) {
-        return couponIssueJpaRepository.findByUserId(userId);
+    public List<CouponIssue> findCouponIssueByUser(User user) {
+        return couponIssueJpaRepository.findByUser(user);
     }
 
     @Override
-    public Optional<CouponIssue> findByUserIdAndCouponId(long userId, long couponId) {
-        return couponIssueJpaRepository.findByUserIdAndCouponId(userId, couponId);
+    public Optional<CouponIssue> findCouponIssueByUserAndCouponId(User user, long couponId) {
+        return couponIssueJpaRepository.findByUserAndCouponId(user, couponId);
     }
 
     @Override
-    public boolean existsCouponIssueByUserIdAndCouponId(long userId, long couponId) {
-        return couponIssueJpaRepository.existsByUserIdAndCouponId(userId, couponId);
+    public boolean existsCouponIssueByUserAndCouponId(User user, long couponId) {
+        return couponIssueJpaRepository.existsByUserAndCouponId(user, couponId);
     }
 
     @Override

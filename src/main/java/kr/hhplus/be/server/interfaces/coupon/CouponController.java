@@ -1,14 +1,13 @@
 package kr.hhplus.be.server.interfaces.coupon;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.domain.coupon.CouponService;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,9 +27,9 @@ public class CouponController implements CouponApiSpec {
 
     @GetMapping
     @Override
-    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@RequestParam @Positive long userId) {
+    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(User user) {
 
-        List<UserCouponResponse> response = couponService.findByUserId(userId).stream()
+        List<UserCouponResponse> response = couponService.findByUser(user).stream()
                 .map(UserCouponResponse::from)
                 .toList();
 
@@ -39,9 +38,9 @@ public class CouponController implements CouponApiSpec {
 
     @PostMapping
     @Override
-    public ResponseEntity<UserCouponResponse> issueCoupon(@RequestBody @Valid CouponIssueRequest request) {
+    public ResponseEntity<UserCouponResponse> issueCoupon(User user, @RequestBody @Valid CouponIssueRequest request) {
 
-        UserCouponResponse response = UserCouponResponse.from(couponService.issueCoupon(request.toCommand()));
+        UserCouponResponse response = UserCouponResponse.from(couponService.issueCoupon(user, request.toCommand()));
 
         return ResponseEntity.ok(response);
     }
