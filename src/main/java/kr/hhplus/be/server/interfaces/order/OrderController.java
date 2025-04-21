@@ -2,6 +2,8 @@ package kr.hhplus.be.server.interfaces.order;
 
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.application.order.OrderFacadeService;
+import kr.hhplus.be.server.common.auth.AuthUser;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,10 +24,10 @@ public class OrderController implements OrderApiSpec {
 
     @PostMapping
     @Override
-    public ResponseEntity<OrderDetailResponse> order(@RequestBody @Valid OrderRequest.OrderCreateRequest request) {
+    public ResponseEntity<OrderDetailResponse> order(@AuthUser User user, @RequestBody @Valid OrderRequest.OrderCreateRequest request) {
 
         OrderDetailResponse response = OrderDetailResponse.from(
-                orderFacadeService.placeOrder(request.toCommand())
+                orderFacadeService.placeOrder(user, request.toCommand())
         );
 
         return ResponseEntity.ok(response);

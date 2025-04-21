@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.item.ItemService;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.point.PointService;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,18 +31,18 @@ public class OrderFacadeService {
     }
 
     @Transactional
-    public OrderCreateResult placeOrder(OrderCreateFacadeCommand command) {
+    public OrderCreateResult placeOrder(User user, OrderCreateFacadeCommand command) {
 
         List<Item> items = itemService.decreaseStocks(command.toStockDecreaseCommands());
 
-        OrderInfo orderInfo = orderService.createOrder(command.toOrderCreateCommand(items));
+        OrderInfo orderInfo = orderService.createOrder(command.toOrderCreateCommand(user, items));
 
         if (command.couponId() != null) {
             int discountAmount = couponService.applyCoupon(command.toCouponApplyCommand(orderInfo));
             orderInfo.applyDiscount(discountAmount);
         }
 
-        pointService.use(command.toPointUseCommand(orderInfo));
+        pointService.use(user, command.toPointUseCommand(orderInfo));
 
         return OrderCreateResult.from(orderInfo);
     }

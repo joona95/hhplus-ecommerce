@@ -17,7 +17,7 @@ public class OrderService {
     @Transactional
     public OrderInfo createOrder(OrderCommand.OrderCreateCommand command) {
 
-        Order order = orderRepository.saveOrder(Order.of(command.userId()));
+        Order order = orderRepository.saveOrder(Order.of(command.user()));
 
         List<OrderItem> orderItems = command.orderItemCreateCommands().stream()
                 .map(orderItemCreateCommand -> OrderItem.of(

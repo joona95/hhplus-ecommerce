@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.item.ItemCommand;
 import kr.hhplus.be.server.domain.order.OrderCommand;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.point.PointCommand;
+import kr.hhplus.be.server.domain.user.User;
 
 import java.util.List;
 import java.util.Map;
@@ -15,13 +16,12 @@ import java.util.stream.Collectors;
 public class OrderFacadeCommand {
 
     public record OrderCreateFacadeCommand(
-            long userId,
             Long couponId,
             List<OrderItemCreateFacadeCommand> orderItems
     ) {
 
-        public static OrderCreateFacadeCommand of(long userId, Long couponId, List<OrderItemCreateFacadeCommand> itemCommands) {
-            return new OrderCreateFacadeCommand(userId, couponId, itemCommands);
+        public static OrderCreateFacadeCommand of(Long couponId, List<OrderItemCreateFacadeCommand> itemCommands) {
+            return new OrderCreateFacadeCommand(couponId, itemCommands);
         }
 
         public List<ItemCommand.StockDecreaseCommand> toStockDecreaseCommands() {
@@ -30,7 +30,7 @@ public class OrderFacadeCommand {
                     .toList();
         }
 
-        public OrderCommand.OrderCreateCommand toOrderCreateCommand(List<Item> items) {
+        public OrderCommand.OrderCreateCommand toOrderCreateCommand(User user, List<Item> items) {
 
             Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
 
@@ -38,11 +38,11 @@ public class OrderFacadeCommand {
                     .map(orderItem -> orderItem.toOrderItemCreateCommand(itemMap.get(orderItem.itemId)))
                     .toList();
 
-            return OrderCommand.OrderCreateCommand.of(userId, orderItemCreateCommands);
+            return OrderCommand.OrderCreateCommand.of(user, orderItemCreateCommands);
         }
 
         public PointCommand.PointUseCommand toPointUseCommand(OrderInfo orderInfo) {
-            return PointCommand.PointUseCommand.of(userId, orderInfo.order().getId(), orderInfo.getTotalAmount());
+            return PointCommand.PointUseCommand.of(orderInfo.order().getId(), orderInfo.getTotalAmount());
         }
 
         public CouponCommand.CouponApplyCommand toCouponApplyCommand(OrderInfo orderInfo) {

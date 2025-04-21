@@ -13,9 +13,6 @@ public class OrderRequest {
 
     @Schema(title = "주문 결제 요청값")
     public record OrderCreateRequest(
-            @Schema(description = "유저식별자", example = "1")
-            @Positive
-            long userId,
             @Schema(description = "쿠폰식별자", example = "1")
             Long couponId,
             @Schema(description = "주문 상품 정보 목록", example = "[1, 2, 3]")
@@ -29,7 +26,7 @@ public class OrderRequest {
                     .map(OrderItemCreateRequest::toCommand)
                     .toList();
 
-            return OrderCreateFacadeCommand.of(userId, couponId, itemCommands);
+            return OrderCreateFacadeCommand.of(couponId, itemCommands);
         }
     }
 
