@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.fixtures.PointFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +21,7 @@ class PointHistoryTest {
         void 포인트식별자가_음수면_IllegalArgumentException_발생(long pointId) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, pointId, 1L, Amount.of(1000), TransactionType.CHARGE, LocalDateTime.now()))
+            assertThatThrownBy(() -> PointFixtures.포인트식별자로_포인트_내역_생성(pointId))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("포인트식별자는 음수일 수 없습니다.");
         }
@@ -30,7 +31,7 @@ class PointHistoryTest {
         void 금액이_null_이면_IllegalArgumentException_발생(Amount amount) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, 1L, 1L, amount, TransactionType.CHARGE, LocalDateTime.now()))
+            assertThatThrownBy(() -> PointFixtures.금액으로_포인트_내역_생성(amount))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("금액 정보가 필요합니다.");
         }
@@ -40,7 +41,7 @@ class PointHistoryTest {
         void 거래_타입이_null_이면_IllegalArgumentException_발생(TransactionType type) {
 
             //when, then
-            assertThatThrownBy(() -> new PointHistory(1L, 1L, 1L, Amount.of(1000), type, LocalDateTime.now()))
+            assertThatThrownBy(() -> PointFixtures.거래_타입으로_포인트_내역_생성(type))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("거래 타입 정보가 필요합니다.");
         }

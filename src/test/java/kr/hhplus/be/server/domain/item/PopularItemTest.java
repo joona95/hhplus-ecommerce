@@ -1,12 +1,12 @@
 package kr.hhplus.be.server.domain.item;
 
+import kr.hhplus.be.server.fixtures.ItemFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -20,7 +20,7 @@ class PopularItemTest {
         void 상품식별자가_음수일_경우_IllegalArgumentException_발생(long itemId) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, itemId, "상품명", 1000, LocalDate.now(), 100, LocalDateTime.now()))
+            assertThatThrownBy(() -> ItemFixtures.상품식별자로_인기_상품_생성(itemId))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("상품식별자는 음수일 수 없습니다.");
         }
@@ -30,7 +30,7 @@ class PopularItemTest {
         void 주문날짜가_null_인_경우_IllegalArgumentException_발생(LocalDate orderDate) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, 1L, "상품명", 1000, orderDate, 100, LocalDateTime.now()))
+            assertThatThrownBy(() -> ItemFixtures.주문날짜로_인기_상품_생성(orderDate))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문날짜 정보가 필요합니다.");
         }
@@ -40,7 +40,7 @@ class PopularItemTest {
         void 주문수량이_음수일_경우_IllegalArgumentException_발생(int orderCount) {
 
             //when, then
-            assertThatThrownBy(() -> new PopularItem(1L, 1L, "상품명", 1000, LocalDate.now(), orderCount, LocalDateTime.now()))
+            assertThatThrownBy(() -> ItemFixtures.주문수량으로_인기_상품_생성(orderCount))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문 수량은 음수일 수 없습니다.");
         }

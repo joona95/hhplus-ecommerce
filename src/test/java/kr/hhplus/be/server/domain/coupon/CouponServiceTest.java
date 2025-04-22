@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.domain.order.Order;
-import kr.hhplus.be.server.domain.order.OrderAmountInfo;
-import kr.hhplus.be.server.domain.order.OrderStatus;
-import org.assertj.core.api.Assertions;
+import kr.hhplus.be.server.fixtures.CouponFixtures;
+import kr.hhplus.be.server.fixtures.OrderFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +33,8 @@ class CouponServiceTest {
             //given
             when(couponRepository.findByUserId(1L))
                     .thenReturn(List.of(
-                            new CouponIssue(1L, 1L, "쿠폰명1", DiscountType.FIXED, 10000, 1L, LocalDateTime.MAX, false, LocalDateTime.now()),
-                            new CouponIssue(2L, 2L, "쿠폰명2", DiscountType.RATE, 100, 1L, LocalDateTime.MAX, false, LocalDateTime.now())
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(1L),
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(1L)
                     ));
 
             //when
@@ -54,14 +52,10 @@ class CouponServiceTest {
         void 유저_쿠폰_발급_조회_레포지토리_1회_호출() {
 
             //given
-            CouponIssue couponIssue = new CouponIssue(1L, 1L, "쿠폰명1", DiscountType.FIXED, 10000, 1L, LocalDateTime.MAX, false, LocalDateTime.now());
-
             when(couponRepository.findByUserIdAndCouponId(1L, 1L))
-                    .thenReturn(Optional.of(couponIssue));
+                    .thenReturn(Optional.of(CouponFixtures.정상_쿠폰_발급_내역_생성()));
 
-            Order order = new Order(1L, 1L, 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now());
-
-            CouponCommand.CouponApplyCommand command = CouponCommand.CouponApplyCommand.of(order, 1L);
+            CouponCommand.CouponApplyCommand command = CouponCommand.CouponApplyCommand.of(OrderFixtures.정상_주문_생성(), 1L);
 
             //when
             couponService.applyCoupon(command);
@@ -77,9 +71,7 @@ class CouponServiceTest {
             when(couponRepository.findByUserIdAndCouponId(1L, 1L))
                     .thenReturn(Optional.empty());
 
-            Order order = new Order(1L, 1L, 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now());
-
-            CouponCommand.CouponApplyCommand command = CouponCommand.CouponApplyCommand.of(order, 1L);
+            CouponCommand.CouponApplyCommand command = CouponCommand.CouponApplyCommand.of(OrderFixtures.정상_주문_생성(), 1L);
 
             //when, then
             assertThatThrownBy(() -> couponService.applyCoupon(command))
@@ -127,7 +119,7 @@ class CouponServiceTest {
         void 유저_쿠폰_보유_여부_조회_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -149,7 +141,7 @@ class CouponServiceTest {
         void 쿠폰_조회_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -171,7 +163,7 @@ class CouponServiceTest {
         void 쿠폰_내역_저장_레포지토리_1회_호출() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MAX, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
                     .thenReturn(false);
@@ -193,12 +185,10 @@ class CouponServiceTest {
         void 쿠폰_발급_실패_시_쿠폰_발급_내역_저장_0회_호출() {
 
             //given
-            Coupon coupon = new Coupon(1L, "쿠폰명", DiscountType.FIXED, 10000, LocalDateTime.MIN, LocalDateTime.MIN, 10, LocalDateTime.now(), LocalDateTime.now());
+            Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(1L, 1L))
-                    .thenReturn(false);
-            when(couponRepository.findCouponById(1L))
-                    .thenReturn(Optional.of(coupon));
+                    .thenReturn(true);
 
             CouponCommand.CouponIssueCommand command = CouponCommand.CouponIssueCommand.of(1L, 1L);
 

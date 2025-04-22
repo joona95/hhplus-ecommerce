@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.item;
 
+import kr.hhplus.be.server.fixtures.ItemFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +46,7 @@ class ItemServiceTest {
 
             //given
             when(itemRepository.findById(1L))
-                    .thenReturn(Optional.of(Item.of(1L, "상품명", Stock.of(100), 10000)));
+                    .thenReturn(Optional.of(ItemFixtures.정상_상품_생성()));
 
             //when, then
             itemService.findById(1L);
@@ -100,8 +101,8 @@ class ItemServiceTest {
 
             when(itemRepository.findByIdIn(List.of(1L, 2L)))
                     .thenReturn(List.of(
-                            Item.of(1L, "상품명1", Stock.of(10), 10000),
-                            Item.of(2L, "상품명2", Stock.of(10), 20000)
+                            ItemFixtures.식별자로_상품_생성(1L),
+                            ItemFixtures.식별자로_상품_생성(2L)
                     ));
 
             //when

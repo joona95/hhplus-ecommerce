@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.Stock;
+import kr.hhplus.be.server.fixtures.OrderFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +24,7 @@ class OrderTest {
         void 유저식별자가_음수인_경우_IllegalArgumentException_발생(long userId) {
 
             //when, then
-            assertThatThrownBy(() -> new Order(1L, userId, 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> OrderFixtures.유저식별자로_주문_생성(userId))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("유저식별자는 음수일 수 없습니다.");
         }
@@ -33,7 +34,7 @@ class OrderTest {
         void 주문_상태가_null_인_경우_IllegalArgumentException_발생(OrderStatus orderStatus) {
 
             //when, then
-            assertThatThrownBy(() -> new Order(1L, 1L, 1L, orderStatus, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> OrderFixtures.주문상태로_주문_생성(orderStatus))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문 상태 정보가 필요합니다.");
         }
@@ -43,7 +44,7 @@ class OrderTest {
         void 주문_가격_정보가_null_인_경우_IllegalArgumentException_발생(OrderAmountInfo orderAmountInfo) {
 
             //when, then
-            assertThatThrownBy(() -> new Order(1L, 1L, 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now()))
+            assertThatThrownBy(() -> OrderFixtures.주문가격정보로_주문_생성(orderAmountInfo))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("주문 가격 정보가 필요합니다.");
         }
@@ -57,7 +58,7 @@ class OrderTest {
         void 주문_상품_정보가_null_인_경우_IllegalArgumentException_발생(List<OrderItem> orderItems) {
 
             //given
-            Order order = new Order(1L, 1L, 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), LocalDateTime.now(), LocalDateTime.now());
+            Order order = OrderFixtures.정상_주문_생성();
 
             //when, then
             assertThatThrownBy(() -> order.calculateOrderAmount(orderItems))

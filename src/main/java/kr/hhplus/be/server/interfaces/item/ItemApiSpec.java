@@ -6,7 +6,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -50,7 +54,7 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<ItemResponse.ItemDetailResponse> getItem(long itemId);
+    ResponseEntity<ItemResponse.ItemDetailResponse> getItem(@PathVariable @Positive long itemId);
 
     @Operation(summary = "인기 상품 목록 조회", description = "데이터 플랫폼에서 최근 3일간 판매량이 가장 많았던 인기 상품 5개에 대한 상세 정보를 조회합니다.")
     @ApiResponses({
@@ -144,5 +148,5 @@ public interface ItemApiSpec {
                             """)
             }))
     })
-    ResponseEntity<Void> sendPopularItemStatistics(ItemRequest.PopularItemStatisticsRequest request);
+    ResponseEntity<Void> sendPopularItemStatistics(@RequestBody @Valid ItemRequest.PopularItemStatisticsRequest request);
 }

@@ -13,7 +13,7 @@ public class OrderResponse {
             @Schema(description = "주문상태", example = "COMPLETE")
             String orderStatus,
             @Schema(description = "쿠폰식별자", example = "1")
-            long couponId,
+            Long couponId,
             @Schema(description = "주문 상품 정보 목록", example = "[]")
             List<OrderItemResponse> orderItems,
             @Schema(description = "주문 금액", example = "10000")

@@ -34,12 +34,19 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 
 	// swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
+
+	/// QueryDSL
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -56,4 +63,20 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 	systemProperty("user.timezone", "UTC")
+}
+
+val querydslDir = "src/main/generated"
+
+sourceSets {
+	getByName("main").java.srcDirs(querydslDir)
+}
+
+tasks.withType<JavaCompile> {
+	options.generatedSourceOutputDirectory = file(querydslDir)
+}
+
+tasks.named("clean") {
+	doLast {
+		file(querydslDir).deleteRecursively()
+	}
 }
