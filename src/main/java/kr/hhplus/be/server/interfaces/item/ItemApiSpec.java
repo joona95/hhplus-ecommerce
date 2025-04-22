@@ -109,44 +109,4 @@ public interface ItemApiSpec {
             }))
     })
     ResponseEntity<List<ItemResponse.PopularItemDetailResponse>> getPopularItems();
-
-    @Operation(summary = "인기 상품 통계 데이터 저장", description = "주문 시 데이터 플랫폼에 주문 관련 통계 자료를 전송합니다. (Mock API)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "통계 데이터 저장 성공")
-            })),
-            @ApiResponse(responseCode = "400", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "유효하지 않은 요청값로 인한 실패", value = """
-                            {
-                            "code": "400",
-                            "message": "유효하지 않은 요청값입니다."
-                            }
-                            """)
-            })),
-            @ApiResponse(responseCode = "401", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "유효하지 않은 사용자로 인한 실패", value = """
-                            {
-                            "code": "401",
-                            "message": "유효하지 않은 사용자입니다."
-                            }
-                            """)
-            })),
-            @ApiResponse(responseCode = "403", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "권한이 없는 사용자로 인한 실패", value = """
-                            {
-                            "code": "403",
-                            "message": "권한이 없는 사용자입니다."
-                            }
-                            """)
-            })),
-            @ApiResponse(responseCode = "500", content = @Content(mediaType = "application/json", examples = {
-                    @ExampleObject(name = "서버 오류로 실패", value = """
-                            {
-                            "code": "500",
-                            "message": "서버 오류가 발생하였습니다."
-                            }
-                            """)
-            }))
-    })
-    ResponseEntity<Void> sendPopularItemStatistics(@RequestBody @Valid ItemRequest.PopularItemStatisticsRequest request);
 }

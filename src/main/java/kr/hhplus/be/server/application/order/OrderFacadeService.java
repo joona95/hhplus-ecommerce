@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
+import kr.hhplus.be.server.application.client.DataPlatformClient;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
@@ -24,12 +25,14 @@ public class OrderFacadeService {
     private final PointService pointService;
     private final OrderService orderService;
     private final CouponService couponService;
+    private final DataPlatformClient dataPlatformClient;
 
-    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService, CouponService couponService) {
+    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService, CouponService couponService, DataPlatformClient dataPlatformClient) {
         this.itemService = itemService;
         this.pointService = pointService;
         this.orderService = orderService;
         this.couponService = couponService;
+        this.dataPlatformClient = dataPlatformClient;
     }
 
     @Transactional
@@ -45,6 +48,8 @@ public class OrderFacadeService {
         }
 
         pointService.use(user, command.toPointUseCommand(orderInfo.order()));
+
+        dataPlatformClient.sendOrderDate(orderInfo);
 
         return OrderCreateResult.from(orderInfo);
     }
