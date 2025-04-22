@@ -58,6 +58,10 @@ public class OrderFixtures {
         return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", 10000, count);
     }
 
+    public static OrderItem 상품가격과_주문수량으로_주문상품_생성(int sellPrice, int count) {
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", sellPrice, count);
+    }
+
     public static OrderItem 정상_주문상품_생성() {
         return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", 10000, 5);
     }
