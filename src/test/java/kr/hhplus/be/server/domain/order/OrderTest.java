@@ -57,7 +57,7 @@ class OrderTest {
 
         @ParameterizedTest
         @NullSource
-        void 주문_상품_정보가_null_인_경우_IllegalArgumentException_발생(List<OrderItem> orderItems) {
+        void 주문_상품_정보가_null_인_경우_IllegalArgumentException_발생(OrderItems orderItems) {
 
             //given
             Order order = OrderFixtures.정상_주문_생성();
@@ -83,11 +83,11 @@ class OrderTest {
                     Item.of(3L, "상품명3", Stock.of(10), 30000)
             );
 
-            List<OrderItem> orderItems = List.of(
+            OrderItems orderItems = new OrderItems(List.of(
                     OrderItem.of(order, items.get(0), 2),
                     OrderItem.of(order, items.get(1), 1),
                     OrderItem.of(order, items.get(2), 1)
-            );
+            ));
 
             //when
             order.calculateOrderAmount(orderItems);

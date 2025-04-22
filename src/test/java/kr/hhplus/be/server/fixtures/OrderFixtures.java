@@ -38,27 +38,27 @@ public class OrderFixtures {
         return new Order(null, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, OrderAmountInfo.of(30000, 50000, 20000), createdAt, createdAt);
     }
 
-    public static OrderItem 주문식별자로_주문상품_생성(long orderId) {
-        return new OrderItem(null, orderId, 1L, "상품명", 10000, 1);
+    public static OrderItem 주문으로_주문상품_생성(Order order) {
+        return new OrderItem(null, order, 1L, "상품명", 10000, 1);
     }
 
     public static OrderItem 상품식별자로_주문상품_생성(long itemId) {
-        return new OrderItem(null, 1L, itemId, "상품명", 10000, 1);
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), itemId, "상품명", 10000, 1);
     }
 
     public static OrderItem 상품명으로_주문상품_생성(String itemName) {
-        return new OrderItem(null, 1L, 1L, itemName, 10000, 1);
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, itemName, 10000, 1);
     }
 
     public static OrderItem 상품가격으로_주문상품_생성(int sellPrice) {
-        return new OrderItem(null, 1L, 1L, "상품명", sellPrice, 1);
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", sellPrice, 1);
     }
 
     public static OrderItem 주문수량으로_주문상품_생성(int count) {
-        return new OrderItem(null, 1L, 1L, "상품명", 10000, count);
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", 10000, count);
     }
 
     public static OrderItem 정상_주문상품_생성() {
-        return new OrderItem(null, 1L, 1L, "상품명", 10000, 5);
+        return new OrderItem(null, OrderFixtures.식별자로_주문_생성(1L), 1L, "상품명", 10000, 5);
     }
 }

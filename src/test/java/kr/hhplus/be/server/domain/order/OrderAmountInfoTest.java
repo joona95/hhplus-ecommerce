@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
+import kr.hhplus.be.server.domain.coupon.CouponIssue;
+import kr.hhplus.be.server.fixtures.CouponFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,13 +58,28 @@ class OrderAmountInfoTest {
     class 할인금액_적용 {
 
         @Test
-        void 할인금액_저장_및_총가격에_할인금액_뺀_값_적용() {
+        void 정률_할인_금액_적용() {
 
             //given
             OrderAmountInfo orderAmountInfo = OrderAmountInfo.of(50000, 50000, 0);
+            CouponIssue couponIssue = CouponFixtures.정률_할인_쿠폰_발급_내역_생성(20);
 
             //when
-            OrderAmountInfo result = orderAmountInfo.applyDiscount(10000);
+            OrderAmountInfo result = orderAmountInfo.applyCoupon(couponIssue);
+
+            //then
+            assertThat(result).isEqualTo(OrderAmountInfo.of(40000, 50000, 10000));
+        }
+
+        @Test
+        void 정액_할인_금액_적용() {
+
+            //given
+            OrderAmountInfo orderAmountInfo = OrderAmountInfo.of(50000, 50000, 0);
+            CouponIssue couponIssue = CouponFixtures.정액_할인_쿠폰_발급_내역_생성(10000);
+
+            //when
+            OrderAmountInfo result = orderAmountInfo.applyCoupon(couponIssue);
 
             //then
             assertThat(result).isEqualTo(OrderAmountInfo.of(40000, 50000, 10000));

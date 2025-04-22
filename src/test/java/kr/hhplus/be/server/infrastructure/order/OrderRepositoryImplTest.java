@@ -11,6 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,15 +72,15 @@ class OrderRepositoryImplTest {
         Order todayOrder = OrderFixtures.생성일시로_주문_생성(today);
         orderJpaRepository.save(todayOrder);
         orderItemJpaRepository.saveAll(List.of(
-                OrderFixtures.주문식별자로_주문상품_생성(todayOrder.getId()),
-                OrderFixtures.주문식별자로_주문상품_생성(todayOrder.getId())
+                OrderFixtures.주문으로_주문상품_생성(todayOrder),
+                OrderFixtures.주문으로_주문상품_생성(todayOrder)
         ));
 
         LocalDateTime yesterday = today.minusDays(1);
         Order yesterdayOrder = OrderFixtures.생성일시로_주문_생성(yesterday);
         orderJpaRepository.save(yesterdayOrder);
         orderItemJpaRepository.save(
-                OrderFixtures.주문식별자로_주문상품_생성(yesterdayOrder.getId())
+                OrderFixtures.주문으로_주문상품_생성(yesterdayOrder)
         );
 
         // when
@@ -88,7 +89,7 @@ class OrderRepositoryImplTest {
         // then
         assertThat(result).hasSize(2); // 오늘 주문 2건만 나와야 함
         assertThat(result).allMatch(orderItem ->
-                orderItem.getOrderId() == todayOrder.getId()
+                Objects.equals(orderItem.getOrder().getId(), todayOrder.getId())
         );
     }
 }

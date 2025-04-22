@@ -2,8 +2,6 @@ package kr.hhplus.be.server.infrastructure.order;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.hhplus.be.server.domain.order.OrderItem;
-import kr.hhplus.be.server.domain.order.QOrder;
-import kr.hhplus.be.server.domain.order.QOrderItem;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -25,7 +23,7 @@ public class OrderQuerydslRepository {
 
     public List<OrderItem> findTodayOrderItems() {
         return queryFactory.selectFrom(orderItem)
-                .innerJoin(order).on(order.id.eq(orderItem.orderId))
+                .innerJoin(orderItem.order, order).fetchJoin()
                 .where(order.createdAt.between(LocalDateTime.of(LocalDate.now(), LocalTime.MIN), LocalDateTime.of(LocalDate.now(), LocalTime.MAX)))
                 .fetch();
     }

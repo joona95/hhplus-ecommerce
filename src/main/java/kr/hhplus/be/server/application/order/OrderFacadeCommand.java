@@ -1,10 +1,10 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.domain.coupon.CouponCommand;
+import kr.hhplus.be.server.domain.coupon.CouponCriteria;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemCommand;
+import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderCommand;
-import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.point.PointCommand;
 import kr.hhplus.be.server.domain.user.User;
 
@@ -41,12 +41,12 @@ public class OrderFacadeCommand {
             return OrderCommand.OrderCreateCommand.of(user, orderItemCreateCommands);
         }
 
-        public PointCommand.PointUseCommand toPointUseCommand(OrderInfo orderInfo) {
-            return PointCommand.PointUseCommand.of(orderInfo.order());
+        public PointCommand.PointUseCommand toPointUseCommand(Order order) {
+            return PointCommand.PointUseCommand.of(order);
         }
 
-        public CouponCommand.CouponApplyCommand toCouponApplyCommand(OrderInfo orderInfo) {
-            return CouponCommand.CouponApplyCommand.of(orderInfo.order(), couponId);
+        public CouponCriteria.IssuedCouponCriteria toIssuedCouponCriteria(User user) {
+            return CouponCriteria.IssuedCouponCriteria.of(user, couponId);
         }
     }
 

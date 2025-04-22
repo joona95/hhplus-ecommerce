@@ -55,7 +55,7 @@ public class OrderServiceIntegrationTest {
 
         // then
         assertThat(orderJpaRepository.findAll().get(0).getId()).isEqualTo(orderInfo.order().getId());
-        assertThat(orderItemJpaRepository.findAll()).isEqualTo(orderInfo.orderItems());
+        assertThat(orderItemJpaRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test

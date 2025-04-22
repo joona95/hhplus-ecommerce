@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.Embeddable;
+import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -62,7 +63,10 @@ public class OrderAmountInfo {
         return Objects.hash(totalAmount, itemTotalAmount, discountAmount);
     }
 
-    public OrderAmountInfo applyDiscount(int discountAmount) {
+    public OrderAmountInfo applyCoupon(CouponIssue couponIssue) {
+
+        int discountAmount = couponIssue.applyDiscount(this.totalAmount);
+
         return OrderAmountInfo.of(this.totalAmount - discountAmount, this.itemTotalAmount, this.discountAmount + discountAmount);
     }
 }

@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.application.order;
 
+import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemService;
+import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.point.PointService;
@@ -38,11 +40,11 @@ public class OrderFacadeService {
         OrderInfo orderInfo = orderService.createOrder(command.toOrderCreateCommand(user, items));
 
         if (command.couponId() != null) {
-            int discountAmount = couponService.applyCoupon(command.toCouponApplyCommand(orderInfo));
-            orderInfo.applyDiscount(discountAmount);
+            CouponIssue couponIssue = couponService.findIssuedCoupon(command.toIssuedCouponCriteria(user));
+            orderInfo.applyCoupon(couponIssue);
         }
 
-        pointService.use(user, command.toPointUseCommand(orderInfo));
+        pointService.use(user, command.toPointUseCommand(orderInfo.order()));
 
         return OrderCreateResult.from(orderInfo);
     }

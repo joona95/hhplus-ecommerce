@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static kr.hhplus.be.server.domain.coupon.CouponCommand.*;
+import static kr.hhplus.be.server.domain.coupon.CouponCriteria.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -50,10 +51,10 @@ class CouponServiceTest {
     }
 
     @Nested
-    class 쿠폰_할인_적용 {
+    class 발급_쿠폰_내역_조회 {
 
         @Test
-        void 유저_쿠폰_발급_조회_레포지토리_1회_호출() {
+        void 유저와_쿠폰식별자로_발급_쿠폰_내역_조회_레포지토리_1회_호출() {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
@@ -61,17 +62,17 @@ class CouponServiceTest {
             when(couponRepository.findCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(Optional.of(CouponFixtures.정상_쿠폰_발급_내역_생성()));
 
-            CouponApplyCommand command = CouponApplyCommand.of(OrderFixtures.정상_주문_생성(), 1L);
+            IssuedCouponCriteria criteria = IssuedCouponCriteria.of(user, 1L);
 
             //when
-            couponService.applyCoupon(command);
+            couponService.findIssuedCoupon(criteria);
 
             //then
             verify(couponRepository, times(1)).findCouponIssueByUserAndCouponId(user, 1L);
         }
 
         @Test
-        void 유저_쿠폰_발급_조회_실패_시_RuntimeException_발생() {
+        void 발급_쿠폰_내역_존재하지_않을_경우_RuntimeException_발생() {
 
             //given
             User user = UserFixtures.식별자로_유저_생성(1L);
@@ -79,10 +80,10 @@ class CouponServiceTest {
             when(couponRepository.findCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(Optional.empty());
 
-            CouponApplyCommand command = CouponApplyCommand.of(OrderFixtures.정상_주문_생성(), 1L);
+            IssuedCouponCriteria criteria = IssuedCouponCriteria.of(user, 1L);
 
             //when, then
-            assertThatThrownBy(() -> couponService.applyCoupon(command))
+            assertThatThrownBy(() -> couponService.findIssuedCoupon(criteria))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("해당 쿠폰을 보유하고 있지 않습니다.");
         }

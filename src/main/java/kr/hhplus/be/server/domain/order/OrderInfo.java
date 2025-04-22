@@ -1,21 +1,23 @@
 package kr.hhplus.be.server.domain.order;
 
+import kr.hhplus.be.server.domain.coupon.CouponIssue;
+
 import java.util.List;
 
 public record OrderInfo(
         Order order,
-        List<OrderItem> orderItems
+        OrderItems orderItems
 ) {
 
-    public static OrderInfo of(Order order, List<OrderItem> orderItems) {
+    public static OrderInfo of(Order order, OrderItems orderItems) {
         return new OrderInfo(order, orderItems);
     }
 
-    public int getTotalAmount() {
-        return order.getOrderAmountInfo().getTotalAmount();
+    public void applyCoupon(CouponIssue couponIssue) {
+        order.applyCoupon(couponIssue);
     }
 
-    public void applyDiscount(int discountAmount) {
-        order.applyDiscount(discountAmount);
+    public List<OrderItem> getOrderItems() {
+        return orderItems.orderItems();
     }
 }

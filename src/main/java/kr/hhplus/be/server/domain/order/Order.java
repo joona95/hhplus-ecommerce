@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "orders")
@@ -71,23 +71,18 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public void calculateOrderAmount(List<OrderItem> orderItems) {
+    public void calculateOrderAmount(OrderItems orderItems) {
 
         if (orderItems == null) {
             throw new IllegalArgumentException("주문 상품 정보가 필요합니다.");
         }
 
-        int itemTotalAmount = orderItems.stream()
-                .mapToInt(OrderItem::getOrderPrice)
-                .sum();
-        int discountAmount = 0;
-        int totalAmount = itemTotalAmount - discountAmount;
-
-        this.orderAmountInfo = OrderAmountInfo.of(totalAmount, itemTotalAmount, discountAmount);
+        this.orderAmountInfo = orderItems.calculateOrderAmount();
     }
 
-    public void applyDiscount(int discountAmount) {
-        this.orderAmountInfo = orderAmountInfo.applyDiscount(discountAmount);
+    public void applyCoupon(CouponIssue couponIssue) {
+        this.orderAmountInfo = orderAmountInfo.applyCoupon(couponIssue);
+        this.couponIssueId = couponIssue.getId();
     }
 
     @Override
@@ -100,10 +95,6 @@ public class Order {
     @Override
     public int hashCode() {
         return Objects.hash(id, user, couponIssueId, orderStatus, orderAmountInfo);
-    }
-
-    public long getUserId() {
-        return user.getId();
     }
 
     public int getTotalAmount() {

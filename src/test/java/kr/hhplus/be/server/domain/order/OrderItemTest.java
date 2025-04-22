@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.item.Item;
-import kr.hhplus.be.server.domain.item.Stock;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.fixtures.OrderFixtures;
 import org.junit.jupiter.api.Nested;
@@ -19,13 +18,13 @@ class OrderItemTest {
     class 주문_상품_생성 {
 
         @ParameterizedTest
-        @ValueSource(longs = {-1000L, -100L, -10L, -3L, -2L, -1L})
-        void 주문식별자가_음수인_경우_IllegalArgumentException_발생(long orderId) {
+        @NullSource
+        void 주문정보가_null_인_경우_IllegalArgumentException_발생(Order order) {
 
             //when, then
-            assertThatThrownBy(() -> OrderFixtures.주문식별자로_주문상품_생성(orderId))
+            assertThatThrownBy(() -> OrderFixtures.주문으로_주문상품_생성(order))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("주문식별자는 음수일 수 없습니다.");
+                    .hasMessageContaining("주문 정보가 필요합니다.");
         }
 
         @ParameterizedTest
@@ -73,7 +72,7 @@ class OrderItemTest {
         void 주문_정보가_null_인_경우_IllegalArgumentException_발생(Order order) {
 
             //given
-            Item item = ItemFixtures.정상_상품_생성();
+            Item item = ItemFixtures.식별자로_상품_생성(1L);
 
             //when, then
             assertThatThrownBy(() -> OrderItem.of(order, item, 1))
@@ -105,7 +104,7 @@ class OrderItemTest {
             OrderItem orderItem = OrderFixtures.정상_주문상품_생성();
 
             //when
-            int result = orderItem.getOrderPrice();
+            int result = orderItem.getOrderItemPrice();
 
             //then
             assertThat(result).isEqualTo(50000);
