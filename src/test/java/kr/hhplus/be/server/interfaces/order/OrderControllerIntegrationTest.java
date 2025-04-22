@@ -6,14 +6,17 @@ import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.point.Amount;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.TransactionType;
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.fixtures.PointFixtures;
+import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointHistoryJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,12 +25,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
+import static kr.hhplus.be.server.interfaces.order.OrderRequest.*;
 import static kr.hhplus.be.server.interfaces.order.OrderResponse.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,6 +60,9 @@ class OrderControllerIntegrationTest {
     @Autowired
     private CouponIssueJpaRepository couponIssueJpaRepository;
 
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
     @BeforeEach
     void setUp() {
         itemJpaRepository.deleteAll();
@@ -63,26 +73,32 @@ class OrderControllerIntegrationTest {
     }
 
     @Test
-    void 주문을_생성한다() {
+    void 주문을_정상적으로_생성() {
 
         // given
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+
         Item item = itemJpaRepository.save(ItemFixtures.정상_상품_생성());
 
-        Point point = pointJpaRepository.save(PointFixtures.금액으로_잔액_생성(20000));
+        Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 20000));
 
         Coupon coupon = couponJpaRepository.save(CouponFixtures.정액_할인_쿠폰_생성(1000));
-        couponIssueJpaRepository.save(CouponIssue.of(1L, coupon));
+        couponIssueJpaRepository.save(CouponIssue.of(user, coupon));
 
-        OrderRequest.OrderCreateRequest request = new OrderRequest.OrderCreateRequest(
-                1L,
+        OrderCreateRequest request = new OrderCreateRequest(
                 coupon.getId(),
-                List.of(new OrderRequest.OrderItemCreateRequest(item.getId(), 2))
+                List.of(new OrderItemCreateRequest(item.getId(), 2))
         );
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-USER-ID", String.valueOf(user.getId()));
+        HttpEntity<OrderCreateRequest> entity = new HttpEntity<>(request, headers);
+
         // when
-        ResponseEntity<OrderDetailResponse> response = restTemplate.postForEntity(
+        ResponseEntity<OrderDetailResponse> response = restTemplate.exchange(
                 "/api/v1/orders",
-                request,
+                HttpMethod.POST,
+                entity,
                 OrderDetailResponse.class
         );
 
@@ -93,7 +109,7 @@ class OrderControllerIntegrationTest {
         assertThat(response.getBody().discountAmount()).isEqualTo(1000);
         assertThat(response.getBody().itemTotalAmount()).isEqualTo(20000);
 
-        assertThat(pointJpaRepository.findByUserId(point.getUserId()).get().getAmount()).isEqualTo(1000);
+        assertThat(pointJpaRepository.findByUser(point.getUser()).get().getAmount()).isEqualTo(1000);
 
         assertThat(pointHistoryJpaRepository.findAll()).hasSize(1);
         assertThat(pointHistoryJpaRepository.findAll().get(0).getType()).isEqualTo(TransactionType.USE);
@@ -102,42 +118,26 @@ class OrderControllerIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
-    void 양수가_아닌_유저식별자로_주문(long userId) {
-
-        // given
-        OrderRequest.OrderCreateRequest request = new OrderRequest.OrderCreateRequest(
-                userId,
-                1L,
-                List.of(new OrderRequest.OrderItemCreateRequest(1L, 2))
-        );
-
-        // when
-        ResponseEntity<OrderDetailResponse> response = restTemplate.postForEntity(
-                "/api/v1/orders",
-                request,
-                OrderDetailResponse.class
-        );
-
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @ParameterizedTest
     @NullSource
-    void 상품_정보_없이_주문(List<OrderRequest.OrderItemCreateRequest> items) {
+    void 상품_정보_없이_주문_시_400_예외_발생(List<OrderItemCreateRequest> items) {
 
         // given
-        OrderRequest.OrderCreateRequest request = new OrderRequest.OrderCreateRequest(
-                1L,
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+
+        OrderCreateRequest request = new OrderCreateRequest(
                 1L,
                 items
         );
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-USER-ID", String.valueOf(user.getId()));
+        HttpEntity<OrderCreateRequest> entity = new HttpEntity<>(request, headers);
+
         // when
-        ResponseEntity<OrderDetailResponse> response = restTemplate.postForEntity(
+        ResponseEntity<OrderDetailResponse> response = restTemplate.exchange(
                 "/api/v1/orders",
-                request,
+                HttpMethod.POST,
+                entity,
                 OrderDetailResponse.class
         );
 
@@ -147,19 +147,25 @@ class OrderControllerIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
-    void 양수가_아닌_상품식별자로_주문(long itemId) {
+    void 양수가_아닌_상품식별자로_주문_시_400_예외_발생(long itemId) {
 
         // given
-        OrderRequest.OrderCreateRequest request = new OrderRequest.OrderCreateRequest(
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+
+        OrderCreateRequest request = new OrderCreateRequest(
                 1L,
-                1L,
-                List.of(new OrderRequest.OrderItemCreateRequest(itemId, 2))
+                List.of(new OrderItemCreateRequest(itemId, 2))
         );
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-USER-ID", String.valueOf(user.getId()));
+        HttpEntity<OrderCreateRequest> entity = new HttpEntity<>(request, headers);
+
         // when
-        ResponseEntity<OrderDetailResponse> response = restTemplate.postForEntity(
+        ResponseEntity<OrderDetailResponse> response = restTemplate.exchange(
                 "/api/v1/orders",
-                request,
+                HttpMethod.POST,
+                entity,
                 OrderDetailResponse.class
         );
 
@@ -169,23 +175,56 @@ class OrderControllerIntegrationTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-100, -10, -3, -2, -1, 0})
-    void 양수가_아닌_주문수량으로_주문(int count) {
+    void 양수가_아닌_주문수량으로_주문_시_400_예외_발생(int count) {
 
         // given
-        OrderRequest.OrderCreateRequest request = new OrderRequest.OrderCreateRequest(
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+
+        OrderCreateRequest request = new OrderCreateRequest(
                 1L,
-                1L,
-                List.of(new OrderRequest.OrderItemCreateRequest(1L, count))
+                List.of(new OrderItemCreateRequest(1L, count))
         );
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-USER-ID", String.valueOf(user.getId()));
+        HttpEntity<OrderCreateRequest> entity = new HttpEntity<>(request, headers);
+
         // when
-        ResponseEntity<OrderDetailResponse> response = restTemplate.postForEntity(
+        ResponseEntity<OrderDetailResponse> response = restTemplate.exchange(
                 "/api/v1/orders",
-                request,
+                HttpMethod.POST,
+                entity,
                 OrderDetailResponse.class
         );
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
+    void 존재하지_않는_유저식별자로_주문_시_500_예외_발생(long userId) {
+
+        // given
+        OrderCreateRequest request = new OrderCreateRequest(
+                1L,
+                List.of(new OrderItemCreateRequest(1L, 2))
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-USER-ID", String.valueOf(userId));
+        HttpEntity<OrderCreateRequest> entity = new HttpEntity<>(request, headers);
+
+
+        // when
+        ResponseEntity<OrderDetailResponse> response = restTemplate.exchange(
+                "/api/v1/orders",
+                HttpMethod.POST,
+                entity,
+                OrderDetailResponse.class
+        );
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

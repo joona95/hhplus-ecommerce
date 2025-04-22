@@ -3,6 +3,7 @@ package kr.hhplus.be.server.infrastructure.point;
 import kr.hhplus.be.server.domain.point.Point;
 import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.point.PointRepository;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,8 +18,8 @@ public class PointRepositoryImpl implements PointRepository {
     }
 
     @Override
-    public Point findByUserId(long userId) {
-        return pointJpaRepository.findByUserId(userId).orElse(null);
+    public Point findByUser(User user) {
+        return pointJpaRepository.findByUser(user).orElse(null);
     }
 
     @Override

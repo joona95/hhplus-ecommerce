@@ -5,6 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static kr.hhplus.be.server.domain.order.OrderCommand.*;
+
 @Service
 public class OrderService {
 
@@ -15,20 +17,15 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderInfo createOrder(OrderCommand.OrderCreateCommand command) {
+    public OrderInfo createOrder(OrderCreateCommand command) {
 
-        Order order = orderRepository.saveOrder(Order.of(command.userId()));
+        Order order = orderRepository.saveOrder(command.toOrder());
 
-        List<OrderItem> orderItems = command.orderItemCreateCommands().stream()
-                .map(orderItemCreateCommand -> OrderItem.of(
-                        order,
-                        orderItemCreateCommand.item(),
-                        orderItemCreateCommand.count()))
-                .toList();
+        OrderItems orderItems = command.toOrderItems(order);
 
         order.calculateOrderAmount(orderItems);
 
-        orderItems = orderRepository.saveOrderItems(orderItems);
+        orderRepository.saveOrderItems(orderItems.orderItems());
 
         return OrderInfo.of(order, orderItems);
     }

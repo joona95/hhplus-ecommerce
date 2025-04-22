@@ -8,16 +8,13 @@ public class CouponRequest {
 
     @Schema(title = "쿠폰 발급 요청값")
     public record CouponIssueRequest(
-            @Schema(description = "유저식별자", example = "1")
-            @Positive
-            long userId,
             @Schema(description = "쿠폰식별자", example = "1")
             @Positive
             long couponId
     ) {
 
         public CouponCommand.CouponIssueCommand toCommand() {
-            return CouponCommand.CouponIssueCommand.of(userId, couponId);
+            return CouponCommand.CouponIssueCommand.of(couponId);
         }
     }
 }

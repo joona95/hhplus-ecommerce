@@ -2,16 +2,23 @@ package kr.hhplus.be.server.interfaces.coupon;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
+import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,105 +42,124 @@ class CouponControllerIntegrationTest {
     @Autowired
     private CouponIssueJpaRepository couponIssueJpaRepository;
 
+    @Autowired
+    private UserJpaRepository userJpaRepository;
+
     @BeforeEach
     void setUp() {
         couponIssueJpaRepository.deleteAll();
         couponJpaRepository.deleteAll();
     }
 
-    @Test
-    void 사용자의_보유_쿠폰_목록을_조회() {
+    @Nested
+    class 사용자_보유_쿠폰_목록_조회 {
 
-        // given
-        Coupon coupon1 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
-        Coupon coupon2 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
-        couponIssueJpaRepository.saveAll(List.of(
-                CouponIssue.of(1L, coupon1),
-                CouponIssue.of(1L, coupon2)
-        ));
+        @Test
+        void 사용자의_보유_쿠폰_목록을_정상적으로_조회() {
 
-        // when
-        ResponseEntity<UserCouponResponse[]> response = restTemplate.getForEntity(
-                "/api/v1/coupons?userId=1",
-                UserCouponResponse[].class
-        );
+            // given
+            User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+            Coupon coupon1 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
+            Coupon coupon2 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
+            couponIssueJpaRepository.saveAll(List.of(
+                    CouponIssue.of(user, coupon1),
+                    CouponIssue.of(user, coupon2)
+            ));
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isNotEmpty();
-        assertThat(response.getBody()[0].couponId()).isEqualTo(coupon1.getId());
-        assertThat(response.getBody()[1].couponId()).isEqualTo(coupon2.getId());
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", String.valueOf(user.getId()));
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // when
+            ResponseEntity<UserCouponResponse[]> response = restTemplate.exchange(
+                    "/api/v1/coupons",
+                    HttpMethod.GET,
+                    entity,
+                    UserCouponResponse[].class
+            );
+
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getBody()).isNotNull();
+            assertThat(response.getBody()).isNotEmpty();
+            assertThat(response.getBody()[0].couponId()).isEqualTo(coupon1.getId());
+            assertThat(response.getBody()[1].couponId()).isEqualTo(coupon2.getId());
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
+        void 존재하지_않는_유저식별자로_보유_쿠폰_목록_조회_시_500_예외_발생(long userId) {
+
+            //given
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", String.valueOf(userId));
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // when
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "/api/v1/coupons",
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
-    void 양수가_아닌_유저식별자로_보유_쿠폰_목록_조회(long userId) {
+    @Nested
+    class 쿠폰_발급 {
 
-        // when
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "/api/v1/coupons?userId=" + userId,
-                String.class
-        );
+        @Test
+        void 정상적으로_쿠폰_발급() {
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
+            // given
+            User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+            Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
 
-    @Test
-    void 쿠폰을_발급() {
+            CouponIssueRequest request = new CouponIssueRequest(coupon.getId());
 
-        // given
-        Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", String.valueOf(user.getId()));
+            HttpEntity<CouponIssueRequest> entity = new HttpEntity<>(request, headers);
 
-        CouponIssueRequest request = new CouponIssueRequest(1L, coupon.getId());
+            // when
+            ResponseEntity<UserCouponResponse> response = restTemplate.exchange(
+                    "/api/v1/coupons",
+                    HttpMethod.POST,
+                    entity,
+                    UserCouponResponse.class
+            );
 
-        // when
-        ResponseEntity<UserCouponResponse> response = restTemplate.postForEntity(
-                "/api/v1/coupons",
-                request,
-                UserCouponResponse.class
-        );
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(response.getBody()).isNotNull();
+            assertThat(response.getBody().couponId()).isEqualTo(coupon.getId());
+        }
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().couponId()).isEqualTo(coupon.getId());
-    }
+        @ParameterizedTest
+        @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
+        void 양수가_아닌_쿠폰식별자로_쿠폰_발급(long couponId) {
 
-    @ParameterizedTest
-    @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
-    void 양수가_아닌_유저식별자로_쿠폰_발급(long userId) {
+            // given
+            User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+            CouponIssueRequest request = new CouponIssueRequest(couponId);
 
-        // given
-        CouponIssueRequest request = new CouponIssueRequest(userId, 1L);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", String.valueOf(user.getId()));
+            HttpEntity<CouponIssueRequest> entity = new HttpEntity<>(request, headers);
 
-        // when
-        ResponseEntity<UserCouponResponse> response = restTemplate.postForEntity(
-                "/api/v1/coupons",
-                request,
-                UserCouponResponse.class
-        );
+            // when
+            ResponseEntity<UserCouponResponse> response = restTemplate.exchange(
+                    "/api/v1/coupons",
+                    HttpMethod.POST,
+                    entity,
+                    UserCouponResponse.class
+            );
 
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {-100L, -10L, -3L, -2L, -1L, 0L})
-    void 양수가_아닌_쿠폰식별자로_쿠폰_발급(long couponId) {
-
-        // given
-        CouponIssueRequest request = new CouponIssueRequest(1L, couponId);
-
-        // when
-        ResponseEntity<UserCouponResponse> response = restTemplate.postForEntity(
-                "/api/v1/coupons",
-                request,
-                UserCouponResponse.class
-        );
-
-        // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            // then
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        }
     }
 }

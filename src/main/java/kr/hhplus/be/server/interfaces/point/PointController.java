@@ -2,7 +2,9 @@ package kr.hhplus.be.server.interfaces.point;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import kr.hhplus.be.server.common.auth.AuthUser;
 import kr.hhplus.be.server.domain.point.PointService;
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,18 +27,18 @@ public class PointController implements PointApiSpec {
 
     @GetMapping
     @Override
-    public ResponseEntity<UserPointResponse> getUserPoint(@RequestParam @Positive long userId) {
+    public ResponseEntity<UserPointResponse> getUserPoint(@AuthUser User user) {
 
-        UserPointResponse response = UserPointResponse.from(pointService.findByUserId(userId));
+        UserPointResponse response = UserPointResponse.from(pointService.findByUser(user));
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/charge")
     @Override
-    public ResponseEntity<UserPointResponse> charge(@RequestBody @Valid PointRequest.PointChargeRequest request) {
+    public ResponseEntity<UserPointResponse> charge(@AuthUser User user, @RequestBody @Valid PointRequest.PointChargeRequest request) {
 
-        UserPointResponse response = UserPointResponse.from(pointService.charge(request.toCommand()));
+        UserPointResponse response = UserPointResponse.from(pointService.charge(user, request.toCommand()));
 
         return ResponseEntity.ok(response);
     }

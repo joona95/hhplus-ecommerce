@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -60,13 +61,13 @@ class CouponIssueTest {
         }
 
         @ParameterizedTest
-        @ValueSource(longs = {-10000L, -10L, -3L, -2L, -1L})
-        void 유저식별자가_음수면_IllegalArgumentException_발생(long userId) {
+        @NullSource
+        void 유저가_null_이면_IllegalArgumentException_발생(User user) {
 
             //when, then
-            assertThatThrownBy(() -> CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(userId))
+            assertThatThrownBy(() -> CouponFixtures.유저로_쿠폰_발급_내역_생성(user))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("유저식별자는 음수일 수 없습니다.");
+                    .hasMessageContaining("유저 정보가 필요합니다.");
         }
 
         @ParameterizedTest

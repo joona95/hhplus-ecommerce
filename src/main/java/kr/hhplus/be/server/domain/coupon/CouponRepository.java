@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -8,11 +9,11 @@ import java.util.Optional;
 @Repository
 public interface CouponRepository {
 
-    List<CouponIssue> findByUserId(long userId);
+    List<CouponIssue> findCouponIssueByUser(User user);
 
-    Optional<CouponIssue> findByUserIdAndCouponId(long userId, long couponId);
+    Optional<CouponIssue> findCouponIssueByUserAndCouponId(User user, long couponId);
 
-    boolean existsCouponIssueByUserIdAndCouponId(long userId, long couponId);
+    boolean existsCouponIssueByUserAndCouponId(User user, long couponId);
 
     Optional<Coupon> findCouponById(long couponId);
 

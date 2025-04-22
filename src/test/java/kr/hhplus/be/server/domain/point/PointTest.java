@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.point;
 
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.PointFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,13 +15,13 @@ class PointTest {
     class 잔액_생성 {
 
         @ParameterizedTest
-        @ValueSource(longs = {-1000L, -100L, -10L, -3L, -2L, -1L})
-        void 유저식별자가_음수면_IllegalArgumentException_발생(long userId) {
+        @NullSource
+        void 유저가_null_이면_IllegalArgumentException_발생(User user) {
 
             //when, then
-            assertThatThrownBy(() -> PointFixtures.유저식별자로_잔액_생성(userId))
+            assertThatThrownBy(() -> PointFixtures.유저로_잔액_생성(user))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("유저식별자는 음수일 수 없습니다.");
+                    .hasMessageContaining("유저 정보가 필요합니다.");
         }
 
         @ParameterizedTest

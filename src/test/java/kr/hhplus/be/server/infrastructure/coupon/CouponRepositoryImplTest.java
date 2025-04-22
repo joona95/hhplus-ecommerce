@@ -2,7 +2,10 @@ package kr.hhplus.be.server.infrastructure.coupon;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
+import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
+import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Testcontainers
 class CouponRepositoryImplTest {
+
+    @Autowired
+    private UserJpaRepository userJpaRepository;
 
     @Autowired
     private CouponJpaRepository couponJpaRepository;
@@ -52,27 +58,27 @@ class CouponRepositoryImplTest {
     void 쿠폰_발급_내역_저장_후_조회() {
 
         // given
-        CouponIssue couponIssue = CouponFixtures.정상_쿠폰_발급_내역_생성();
-        couponIssueJpaRepository.save(couponIssue);
+        User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+        CouponIssue couponIssue = couponIssueJpaRepository.save(CouponFixtures.유저로_쿠폰_발급_내역_생성(user));
 
         // when
-        Optional<CouponIssue> result = couponRepository.findByUserIdAndCouponId(
-                couponIssue.getUserId(), couponIssue.getCouponId());
+        Optional<CouponIssue> result = couponRepository.findCouponIssueByUserAndCouponId(user, couponIssue.getCouponId());
 
         // then
         assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(couponIssue);
+        assertThat(result.get().getId()).isEqualTo(couponIssue.getId());
     }
 
     @Test
     void 유저의_쿠폰_발급_내역_목록_조회() {
 
         // given
-        List<CouponIssue> issues = List.of(CouponFixtures.정상_쿠폰_발급_내역_생성(), CouponFixtures.정상_쿠폰_발급_내역_생성());
+        User user = UserFixtures.식별자로_유저_생성(1L);
+        List<CouponIssue> issues = List.of(CouponFixtures.유저로_쿠폰_발급_내역_생성(user), CouponFixtures.정상_쿠폰_발급_내역_생성());
         couponIssueJpaRepository.saveAll(issues);
 
         // when
-        List<CouponIssue> result = couponRepository.findByUserId(1L);
+        List<CouponIssue> result = couponRepository.findCouponIssueByUser(user);
 
         // then
         assertThat(result).hasSize(2);
@@ -86,8 +92,8 @@ class CouponRepositoryImplTest {
         couponIssueJpaRepository.save(couponIssue);
 
         // when
-        boolean result = couponRepository.existsCouponIssueByUserIdAndCouponId(
-                couponIssue.getUserId(), couponIssue.getCouponId());
+        boolean result = couponRepository.existsCouponIssueByUserAndCouponId(
+                couponIssue.getUser(), couponIssue.getCouponId());
 
         // then
         assertThat(result).isTrue();

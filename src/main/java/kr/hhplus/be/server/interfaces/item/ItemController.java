@@ -1,13 +1,10 @@
 package kr.hhplus.be.server.interfaces.item;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.domain.item.ItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,11 +40,5 @@ public class ItemController implements ItemApiSpec {
                 .toList();
 
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/popular")
-    @Override
-    public ResponseEntity<Void> sendPopularItemStatistics(@RequestBody @Valid ItemRequest.PopularItemStatisticsRequest request) {
-        return ResponseEntity.ok().build();
     }
 }
