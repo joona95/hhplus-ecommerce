@@ -47,7 +47,7 @@ class CouponRepositoryImplTest {
         couponJpaRepository.save(coupon);
 
         // when
-        Optional<Coupon> result = couponRepository.findCouponById(coupon.getId());
+        Optional<Coupon> result = couponRepository.findCouponByIdWithLock(coupon.getId());
 
         // then
         assertThat(result).isPresent();

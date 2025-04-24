@@ -15,7 +15,7 @@ public interface CouponRepository {
 
     boolean existsCouponIssueByUserAndCouponId(User user, long couponId);
 
-    Optional<Coupon> findCouponById(long couponId);
+    Optional<Coupon> findCouponByIdWithLock(long couponId);
 
     CouponIssue saveCouponIssue(CouponIssue couponIssue);
 }
