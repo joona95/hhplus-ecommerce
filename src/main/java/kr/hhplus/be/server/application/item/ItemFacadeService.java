@@ -3,6 +3,7 @@ package kr.hhplus.be.server.application.item;
 import kr.hhplus.be.server.domain.item.ItemService;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.order.OrderService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class ItemFacadeService {
         this.orderService = orderService;
     }
 
+    @Scheduled(cron = "59 59 11 * * *")
     @Transactional
     public void createOrderItemStatistics() {
 
