@@ -30,6 +30,10 @@ public class OrderFixtures {
         return new Order(null, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now());
     }
 
+    public static Order 유저와_주문가격정보로_주문_생성(User user, OrderAmountInfo orderAmountInfo) {
+        return new Order(null, user, 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now());
+    }
+
     public static Order 식별자와_주문가격정보로_주문_생성(long id, OrderAmountInfo orderAmountInfo) {
         return new Order(id, UserFixtures.식별자로_유저_생성(1L), 1L, OrderStatus.COMPLETE, orderAmountInfo, LocalDateTime.now(), LocalDateTime.now());
     }
