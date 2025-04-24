@@ -16,6 +16,7 @@ import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointHistoryJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,13 +64,12 @@ class OrderControllerIntegrationTest {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        itemJpaRepository.deleteAll();
-        pointJpaRepository.deleteAll();
-        pointHistoryJpaRepository.deleteAll();
-        couponJpaRepository.deleteAll();
-        couponIssueJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.user;
 
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

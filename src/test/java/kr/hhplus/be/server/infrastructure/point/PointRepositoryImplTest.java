@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.point.PointHistory;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.PointFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +32,12 @@ class PointRepositoryImplTest {
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        pointHistoryJpaRepository.deleteAll();
-        pointJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test
