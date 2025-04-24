@@ -37,7 +37,7 @@ public class ItemService {
                 .map(StockDecreaseCommand::itemId)
                 .toList();
 
-        List<Item> items = itemRepository.findByIdIn(itemIds);
+        List<Item> items = itemRepository.findByIdInWithLock(itemIds);
 
         Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
 

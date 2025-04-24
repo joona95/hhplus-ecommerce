@@ -31,8 +31,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<Item> findByIdIn(List<Long> ids) {
-        return itemJpaRepository.findAllById(ids);
+    public List<Item> findByIdInWithLock(List<Long> ids) {
+        return itemJpaRepository.findAllByIdWithLock(ids);
     }
 
     @Override

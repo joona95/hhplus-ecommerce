@@ -56,7 +56,7 @@ class ItemRepositoryImplTest {
         List<Long> ids = savedItems.stream().map(Item::getId).toList();
 
         // when
-        List<Item> result = itemRepository.findByIdIn(ids);
+        List<Item> result = itemRepository.findByIdInWithLock(ids);
 
         // then
         assertThat(result).hasSize(2);
