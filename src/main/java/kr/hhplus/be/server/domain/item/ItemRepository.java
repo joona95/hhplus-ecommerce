@@ -12,7 +12,7 @@ public interface ItemRepository {
 
     List<PopularItem> findPopularItems();
 
-    List<Item> findByIdInWithLock(List<Long> ids);
+    Item findByIdWithLock(long id);
 
     List<PopularItem> savePopularItems(List<PopularItem> popularItems);
 }

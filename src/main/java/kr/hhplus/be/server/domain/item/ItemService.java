@@ -31,23 +31,12 @@ public class ItemService {
     }
 
     @Transactional
-    public List<Item> decreaseStocks(List<StockDecreaseCommand> commands) {
+    public Item decreaseStock(StockDecreaseCommand command) {
 
-        List<Long> itemIds = commands.stream()
-                .map(StockDecreaseCommand::itemId)
-                .toList();
+        Item item = itemRepository.findByIdWithLock(command.itemId());
+        item.decreaseStock(command.count());
 
-        List<Item> items = itemRepository.findByIdInWithLock(itemIds);
-
-        Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
-
-        for (StockDecreaseCommand command : commands) {
-
-            Item item = itemMap.get(command.itemId());
-            item.decreaseStock(command.count());
-        }
-
-        return items;
+        return item;
     }
 
     @Transactional

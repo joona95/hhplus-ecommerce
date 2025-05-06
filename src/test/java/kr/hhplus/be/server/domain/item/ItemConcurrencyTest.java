@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +45,7 @@ public class ItemConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
-        List<ItemCommand.StockDecreaseCommand> commands = List.of(ItemCommand.StockDecreaseCommand.of(item.getId(), 1));
+        ItemCommand.StockDecreaseCommand command = ItemCommand.StockDecreaseCommand.of(item.getId(), 1);
 
         AtomicInteger failureCount = new AtomicInteger();
 
@@ -55,7 +54,7 @@ public class ItemConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
                 try {
-                    itemService.decreaseStocks(commands);
+                    itemService.decreaseStock(command);
                 } catch (Exception e) {
                     failureCount.getAndIncrement();
                 }

@@ -5,7 +5,6 @@ import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemService;
-import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.point.PointService;
@@ -38,7 +37,9 @@ public class OrderFacadeService {
     @Transactional
     public OrderCreateResult placeOrder(User user, OrderCreateFacadeCommand command) {
 
-        List<Item> items = itemService.decreaseStocks(command.toStockDecreaseCommands());
+        List<Item> items = command.orderItemCommands().stream()
+                .map(orderItemCommand -> itemService.decreaseStock(orderItemCommand.toStockDecreaseCommand()))
+                .toList();
 
         OrderInfo orderInfo = orderService.createOrder(command.toOrderCreateCommand(user, items));
 
