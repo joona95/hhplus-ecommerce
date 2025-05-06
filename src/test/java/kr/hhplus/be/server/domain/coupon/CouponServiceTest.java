@@ -116,7 +116,7 @@ class CouponServiceTest {
 
             when(couponRepository.existsCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(false);
-            when(couponRepository.findCouponByIdWithLock(1L))
+            when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.empty());
 
             CouponIssueCommand command = CouponIssueCommand.of(1L);
@@ -136,7 +136,7 @@ class CouponServiceTest {
 
             when(couponRepository.existsCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(false);
-            when(couponRepository.findCouponByIdWithLock(1L))
+            when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
             when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
                     .thenReturn(CouponIssue.of(user, coupon));
@@ -159,7 +159,7 @@ class CouponServiceTest {
 
             when(couponRepository.existsCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(false);
-            when(couponRepository.findCouponByIdWithLock(1L))
+            when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
             when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
                     .thenReturn(CouponIssue.of(user, coupon));
@@ -170,7 +170,7 @@ class CouponServiceTest {
             couponService.issueCoupon(user, command);
 
             //then
-            verify(couponRepository, times(1)).findCouponByIdWithLock(1L);
+            verify(couponRepository, times(1)).findCouponById(1L);
         }
 
         @Test
@@ -182,7 +182,7 @@ class CouponServiceTest {
 
             when(couponRepository.existsCouponIssueByUserAndCouponId(user, 1L))
                     .thenReturn(false);
-            when(couponRepository.findCouponByIdWithLock(1L))
+            when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
             when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
                     .thenReturn(CouponIssue.of(user, coupon));
