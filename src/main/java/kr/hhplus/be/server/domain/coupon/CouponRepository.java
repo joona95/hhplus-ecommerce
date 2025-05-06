@@ -18,4 +18,6 @@ public interface CouponRepository {
     Optional<Coupon> findCouponByIdWithLock(long couponId);
 
     CouponIssue saveCouponIssue(CouponIssue couponIssue);
+
+    Optional<Coupon> findCouponById(long couponId);
 }
