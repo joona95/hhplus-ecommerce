@@ -17,24 +17,18 @@ public class OrderFacadeCommand {
 
     public record OrderCreateFacadeCommand(
             Long couponId,
-            List<OrderItemCreateFacadeCommand> orderItems
+            List<OrderItemCreateFacadeCommand> orderItemCommands
     ) {
 
         public static OrderCreateFacadeCommand of(Long couponId, List<OrderItemCreateFacadeCommand> itemCommands) {
             return new OrderCreateFacadeCommand(couponId, itemCommands);
         }
 
-        public List<ItemCommand.StockDecreaseCommand> toStockDecreaseCommands() {
-            return orderItems.stream()
-                    .map(OrderItemCreateFacadeCommand::toStockDecreaseCommand)
-                    .toList();
-        }
-
         public OrderCommand.OrderCreateCommand toOrderCreateCommand(User user, List<Item> items) {
 
             Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
 
-            List<OrderCommand.OrderItemCreateCommand> orderItemCreateCommands = orderItems.stream()
+            List<OrderCommand.OrderItemCreateCommand> orderItemCreateCommands = orderItemCommands.stream()
                     .map(orderItem -> orderItem.toOrderItemCreateCommand(itemMap.get(orderItem.itemId)))
                     .toList();
 

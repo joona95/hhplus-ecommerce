@@ -7,11 +7,9 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface ItemJpaRepository extends JpaRepository<Item, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select i from Item i where i.id in :ids")
-    List<Item> findAllByIdWithLock(@Param("ids") List<Long> ids);
+    @Query("select i from Item i where i.id = :id")
+    Item findByIdWithLock(@Param("id") long id);
 }

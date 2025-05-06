@@ -91,25 +91,19 @@ class ItemServiceTest {
     class 재고_차감 {
 
         @Test
-        void 상품_목록_조회_레포지토리_1회_호출() {
+        void 상품_조회_레포지토리_1회_호출() {
 
             //given
-            List<StockDecreaseCommand> commands = List.of(
-                    StockDecreaseCommand.of(1L, 1),
-                    StockDecreaseCommand.of(2L, 2)
-            );
+            StockDecreaseCommand command = StockDecreaseCommand.of(1L, 1);
 
-            when(itemRepository.findByIdInWithLock(List.of(1L, 2L)))
-                    .thenReturn(List.of(
-                            ItemFixtures.식별자로_상품_생성(1L),
-                            ItemFixtures.식별자로_상품_생성(2L)
-                    ));
+            when(itemRepository.findByIdWithLock(1L))
+                    .thenReturn(ItemFixtures.식별자로_상품_생성(1L));
 
             //when
-            itemService.decreaseStocks(commands);
+            itemService.decreaseStock(command);
 
             //then
-            verify(itemRepository, times(1)).findByIdInWithLock(List.of(1L, 2L));
+            verify(itemRepository, times(1)).findByIdWithLock(1L);
         }
     }
 }

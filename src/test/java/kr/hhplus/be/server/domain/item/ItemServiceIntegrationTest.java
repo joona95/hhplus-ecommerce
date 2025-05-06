@@ -46,23 +46,17 @@ public class ItemServiceIntegrationTest {
         void 재고_차감_성공() {
 
             // given
-            Item item1 = ItemFixtures.재고로_상품_생성(Stock.of(10));
-            Item item2 = ItemFixtures.재고로_상품_생성(Stock.of(10));
+            Item item = ItemFixtures.재고로_상품_생성(Stock.of(10));
 
-            itemJpaRepository.saveAll(List.of(item1, item2));
+            itemJpaRepository.save(item);
 
-            List<StockDecreaseCommand> commands = List.of(
-                    StockDecreaseCommand.of(item1.getId(), 1),
-                    StockDecreaseCommand.of(item2.getId(), 2)
-            );
+            StockDecreaseCommand command = StockDecreaseCommand.of(item.getId(), 1);
 
             // when
-            List<Item> result = itemService.decreaseStocks(commands);
+            Item result = itemService.decreaseStock(command);
 
             // then
-            assertThat(result).hasSize(2);
-            assertThat(result.get(0).getStock()).isEqualTo(9); // 재고 감소 확인
-            assertThat(result.get(1).getStock()).isEqualTo(8); // 재고 감소 확인
+            assertThat(result.getStock()).isEqualTo(9); // 재고 감소 확인
         }
     }
 

@@ -54,17 +54,16 @@ class ItemRepositoryImplTest {
 
     @Test
     @Transactional
-    void 여러_상품_ID로_조회() {
+    void 상품_ID로_조회() {
 
         // given
-        List<Item> savedItems = itemJpaRepository.saveAll(List.of(ItemFixtures.정상_상품_생성(), ItemFixtures.정상_상품_생성()));
-        List<Long> ids = savedItems.stream().map(Item::getId).toList();
+        Item savedItem = itemJpaRepository.save(ItemFixtures.정상_상품_생성());
 
         // when
-        List<Item> result = itemRepository.findByIdInWithLock(ids);
+        Item result = itemRepository.findByIdWithLock(savedItem.getId());
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result).isEqualTo(savedItem);
     }
 
     @Test
