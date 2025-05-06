@@ -1,10 +1,12 @@
 package kr.hhplus.be.server.infrastructure.coupon;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,13 +35,16 @@ class CouponRepositoryImplTest {
     @Autowired
     private CouponRepositoryImpl couponRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        couponIssueJpaRepository.deleteAll();
-        couponJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test
+    @Transactional
     void 쿠폰_저장_후_조회() {
 
         // given
@@ -47,7 +52,7 @@ class CouponRepositoryImplTest {
         couponJpaRepository.save(coupon);
 
         // when
-        Optional<Coupon> result = couponRepository.findCouponById(coupon.getId());
+        Optional<Coupon> result = couponRepository.findCouponByIdWithLock(coupon.getId());
 
         // then
         assertThat(result).isPresent();
@@ -74,14 +79,14 @@ class CouponRepositoryImplTest {
 
         // given
         User user = UserFixtures.식별자로_유저_생성(1L);
-        List<CouponIssue> issues = List.of(CouponFixtures.유저로_쿠폰_발급_내역_생성(user), CouponFixtures.정상_쿠폰_발급_내역_생성());
+        List<CouponIssue> issues = List.of(CouponFixtures.유저로_쿠폰_발급_내역_생성(user));
         couponIssueJpaRepository.saveAll(issues);
 
         // when
         List<CouponIssue> result = couponRepository.findCouponIssueByUser(user);
 
         // then
-        assertThat(result).hasSize(2);
+        assertThat(result).hasSize(1);
     }
 
     @Test

@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import kr.hhplus.be.server.domain.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +22,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@Table(name = "coupon_issue", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "coupon_id"})
+})
 @Getter
 @NoArgsConstructor
 public class CouponIssue {

@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.infrastructure.item;
 
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.PopularItem;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,12 @@ class ItemRepositoryImplTest {
     @Autowired
     private PopularItemJpaRepository popularItemJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        popularItemJpaRepository.deleteAll();
-        itemJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test
@@ -49,6 +53,7 @@ class ItemRepositoryImplTest {
     }
 
     @Test
+    @Transactional
     void 여러_상품_ID로_조회() {
 
         // given
@@ -56,7 +61,7 @@ class ItemRepositoryImplTest {
         List<Long> ids = savedItems.stream().map(Item::getId).toList();
 
         // when
-        List<Item> result = itemRepository.findByIdIn(ids);
+        List<Item> result = itemRepository.findByIdInWithLock(ids);
 
         // then
         assertThat(result).hasSize(2);

@@ -3,6 +3,8 @@ package kr.hhplus.be.server.infrastructure.order;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.fixtures.OrderFixtures;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
+import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,17 @@ class OrderRepositoryImplTest {
     private OrderItemJpaRepository orderItemJpaRepository;
 
     @Autowired
+    private UserJpaRepository userJpaRepository;
+
+    @Autowired
     private OrderRepositoryImpl orderRepository;
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     void setUp() {
-        orderItemJpaRepository.deleteAll();
-        orderJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test

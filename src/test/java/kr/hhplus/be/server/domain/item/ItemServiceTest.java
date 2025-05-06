@@ -99,7 +99,7 @@ class ItemServiceTest {
                     StockDecreaseCommand.of(2L, 2)
             );
 
-            when(itemRepository.findByIdIn(List.of(1L, 2L)))
+            when(itemRepository.findByIdInWithLock(List.of(1L, 2L)))
                     .thenReturn(List.of(
                             ItemFixtures.식별자로_상품_생성(1L),
                             ItemFixtures.식별자로_상품_생성(2L)
@@ -109,7 +109,7 @@ class ItemServiceTest {
             itemService.decreaseStocks(commands);
 
             //then
-            verify(itemRepository, times(1)).findByIdIn(List.of(1L, 2L));
+            verify(itemRepository, times(1)).findByIdInWithLock(List.of(1L, 2L));
         }
     }
 }

@@ -34,7 +34,7 @@ public class CouponService {
             throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
         }
 
-        Coupon coupon = couponRepository.findCouponById(command.couponId())
+        Coupon coupon = couponRepository.findCouponByIdWithLock(command.couponId())
                 .orElseThrow(() -> new RuntimeException("쿠폰이 존재하지 않습니다."));
 
         coupon.issue();

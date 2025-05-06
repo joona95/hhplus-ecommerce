@@ -9,6 +9,7 @@ import kr.hhplus.be.server.fixtures.PointFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.point.PointHistoryJpaRepository;
 import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -47,10 +48,12 @@ class PointControllerIntegrationTest {
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        pointHistoryJpaRepository.deleteAll();
-        pointJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Nested
@@ -105,6 +108,7 @@ class PointControllerIntegrationTest {
 
     @Nested
     class 포인트_충전 {
+
         @Test
         void 포인트를_충전() {
 
@@ -166,7 +170,7 @@ class PointControllerIntegrationTest {
 
             // given
             User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
-            Point point = pointJpaRepository.save(PointFixtures.금액으로_잔액_생성(10000));
+            Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 10000));
             PointChargeRequest request = new PointChargeRequest(amount);
 
             HttpHeaders headers = new HttpHeaders();

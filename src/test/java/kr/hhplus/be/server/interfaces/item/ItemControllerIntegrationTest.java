@@ -1,10 +1,10 @@
 package kr.hhplus.be.server.interfaces.item;
 
-import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.item.PopularItemJpaRepository;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,10 +35,12 @@ class ItemControllerIntegrationTest {
     @Autowired
     private PopularItemJpaRepository popularItemJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        popularItemJpaRepository.deleteAll();
-        itemJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test

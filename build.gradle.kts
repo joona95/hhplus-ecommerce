@@ -58,6 +58,10 @@ dependencies {
 	// lombok
 	implementation("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+
+	// Spring-Retry
+	implementation("org.springframework.retry:spring-retry")
+	implementation("org.springframework:spring-aspects")
 }
 
 tasks.withType<Test> {

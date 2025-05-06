@@ -5,6 +5,7 @@ import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.order.OrderItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.order.OrderJpaRepository;
+import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,10 +33,12 @@ public class OrderServiceIntegrationTest {
     @Autowired
     private UserJpaRepository userJpaRepository;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     void setUp() {
-        orderItemJpaRepository.deleteAll();
-        orderJpaRepository.deleteAll();
+        databaseCleanup.truncateAllTables();
     }
 
     @Test
