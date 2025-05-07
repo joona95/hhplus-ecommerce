@@ -2,8 +2,6 @@ package kr.hhplus.be.server;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -29,10 +27,13 @@ class TestcontainersConfiguration {
 
         REDIS_CONTAINER.start();
         MYSQL_CONTAINER.start();
-
+        System.setProperty("spring.datasource.password", MYSQL_CONTAINER.getPassword());
         System.setProperty("spring.datasource.url", MYSQL_CONTAINER.getJdbcUrl() + "?characterEncoding=UTF-8&serverTimezone=UTC");
         System.setProperty("spring.datasource.username", MYSQL_CONTAINER.getUsername());
         System.setProperty("spring.datasource.password", MYSQL_CONTAINER.getPassword());
+
+        System.setProperty("spring.data.redis.host", REDIS_CONTAINER.getHost());
+        System.setProperty("spring.data.redis.port", REDIS_CONTAINER.getMappedPort(REDIS_PORT).toString());
     }
 
     @PreDestroy
@@ -40,12 +41,9 @@ class TestcontainersConfiguration {
         if (MYSQL_CONTAINER.isRunning()) {
             MYSQL_CONTAINER.stop();
         }
-    }
 
-    @DynamicPropertySource
-    private static void registerRedisProperties(DynamicPropertyRegistry registry) {
-
-        registry.add("spring.data.redis.host", REDIS_CONTAINER::getHost);
-        registry.add("spring.data.redis.port", () -> REDIS_CONTAINER.getMappedPort(REDIS_PORT).toString());
+        if (REDIS_CONTAINER.isRunning()) {
+            REDIS_CONTAINER.stop();
+        }
     }
 }
