@@ -90,12 +90,10 @@ ITEM {
     datetime updated_at "수정일시"
 }
 
-ITEM_STATISTICS {
+POPULAR_ITEM_STATISTICS {
     int id PK
     int item_id FK "상품식별자"
-    string item_name "상품명"
     date order_date "주문일자"
-    int price "가격"
     int order_count "주문수량"
     datetime created_at "생성일시"
 }

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.item;
 
 import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.domain.order.OrderItemStatistics;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.fixtures.OrderFixtures;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
@@ -73,8 +74,10 @@ public class ItemServiceIntegrationTest {
                     OrderFixtures.상품식별자로_주문상품_생성(2L)
             );
 
+            OrderItemStatistics orderItemStatistics = new OrderItemStatistics(orderItems);
+
             // when
-            List<PopularItem> result = itemService.createPopularItemStatistics(orderItems);
+            List<PopularItemStatistics> result = itemService.createPopularItems(orderItemStatistics);
 
             // then
             assertThat(result).hasSize(2);

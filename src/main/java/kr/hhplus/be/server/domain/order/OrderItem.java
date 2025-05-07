@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -74,6 +75,10 @@ public class OrderItem {
 
     public int getOrderItemPrice() {
         return sellPrice * count;
+    }
+
+    public LocalDate getOrderDate() {
+        return order.getCreatedAt().toLocalDate();
     }
 
     @Override

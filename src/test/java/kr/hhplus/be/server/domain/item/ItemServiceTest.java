@@ -66,7 +66,7 @@ class ItemServiceTest {
                     .thenReturn(null);
 
             //when
-            List<PopularItem> result = itemService.findPopularItems();
+            List<PopularItemDetail> result = itemService.findPopularItems();
 
             //then
             assertThat(result).isEqualTo(List.of());
@@ -84,6 +84,28 @@ class ItemServiceTest {
 
             //then
             verify(itemRepository, times(1)).findPopularItems();
+        }
+
+        @Test
+        void 상품_조회_레포지토리_인기_상품_목록_수_만큼_호출() {
+
+            //given
+            when(itemRepository.findPopularItems())
+                    .thenReturn(List.of(
+                            ItemFixtures.상품식별자로_인기_상품_생성(1L),
+                            ItemFixtures.상품식별자로_인기_상품_생성(2L)
+                    ));
+            when(itemRepository.findById(1L))
+                    .thenReturn(Optional.of(ItemFixtures.식별자로_상품_생성(1L)));
+            when(itemRepository.findById(2L))
+                    .thenReturn(Optional.of(ItemFixtures.식별자로_상품_생성(2L)));
+
+            //when
+            itemService.findPopularItems();
+
+            //then
+            verify(itemRepository, times(1)).findById(1L);
+            verify(itemRepository, times(1)).findById(2L);
         }
     }
 

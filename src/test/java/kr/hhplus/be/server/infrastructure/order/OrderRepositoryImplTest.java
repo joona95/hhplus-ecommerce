@@ -72,31 +72,31 @@ class OrderRepositoryImplTest {
     }
 
     @Test
-    void 오늘_주문의_주문상품들만_조회된다() {
+    void 어제_주문의_주문상품들만_조회된다() {
 
         // given
         LocalDateTime today = LocalDateTime.now();
         Order todayOrder = OrderFixtures.생성일시로_주문_생성(today);
         orderJpaRepository.save(todayOrder);
         orderItemJpaRepository.saveAll(List.of(
-                OrderFixtures.주문으로_주문상품_생성(todayOrder),
                 OrderFixtures.주문으로_주문상품_생성(todayOrder)
         ));
 
         LocalDateTime yesterday = today.minusDays(1);
         Order yesterdayOrder = OrderFixtures.생성일시로_주문_생성(yesterday);
         orderJpaRepository.save(yesterdayOrder);
-        orderItemJpaRepository.save(
+        orderItemJpaRepository.saveAll(List.of(
+                OrderFixtures.주문으로_주문상품_생성(yesterdayOrder),
                 OrderFixtures.주문으로_주문상품_생성(yesterdayOrder)
-        );
+        ));
 
         // when
-        List<OrderItem> result = orderRepository.findTodayOrderItems();
+        List<OrderItem> result = orderRepository.findYesterdayOrderItems();
 
         // then
-        assertThat(result).hasSize(2); // 오늘 주문 2건만 나와야 함
+        assertThat(result).hasSize(2); // 어제 주문 1건만 나와야 함
         assertThat(result).allMatch(orderItem ->
-                Objects.equals(orderItem.getOrder().getId(), todayOrder.getId())
+                Objects.equals(orderItem.getOrder().getId(), yesterdayOrder.getId())
         );
     }
 }

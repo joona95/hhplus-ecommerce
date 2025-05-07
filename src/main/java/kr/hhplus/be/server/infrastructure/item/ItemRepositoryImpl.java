@@ -3,6 +3,7 @@ package kr.hhplus.be.server.infrastructure.item;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemRepository;
 import kr.hhplus.be.server.domain.item.PopularItem;
+import kr.hhplus.be.server.domain.item.PopularItemStatistics;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -14,10 +15,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     private final ItemJpaRepository itemJpaRepository;
     private final PopularItemJpaRepository popularItemJpaRepository;
+    private final PopularItemQuerydslRepository popularItemQuerydslRepository;
 
-    public ItemRepositoryImpl(ItemJpaRepository itemJpaRepository, PopularItemJpaRepository popularItemJpaRepository) {
+    public ItemRepositoryImpl(ItemJpaRepository itemJpaRepository, PopularItemJpaRepository popularItemJpaRepository, PopularItemQuerydslRepository popularItemQuerydslRepository) {
         this.itemJpaRepository = itemJpaRepository;
         this.popularItemJpaRepository = popularItemJpaRepository;
+        this.popularItemQuerydslRepository = popularItemQuerydslRepository;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<PopularItem> findPopularItems() {
-        return popularItemJpaRepository.findByOrderDateBetween(LocalDate.now().minusDays(3), LocalDate.now().minusDays(1));
+        return popularItemQuerydslRepository.findPopularItems();
     }
 
     @Override
@@ -36,7 +39,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<PopularItem> savePopularItems(List<PopularItem> popularItems) {
-        return popularItemJpaRepository.saveAll(popularItems);
+    public List<PopularItemStatistics> savePopularItems(List<PopularItemStatistics> popularItemStatistics) {
+        return popularItemJpaRepository.saveAll(popularItemStatistics);
     }
 }
