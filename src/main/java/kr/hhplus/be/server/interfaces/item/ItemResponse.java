@@ -13,7 +13,7 @@ public class ItemResponse {
                                      @Schema(description = "상품 재고", example = "100") long stock) {
 
         public static ItemDetailResponse from(Item item) {
-            return new ItemDetailResponse(item.getId(), item.getItemName(), item.getPrice(), item.getStock());
+            return new ItemDetailResponse(item.getId(), item.getItemName(), item.getPrice(), item.getStockCount());
         }
     }
 

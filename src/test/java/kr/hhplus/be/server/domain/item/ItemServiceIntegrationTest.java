@@ -57,7 +57,7 @@ public class ItemServiceIntegrationTest {
             Item result = itemService.decreaseStock(command);
 
             // then
-            assertThat(result.getStock()).isEqualTo(9); // 재고 감소 확인
+            assertThat(result.getStockCount()).isEqualTo(9); // 재고 감소 확인
         }
     }
 
