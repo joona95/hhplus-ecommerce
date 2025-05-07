@@ -66,6 +66,7 @@ dependencies {
 
 	// redis
 	implementation("org.redisson:redisson-spring-boot-starter:3.17.0")
+	implementation("io.netty:netty-resolver-dns-native-macos:4.1.82.Final:osx-aarch_64")
 }
 
 tasks.withType<Test> {
