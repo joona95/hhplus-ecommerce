@@ -1,8 +1,21 @@
 package kr.hhplus.be.server.domain.item;
 
-public record PopularItem(
-        long itemId,
-        int orderCount
-) {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
+@Getter
+@NoArgsConstructor
+public class PopularItem implements Serializable {
+
+    private long itemId;
+
+    private int orderCount;
+
+    public PopularItem(long itemId, int orderCount) {
+
+        this.itemId = itemId;
+        this.orderCount = orderCount;
+    }
 }

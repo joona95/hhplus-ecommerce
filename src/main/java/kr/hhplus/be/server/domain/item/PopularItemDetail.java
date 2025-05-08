@@ -8,6 +8,6 @@ public record PopularItemDetail(
 ) {
 
     public static PopularItemDetail of(PopularItem popularItem, Item item) {
-        return new PopularItemDetail(popularItem.itemId(), item.getItemName(), item.getPrice(), popularItem.orderCount());
+        return new PopularItemDetail(popularItem.getItemId(), item.getItemName(), item.getPrice(), popularItem.getOrderCount());
     }
 }

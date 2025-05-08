@@ -77,15 +77,15 @@ public class PopularItemRepositoryImplTest {
         List<PopularItem> result = popularItemRepository.findPopularItems();
 
         // then
-        assertThat(result.get(0).itemId()).isEqualTo(items.get(6).getId());
-        assertThat(result.get(0).orderCount()).isEqualTo(1200);
-        assertThat(result.get(1).itemId()).isEqualTo(items.get(5).getId());
-        assertThat(result.get(1).orderCount()).isEqualTo(1000);
-        assertThat(result.get(2).itemId()).isEqualTo(items.get(4).getId());
-        assertThat(result.get(2).orderCount()).isEqualTo(800);
-        assertThat(result.get(3).itemId()).isEqualTo(items.get(3).getId());
-        assertThat(result.get(3).orderCount()).isEqualTo(600);
-        assertThat(result.get(4).itemId()).isEqualTo(items.get(2).getId());
-        assertThat(result.get(4).orderCount()).isEqualTo(400);
+        assertThat(result.get(0).getItemId()).isEqualTo(items.get(6).getId());
+        assertThat(result.get(0).getOrderCount()).isEqualTo(1200);
+        assertThat(result.get(1).getItemId()).isEqualTo(items.get(5).getId());
+        assertThat(result.get(1).getOrderCount()).isEqualTo(1000);
+        assertThat(result.get(2).getItemId()).isEqualTo(items.get(4).getId());
+        assertThat(result.get(2).getOrderCount()).isEqualTo(800);
+        assertThat(result.get(3).getItemId()).isEqualTo(items.get(3).getId());
+        assertThat(result.get(3).getOrderCount()).isEqualTo(600);
+        assertThat(result.get(4).getItemId()).isEqualTo(items.get(2).getId());
+        assertThat(result.get(4).getOrderCount()).isEqualTo(400);
     }
 }

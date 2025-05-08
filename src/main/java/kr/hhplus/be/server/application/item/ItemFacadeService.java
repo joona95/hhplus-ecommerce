@@ -37,7 +37,7 @@ public class ItemFacadeService {
 
     public List<PopularItemDetail> findPopularItemDetails() {
         return popularItemService.findPopularItems().stream()
-                .map(p -> PopularItemDetail.of(p, itemService.findById(p.itemId())))  // ← 프록시 경유
+                .map(popularItem -> PopularItemDetail.of(popularItem, itemService.findById(popularItem.getItemId())))  // ← 프록시 경유
                 .toList();
     }
 }
