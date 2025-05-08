@@ -11,5 +11,5 @@ public interface OrderRepository {
 
     List<OrderItem> saveOrderItems(List<OrderItem> orderItems);
 
-    List<OrderItem> findTodayOrderItems();
+    List<OrderItem> findYesterdayOrderItems();
 }

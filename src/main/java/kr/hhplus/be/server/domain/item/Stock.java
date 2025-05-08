@@ -3,11 +3,12 @@ package kr.hhplus.be.server.domain.item;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 @Getter
-public class Stock {
+public class Stock implements Serializable {
 
     private final int count;
 

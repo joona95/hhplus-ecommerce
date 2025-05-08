@@ -11,13 +11,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Item {
+public class Item implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +70,7 @@ public class Item {
         this.stock = stock.increase(count);
     }
 
-    public int getStock() {
+    public int getStockCount() {
         return stock.getCount();
     }
 
@@ -84,5 +85,11 @@ public class Item {
     @Override
     public int hashCode() {
         return Objects.hash(id, itemName, stock, price);
+    }
+
+    public void update(ItemCommand.ItemUpdateCommand command) {
+        this.itemName = command.itemName();
+        this.price = command.price();
+        this.stock = new Stock(command.stock());
     }
 }

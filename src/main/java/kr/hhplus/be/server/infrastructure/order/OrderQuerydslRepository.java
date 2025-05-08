@@ -21,10 +21,13 @@ public class OrderQuerydslRepository {
         this.queryFactory = queryFactory;
     }
 
-    public List<OrderItem> findTodayOrderItems() {
+    public List<OrderItem> findYesterdayOrderItems() {
+
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+
         return queryFactory.selectFrom(orderItem)
                 .innerJoin(orderItem.order, order).fetchJoin()
-                .where(order.createdAt.between(LocalDateTime.of(LocalDate.now(), LocalTime.MIN), LocalDateTime.of(LocalDate.now(), LocalTime.MAX)))
+                .where(order.createdAt.between(LocalDateTime.of(yesterday, LocalTime.MIN), LocalDateTime.of(yesterday, LocalTime.MAX)))
                 .fetch();
     }
 }

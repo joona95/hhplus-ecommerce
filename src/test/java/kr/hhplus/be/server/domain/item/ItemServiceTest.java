@@ -56,38 +56,6 @@ class ItemServiceTest {
     }
 
     @Nested
-    class 인기_상품_목록_조회 {
-
-        @Test
-        void 인기_상품_목록_조회_값이_없을_경우_빈_리스트_반환() {
-
-            //given
-            when(itemRepository.findPopularItems())
-                    .thenReturn(null);
-
-            //when
-            List<PopularItem> result = itemService.findPopularItems();
-
-            //then
-            assertThat(result).isEqualTo(List.of());
-        }
-
-        @Test
-        void 인기_상품_목록_조회_레포지토리_1회_호출() {
-
-            //given
-            when(itemRepository.findPopularItems())
-                    .thenReturn(List.of());
-
-            //when
-            itemService.findPopularItems();
-
-            //then
-            verify(itemRepository, times(1)).findPopularItems();
-        }
-    }
-
-    @Nested
     class 재고_차감 {
 
         @Test

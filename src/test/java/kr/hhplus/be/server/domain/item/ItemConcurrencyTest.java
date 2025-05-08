@@ -71,8 +71,8 @@ public class ItemConcurrencyTest {
         Optional<Item> result = itemJpaRepository.findById(item.getId());
 
         assertThat(result).isPresent();
-        assertThat(result.get().getStock()).isEqualTo(failureCount.get());
+        assertThat(result.get().getStockCount()).isEqualTo(failureCount.get());
 
-        System.out.println("실패 횟수 : " + failureCount.get() + ", 재고 : " + result.get().getStock());
+        System.out.println("실패 횟수 : " + failureCount.get() + ", 재고 : " + result.get().getStockCount());
     }
 }
