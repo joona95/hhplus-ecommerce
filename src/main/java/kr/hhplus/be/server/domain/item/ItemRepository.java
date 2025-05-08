@@ -15,4 +15,6 @@ public interface ItemRepository {
     Item findByIdWithLock(long id);
 
     List<PopularItemStatistics> savePopularItems(List<PopularItemStatistics> popularItemStatistics);
+
+    Item saveItem(Item item);
 }

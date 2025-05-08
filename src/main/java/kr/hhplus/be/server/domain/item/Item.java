@@ -86,4 +86,10 @@ public class Item implements Serializable {
     public int hashCode() {
         return Objects.hash(id, itemName, stock, price);
     }
+
+    public void update(ItemCommand.ItemUpdateCommand command) {
+        this.itemName = command.itemName();
+        this.price = command.price();
+        this.stock = new Stock(command.stock());
+    }
 }

@@ -10,4 +10,15 @@ public class ItemCommand {
             return new StockDecreaseCommand(itemId, count);
         }
     }
+
+    public record ItemUpdateCommand(
+            String itemName,
+            int price,
+            int stock
+            ) {
+
+        public static ItemUpdateCommand of(String itemName, int price, int stock) {
+            return new ItemUpdateCommand(itemName, price, stock);
+        }
+    }
 }

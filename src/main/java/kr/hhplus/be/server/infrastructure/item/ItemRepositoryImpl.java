@@ -6,7 +6,6 @@ import kr.hhplus.be.server.domain.item.PopularItem;
 import kr.hhplus.be.server.domain.item.PopularItemStatistics;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +40,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<PopularItemStatistics> savePopularItems(List<PopularItemStatistics> popularItemStatistics) {
         return popularItemJpaRepository.saveAll(popularItemStatistics);
+    }
+
+    @Override
+    public Item saveItem(Item item) {
+        return itemJpaRepository.save(item);
     }
 }

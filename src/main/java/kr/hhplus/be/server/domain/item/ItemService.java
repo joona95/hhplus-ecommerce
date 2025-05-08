@@ -51,4 +51,14 @@ public class ItemService {
 
         return itemRepository.savePopularItems(popularItemStatistics);
     }
+
+    @Transactional
+    public Item updateItem(Long itemId, ItemUpdateCommand command) {
+
+        Item item = findById(itemId);
+
+        item.update(command);
+
+        return itemRepository.saveItem(item);
+    }
 }

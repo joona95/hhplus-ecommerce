@@ -1,15 +1,19 @@
 package kr.hhplus.be.server.interfaces.item;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import kr.hhplus.be.server.domain.item.ItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static kr.hhplus.be.server.interfaces.item.ItemRequest.*;
 import static kr.hhplus.be.server.interfaces.item.ItemResponse.*;
 
 @RestController
@@ -38,6 +42,16 @@ public class ItemController implements ItemApiSpec {
         List<PopularItemDetailResponse> response = itemService.findPopularItems().stream()
                 .map(PopularItemDetailResponse::from)
                 .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{itemId}")
+    @Override
+    public ResponseEntity<ItemDetailResponse> updateItem(@PathVariable @Positive long itemId,
+                                                         @Valid @RequestBody ItemUpdateRequest request) {
+
+        ItemDetailResponse response = ItemDetailResponse.from(itemService.updateItem(itemId, request.toCommand()));
 
         return ResponseEntity.ok(response);
     }
