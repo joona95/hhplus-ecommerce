@@ -2,6 +2,7 @@ package kr.hhplus.be.server.interfaces.item;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import kr.hhplus.be.server.application.item.ItemFacadeService;
 import kr.hhplus.be.server.domain.item.ItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +22,11 @@ import static kr.hhplus.be.server.interfaces.item.ItemResponse.*;
 public class ItemController implements ItemApiSpec {
 
     private final ItemService itemService;
+    private final ItemFacadeService itemFacadeService;
 
-    public ItemController(ItemService itemService) {
+    public ItemController(ItemService itemService, ItemFacadeService itemFacadeService) {
         this.itemService = itemService;
+        this.itemFacadeService = itemFacadeService;
     }
 
     @GetMapping("/{itemId}")
@@ -39,7 +42,7 @@ public class ItemController implements ItemApiSpec {
     @Override
     public ResponseEntity<List<PopularItemDetailResponse>> getPopularItems() {
 
-        List<PopularItemDetailResponse> response = itemService.findPopularItems().stream()
+        List<PopularItemDetailResponse> response = itemFacadeService.findPopularItemDetails().stream()
                 .map(PopularItemDetailResponse::from)
                 .toList();
 

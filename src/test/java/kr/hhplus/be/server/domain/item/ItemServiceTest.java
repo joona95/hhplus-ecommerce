@@ -56,60 +56,6 @@ class ItemServiceTest {
     }
 
     @Nested
-    class 인기_상품_목록_조회 {
-
-        @Test
-        void 인기_상품_목록_조회_값이_없을_경우_빈_리스트_반환() {
-
-            //given
-            when(itemRepository.findPopularItems())
-                    .thenReturn(null);
-
-            //when
-            List<PopularItemDetail> result = itemService.findPopularItems();
-
-            //then
-            assertThat(result).isEqualTo(List.of());
-        }
-
-        @Test
-        void 인기_상품_목록_조회_레포지토리_1회_호출() {
-
-            //given
-            when(itemRepository.findPopularItems())
-                    .thenReturn(List.of());
-
-            //when
-            itemService.findPopularItems();
-
-            //then
-            verify(itemRepository, times(1)).findPopularItems();
-        }
-
-        @Test
-        void 상품_조회_레포지토리_인기_상품_목록_수_만큼_호출() {
-
-            //given
-            when(itemRepository.findPopularItems())
-                    .thenReturn(List.of(
-                            ItemFixtures.상품식별자로_인기_상품_생성(1L),
-                            ItemFixtures.상품식별자로_인기_상품_생성(2L)
-                    ));
-            when(itemRepository.findById(1L))
-                    .thenReturn(Optional.of(ItemFixtures.식별자로_상품_생성(1L)));
-            when(itemRepository.findById(2L))
-                    .thenReturn(Optional.of(ItemFixtures.식별자로_상품_생성(2L)));
-
-            //when
-            itemService.findPopularItems();
-
-            //then
-            verify(itemRepository, times(1)).findById(1L);
-            verify(itemRepository, times(1)).findById(2L);
-        }
-    }
-
-    @Nested
     class 재고_차감 {
 
         @Test

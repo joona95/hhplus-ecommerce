@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.item;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
+import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,9 +30,13 @@ public class ItemCacheTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
+    @Autowired
+    private RedisCleanup redisCleanup;
+
     @BeforeEach
     void setUp() {
         databaseCleanup.truncateAllTables();
+        redisCleanup.flushAll();
     }
 
     @Test
