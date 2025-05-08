@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.item;
 
 import kr.hhplus.be.server.domain.order.OrderItemStatistics;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ public class ItemService {
         return itemRepository.savePopularItems(popularItemStatistics);
     }
 
+    @CacheEvict(value = "cache:item", key = "#itemId")
     @Transactional
     public Item updateItem(Long itemId, ItemUpdateCommand command) {
 
