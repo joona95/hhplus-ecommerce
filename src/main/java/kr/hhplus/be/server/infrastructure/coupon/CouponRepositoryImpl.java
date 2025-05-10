@@ -44,4 +44,9 @@ public class CouponRepositoryImpl implements CouponRepository {
     public CouponIssue saveCouponIssue(CouponIssue couponIssue) {
         return couponIssueJpaRepository.save(couponIssue);
     }
+
+    @Override
+    public Optional<Coupon> findCouponById(long couponId) {
+        return couponJpaRepository.findById(couponId);
+    }
 }
