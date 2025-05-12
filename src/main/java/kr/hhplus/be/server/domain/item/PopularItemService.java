@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.item;
 
 import kr.hhplus.be.server.domain.order.OrderItemStatistics;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,11 @@ public class PopularItemService {
 
     @Cacheable(value = "cache:popular-items", key = "'cache:popular-items'")
     public List<PopularItem> findPopularItems() {
+        return Optional.ofNullable(popularItemRepository.findPopularItems()).orElse(List.of());
+    }
+
+    @CachePut(value = "cache:popular-items", key = "'cache:popular-items'")
+    public List<PopularItem> warmupPopularItems() {
         return Optional.ofNullable(popularItemRepository.findPopularItems()).orElse(List.of());
     }
 

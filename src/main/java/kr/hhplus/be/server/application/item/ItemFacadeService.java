@@ -33,6 +33,8 @@ public class ItemFacadeService {
         OrderItemStatistics orderItemStatistics = orderService.findYesterdayOrderItemStatistics();
 
         popularItemService.createPopularItems(orderItemStatistics);
+
+        popularItemService.warmupPopularItems();
     }
 
     public List<PopularItemDetail> findPopularItemDetails() {
