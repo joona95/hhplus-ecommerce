@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ItemFacadeService {
@@ -26,9 +25,8 @@ public class ItemFacadeService {
         this.orderService = orderService;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
-    public void createOrderItemStatistics() {
+    public void createPopularItemStatistics() {
 
         OrderItemStatistics orderItemStatistics = orderService.findYesterdayOrderItemStatistics();
 
