@@ -109,4 +109,49 @@ public interface ItemApiSpec {
             }))
     })
     ResponseEntity<List<ItemResponse.PopularItemDetailResponse>> getPopularItems();
+
+    @Operation(
+            summary = "상품 수정",
+            description = "상품 정보를 수정합니다. 전달된 값만 변경 (Patch‑like) 하며, 응답은 변경된 상세 정보를 돌려줍니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(name = "수정 성공", value = """
+                    {
+                      "itemId": 1,
+                      "itemName": "수정된 상품명",
+                      "price": 1200,
+                      "stock": 95
+                    }
+                    """))),
+            @ApiResponse(responseCode = "400", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(name = "유효하지 않은 요청값으로 실패", value = """
+                    {
+                      "code": "400",
+                      "message": "유효하지 않은 요청값입니다."
+                    }
+                    """))),
+            @ApiResponse(responseCode = "404", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(name = "상품을 찾을 수 없어 실패", value = """
+                    {
+                      "code": "404",
+                      "message": "해당 상품 정보를 찾을 수 없습니다."
+                    }
+                    """))),
+            @ApiResponse(responseCode = "500", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(name = "서버 오류로 실패", value = """
+                    {
+                      "code": "500",
+                      "message": "서버 오류가 발생하였습니다."
+                    }
+                    """)))
+    })
+    ResponseEntity<ItemResponse.ItemDetailResponse> updateItem(
+            @PathVariable @Positive long itemId,
+            @Valid @RequestBody ItemRequest.ItemUpdateRequest request
+    );
 }

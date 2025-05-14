@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.interfaces.item;
 
 import kr.hhplus.be.server.domain.item.Item;
+import kr.hhplus.be.server.domain.item.PopularItemStatistics;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
 import kr.hhplus.be.server.infrastructure.item.PopularItemJpaRepository;
@@ -79,10 +80,20 @@ class ItemControllerIntegrationTest {
     void 인기_상품_목록을_조회() {
 
         // given
-        popularItemJpaRepository.saveAll(List.of(
-                ItemFixtures.주문날짜로_인기_상품_생성(LocalDate.now().minusDays(1)),
-                ItemFixtures.주문날짜로_인기_상품_생성(LocalDate.now().minusDays(3))
+        List<Item> items = itemJpaRepository.saveAll(List.of(
+                ItemFixtures.정상_상품_생성(),
+                ItemFixtures.정상_상품_생성(),
+                ItemFixtures.정상_상품_생성(),
+                ItemFixtures.정상_상품_생성(),
+                ItemFixtures.정상_상품_생성()
         ));
+
+        for (int i = 0; i < items.size(); i++) {
+            popularItemJpaRepository.saveAll(List.of(
+                    ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100),
+                    ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100)
+            ));
+        }
 
         // when
         ResponseEntity<PopularItemDetailResponse[]> response = restTemplate.getForEntity(
@@ -94,6 +105,11 @@ class ItemControllerIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).isNotEmpty();
-        assertThat(response.getBody()).hasSize(2);
+        assertThat(response.getBody()).hasSize(5);
+        assertThat(response.getBody()[0].itemId()).isEqualTo(items.get(0).getId());
+        assertThat(response.getBody()[1].itemId()).isEqualTo(items.get(1).getId());
+        assertThat(response.getBody()[2].itemId()).isEqualTo(items.get(2).getId());
+        assertThat(response.getBody()[3].itemId()).isEqualTo(items.get(3).getId());
+        assertThat(response.getBody()[4].itemId()).isEqualTo(items.get(4).getId());
     }
 }

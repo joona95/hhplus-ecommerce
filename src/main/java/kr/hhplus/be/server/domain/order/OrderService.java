@@ -30,7 +30,7 @@ public class OrderService {
         return OrderInfo.of(order, orderItems);
     }
 
-    public List<OrderItem> findTodayOrderItems() {
-        return orderRepository.findTodayOrderItems();
+    public OrderItemStatistics findYesterdayOrderItemStatistics() {
+        return new OrderItemStatistics(orderRepository.findYesterdayOrderItems());
     }
 }

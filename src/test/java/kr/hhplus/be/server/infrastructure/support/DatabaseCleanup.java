@@ -20,7 +20,7 @@ public class DatabaseCleanup {
         entityManager.createNativeQuery("TRUNCATE TABLE coupon").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE coupon_issue").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE item").executeUpdate();
-        entityManager.createNativeQuery("TRUNCATE TABLE popular_item").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE popular_item_statistics").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE orders").executeUpdate();
         entityManager.createNativeQuery("TRUNCATE TABLE order_item").executeUpdate();
     }

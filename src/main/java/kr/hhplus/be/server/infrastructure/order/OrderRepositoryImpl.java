@@ -31,7 +31,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<OrderItem> findTodayOrderItems() {
-        return orderQuerydslRepository.findTodayOrderItems();
+    public List<OrderItem> findYesterdayOrderItems() {
+        return orderQuerydslRepository.findYesterdayOrderItems();
     }
 }

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import kr.hhplus.be.server.common.lock.DistributedLock;
+import kr.hhplus.be.server.common.lock.LockType;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class CouponService {
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰을 보유하고 있지 않습니다."));
     }
 
-    @DistributedLock(prefix = "couponId:", key = "#command.couponId")
+    @DistributedLock(lockType = LockType.COUPON, key = "#command.couponId")
     public CouponIssue issueCoupon(User user, CouponIssueCommand command) {
 
         if (couponRepository.existsCouponIssueByUserAndCouponId(user, command.couponId())) {

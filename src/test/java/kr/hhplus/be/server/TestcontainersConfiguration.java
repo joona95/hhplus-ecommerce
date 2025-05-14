@@ -2,8 +2,6 @@ package kr.hhplus.be.server;
 
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
