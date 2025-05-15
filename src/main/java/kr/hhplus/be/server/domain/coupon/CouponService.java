@@ -40,7 +40,7 @@ public class CouponService {
 
         coupon.issue();
 
-        CouponIssue couponIssue = CouponIssue.of(user, coupon);
+        CouponIssue couponIssue = CouponIssue.of(user.getId(), coupon);
 
         return couponRepository.saveCouponIssue(couponIssue);
     }

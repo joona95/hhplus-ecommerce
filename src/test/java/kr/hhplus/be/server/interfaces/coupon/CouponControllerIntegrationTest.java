@@ -65,8 +65,8 @@ class CouponControllerIntegrationTest {
             Coupon coupon1 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
             Coupon coupon2 = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
             couponIssueJpaRepository.saveAll(List.of(
-                    CouponIssue.of(user, coupon1),
-                    CouponIssue.of(user, coupon2)
+                    CouponIssue.of(user.getId(), coupon1),
+                    CouponIssue.of(user.getId(), coupon2)
             ));
 
             HttpHeaders headers = new HttpHeaders();

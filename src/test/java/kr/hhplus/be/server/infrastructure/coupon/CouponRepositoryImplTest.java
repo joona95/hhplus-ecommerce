@@ -64,7 +64,7 @@ class CouponRepositoryImplTest {
 
         // given
         User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
-        CouponIssue couponIssue = couponIssueJpaRepository.save(CouponFixtures.유저로_쿠폰_발급_내역_생성(user));
+        CouponIssue couponIssue = couponIssueJpaRepository.save(CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(user.getId()));
 
         // when
         Optional<CouponIssue> result = couponRepository.findCouponIssueByUserAndCouponId(user, couponIssue.getCouponId());
@@ -79,7 +79,7 @@ class CouponRepositoryImplTest {
 
         // given
         User user = UserFixtures.식별자로_유저_생성(1L);
-        List<CouponIssue> issues = List.of(CouponFixtures.유저로_쿠폰_발급_내역_생성(user));
+        List<CouponIssue> issues = List.of(CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(user.getId()));
         couponIssueJpaRepository.saveAll(issues);
 
         // when
@@ -93,12 +93,12 @@ class CouponRepositoryImplTest {
     void 유저의_쿠폰_발급_내역_존재여부_확인() {
 
         // given
-        CouponIssue couponIssue = CouponFixtures.정상_쿠폰_발급_내역_생성();
+        User user = UserFixtures.식별자로_유저_생성(1L);
+        CouponIssue couponIssue = CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(user.getId());
         couponIssueJpaRepository.save(couponIssue);
 
         // when
-        boolean result = couponRepository.existsCouponIssueByUserAndCouponId(
-                couponIssue.getUser(), couponIssue.getCouponId());
+        boolean result = couponRepository.existsCouponIssueByUserAndCouponId(user, couponIssue.getCouponId());
 
         // then
         assertThat(result).isTrue();

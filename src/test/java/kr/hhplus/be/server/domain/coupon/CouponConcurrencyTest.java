@@ -129,7 +129,7 @@ public class CouponConcurrencyTest {
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getCouponId()).isEqualTo(coupon.getId());
-        assertThat(result.get(0).getUser().getId()).isEqualTo(user.getId());
+        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
 
         System.out.println("실패 횟수 : " + failureCount.get());
     }

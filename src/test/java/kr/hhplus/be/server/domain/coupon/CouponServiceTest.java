@@ -37,8 +37,8 @@ class CouponServiceTest {
 
             when(couponRepository.findCouponIssueByUser(user))
                     .thenReturn(List.of(
-                            CouponFixtures.유저로_쿠폰_발급_내역_생성(user),
-                            CouponFixtures.유저로_쿠폰_발급_내역_생성(user)
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(user.getId()),
+                            CouponFixtures.유저식별자로_쿠폰_발급_내역_생성(user.getId())
                     ));
 
             //when
@@ -138,8 +138,8 @@ class CouponServiceTest {
                     .thenReturn(false);
             when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
-            when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
-                    .thenReturn(CouponIssue.of(user, coupon));
+            when(couponRepository.saveCouponIssue(CouponIssue.of(user.getId(), coupon)))
+                    .thenReturn(CouponIssue.of(user.getId(), coupon));
 
             CouponIssueCommand command = CouponIssueCommand.of(1L);
 
@@ -161,8 +161,8 @@ class CouponServiceTest {
                     .thenReturn(false);
             when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
-            when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
-                    .thenReturn(CouponIssue.of(user, coupon));
+            when(couponRepository.saveCouponIssue(CouponIssue.of(user.getId(), coupon)))
+                    .thenReturn(CouponIssue.of(user.getId(), coupon));
 
             CouponIssueCommand command = CouponIssueCommand.of(1L);
 
@@ -184,8 +184,8 @@ class CouponServiceTest {
                     .thenReturn(false);
             when(couponRepository.findCouponById(1L))
                     .thenReturn(Optional.of(coupon));
-            when(couponRepository.saveCouponIssue(CouponIssue.of(user, coupon)))
-                    .thenReturn(CouponIssue.of(user, coupon));
+            when(couponRepository.saveCouponIssue(CouponIssue.of(user.getId(), coupon)))
+                    .thenReturn(CouponIssue.of(user.getId(), coupon));
 
             CouponIssueCommand command = CouponIssueCommand.of(1L);
 
@@ -193,7 +193,7 @@ class CouponServiceTest {
             couponService.issueCoupon(user, command);
 
             //then
-            verify(couponRepository, times(1)).saveCouponIssue(CouponIssue.of(user, coupon));
+            verify(couponRepository, times(1)).saveCouponIssue(CouponIssue.of(user.getId(), coupon));
         }
 
         @Test
@@ -212,7 +212,7 @@ class CouponServiceTest {
             assertThatThrownBy(() -> couponService.issueCoupon(user, command))
                     .isInstanceOf(RuntimeException.class);
 
-            verify(couponRepository, times(0)).saveCouponIssue(CouponIssue.of(user, coupon));
+            verify(couponRepository, times(0)).saveCouponIssue(CouponIssue.of(user.getId(), coupon));
         }
     }
 }

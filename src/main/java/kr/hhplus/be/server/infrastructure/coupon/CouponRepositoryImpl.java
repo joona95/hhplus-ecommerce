@@ -22,17 +22,17 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     @Override
     public List<CouponIssue> findCouponIssueByUser(User user) {
-        return couponIssueJpaRepository.findByUser(user);
+        return couponIssueJpaRepository.findByUserId(user.getId());
     }
 
     @Override
     public Optional<CouponIssue> findCouponIssueByUserAndCouponId(User user, long couponId) {
-        return couponIssueJpaRepository.findByUserAndCouponId(user, couponId);
+        return couponIssueJpaRepository.findByUserIdAndCouponId(user.getId(), couponId);
     }
 
     @Override
     public boolean existsCouponIssueByUserAndCouponId(User user, long couponId) {
-        return couponIssueJpaRepository.existsByUserAndCouponId(user, couponId);
+        return couponIssueJpaRepository.existsByUserIdAndCouponId(user.getId(), couponId);
     }
 
     @Override
