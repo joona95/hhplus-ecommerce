@@ -24,6 +24,13 @@ public class PopularItemRepositoryImpl implements PopularItemRepository {
     }
 
     @Override
+    public void savePopularItemScore(PopularItem popularItem) {
+        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(POPULAR_ITEMS_KEY_PREFIX + LocalDate.now());
+        zset.addScore(popularItem.getItemId(), popularItem.getOrderCount());
+        zset.expire(Duration.ofDays(2));
+    }
+
+    @Override
     public List<PopularItem> findPopularItems() {
         return popularItemQuerydslRepository.findPopularItems();
     }

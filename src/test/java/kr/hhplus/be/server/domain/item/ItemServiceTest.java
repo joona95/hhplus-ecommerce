@@ -22,6 +22,8 @@ class ItemServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+    @Mock
+    private ApplicationEventPublisher publisher;
     @InjectMocks
     private ItemService itemService;
 

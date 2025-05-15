@@ -37,4 +37,8 @@ public class PopularItemService {
 
         return popularItemRepository.savePopularItems(popularItemStatistics);
     }
+
+    public void savePopularItemScore(Long itemId, int count) {
+        popularItemRepository.savePopularItemScore(new PopularItem(itemId, count));
+    }
 }

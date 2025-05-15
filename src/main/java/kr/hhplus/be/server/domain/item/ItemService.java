@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.item;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,11 @@ import static kr.hhplus.be.server.domain.item.ItemCommand.*;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final ApplicationEventPublisher publisher;
 
-    public ItemService(ItemRepository itemRepository) {
+    public ItemService(ItemRepository itemRepository, ApplicationEventPublisher publisher) {
         this.itemRepository = itemRepository;
+        this.publisher = publisher;
     }
 
     @Cacheable(value = "cache:item", key = "#id")
@@ -26,6 +29,8 @@ public class ItemService {
 
         Item item = itemRepository.findByIdWithLock(command.itemId());
         item.decreaseStock(command.count());
+
+        publisher.publishEvent(new ItemEvent.StockDecreasedEvent(command.itemId(), command.count()));
 
         return item;
     }

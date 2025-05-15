@@ -11,4 +11,5 @@ public interface PopularItemRepository {
 
     List<PopularItemStatistics> savePopularItems(List<PopularItemStatistics> popularItemStatistics);
 
+    void savePopularItemScore(PopularItem popularItem);
 }
