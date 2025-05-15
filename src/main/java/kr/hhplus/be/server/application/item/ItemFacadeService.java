@@ -17,20 +17,16 @@ public class ItemFacadeService {
 
     private final ItemService itemService;
     private final PopularItemService popularItemService;
-    private final OrderService orderService;
 
-    public ItemFacadeService(ItemService itemService, PopularItemService popularItemService, OrderService orderService) {
+    public ItemFacadeService(ItemService itemService, PopularItemService popularItemService) {
         this.itemService = itemService;
         this.popularItemService = popularItemService;
-        this.orderService = orderService;
     }
 
     @Transactional
     public void createPopularItemStatistics() {
 
-        OrderItemStatistics orderItemStatistics = orderService.findYesterdayOrderItemStatistics();
-
-        popularItemService.createPopularItems(orderItemStatistics);
+        popularItemService.createPopularItems();
 
         popularItemService.warmupPopularItems();
     }
