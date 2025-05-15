@@ -12,8 +12,10 @@ import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.LongCodec;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class CouponRepositoryImpl implements CouponRepository {
@@ -43,8 +45,8 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
-    public boolean existsCouponIssueByUserAndCouponId(User user, long couponId) {
-        return couponIssueJpaRepository.existsByUserIdAndCouponId(user.getId(), couponId);
+    public boolean existsCouponIssueByUserIdAndCouponId(long userId, long couponId) {
+        return couponIssueJpaRepository.existsByUserIdAndCouponId(userId, couponId);
     }
 
     @Override
@@ -64,9 +66,7 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     @Override
     public long getCouponStock(long couponId) {
-
         RAtomicLong rAtomicLong = redissonClient.getAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId);
-
         return rAtomicLong.get();
     }
 
@@ -85,5 +85,28 @@ public class CouponRepositoryImpl implements CouponRepository {
     public void savePendingIssueCoupon(long couponId) {
         RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUE_PENDING_KEY, LongCodec.INSTANCE);
         rSet.add(couponId);
+    }
+
+    @Override
+    public Set<Long> getPendingIssueCouponIds() {
+        RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUE_PENDING_KEY, LongCodec.INSTANCE);
+        return rSet.readAll();
+    }
+
+    @Override
+    public List<Coupon> findCouponsByIdIn(Collection<Long> couponIds) {
+        return couponJpaRepository.findAllById(couponIds);
+    }
+
+    @Override
+    public List<Long> popCouponIssueUserIds(Coupon coupon, int size) {
+        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(COUPON_ISSUE_TOKEN_KEY_PREFIX + coupon.getId());
+        return zset.pollFirst(size).stream().toList();
+    }
+
+    @Override
+    public void saveCouponStock(long couponId, int count) {
+        RAtomicLong rAtomicLong = redissonClient.getAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId);
+        rAtomicLong.set(count);
     }
 }

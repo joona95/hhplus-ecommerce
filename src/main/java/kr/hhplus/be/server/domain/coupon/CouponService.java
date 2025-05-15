@@ -1,13 +1,12 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.common.lock.DistributedLock;
-import kr.hhplus.be.server.common.lock.LockType;
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
-import static kr.hhplus.be.server.domain.coupon.CouponCommand.*;
 import static kr.hhplus.be.server.domain.coupon.CouponCriteria.*;
 
 @Service
@@ -28,21 +27,17 @@ public class CouponService {
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰을 보유하고 있지 않습니다."));
     }
 
-    @DistributedLock(lockType = LockType.COUPON, key = "#command.couponId")
-    public CouponIssue issueCoupon(User user, CouponIssueCommand command) {
+    @Transactional
+    public void issueCoupon(long userId, Coupon coupon) {
 
-        if (couponRepository.existsCouponIssueByUserAndCouponId(user, command.couponId())) {
+        if (couponRepository.existsCouponIssueByUserIdAndCouponId(userId, coupon.getId())) {
             throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
         }
 
-        Coupon coupon = couponRepository.findCouponById(command.couponId())
-                .orElseThrow(() -> new RuntimeException("쿠폰이 존재하지 않습니다."));
-
         coupon.issue();
 
-        CouponIssue couponIssue = CouponIssue.of(user.getId(), coupon);
-
-        return couponRepository.saveCouponIssue(couponIssue);
+        couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
+        couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
     }
 
     public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
@@ -56,5 +51,16 @@ public class CouponService {
             couponRepository.saveIssueToken(couponIssueToken);
             couponRepository.savePendingIssueCoupon(command.couponId());
         }
+    }
+
+    public List<Coupon> getPendingCoupons() {
+
+        Set<Long> pendingCouponIds = couponRepository.getPendingIssueCouponIds();
+
+        return couponRepository.findCouponsByIdIn(pendingCouponIds);
+    }
+
+    public List<Long> popCouponIssueUserIds(Coupon coupon) {
+        return couponRepository.popCouponIssueUserIds(coupon, 500);
     }
 }

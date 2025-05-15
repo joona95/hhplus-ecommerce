@@ -101,7 +101,7 @@ public class CouponIssue {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CouponIssue that = (CouponIssue) o;
-        return couponId == that.couponId && discountValue == that.discountValue && isUsed == that.isUsed && Objects.equals(id, that.id) && Objects.equals(couponName, that.couponName) && discountType == that.discountType && userId == that.userId && Objects.equals(expiredAt, that.expiredAt);
+        return couponId == that.couponId && discountValue == that.discountValue && userId == that.userId && isUsed == that.isUsed && Objects.equals(id, that.id) && Objects.equals(couponName, that.couponName) && discountType == that.discountType && Objects.equals(expiredAt, that.expiredAt);
     }
 
     @Override
