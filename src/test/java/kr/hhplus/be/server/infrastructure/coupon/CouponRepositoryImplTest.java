@@ -98,7 +98,7 @@ class CouponRepositoryImplTest {
         couponIssueJpaRepository.save(couponIssue);
 
         // when
-        boolean result = couponRepository.existsCouponIssueByUserAndCouponId(user, couponIssue.getCouponId());
+        boolean result = couponRepository.existsCouponIssueByUserIdAndCouponId(user.getId(), couponIssue.getCouponId());
 
         // then
         assertThat(result).isTrue();

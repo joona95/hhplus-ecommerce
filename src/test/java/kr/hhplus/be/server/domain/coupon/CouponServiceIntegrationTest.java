@@ -7,7 +7,6 @@ import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
-import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,9 +44,6 @@ public class CouponServiceIntegrationTest {
     private RedissonClient redissonClient;
 
     @Autowired
-    private UserJpaRepository userJpaRepository;
-
-    @Autowired
     private DatabaseCleanup databaseCleanup;
 
     @Autowired
@@ -69,14 +65,13 @@ public class CouponServiceIntegrationTest {
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
 
-            CouponIssueCommand command = new CouponIssueCommand(coupon.getId());
-
             // when
-            CouponIssue couponIssue = couponService.issueCoupon(user, command);
+            couponService.issueCoupon(user.getId(), coupon);
 
             // then
-            assertThat(couponIssue).isNotNull();
-            assertThat(couponIssue.getCouponId()).isEqualTo(coupon.getId());
+            assertThat(couponIssueJpaRepository.findAll()).hasSize(1);
+            assertThat(couponIssueJpaRepository.findAll().get(0).getUserId()).isEqualTo(user.getId());
+            assertThat(couponIssueJpaRepository.findAll().get(0).getCouponId()).isEqualTo(coupon.getId());
         }
     }
 

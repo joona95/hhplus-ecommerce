@@ -47,48 +47,48 @@ public class CouponConcurrencyTest {
         databaseCleanup.truncateAllTables();
     }
 
-    @Test
-    void 특정_쿠폰_발급_요청이_동시에_들어오는_경우_쿠폰_발급_개수가_요청_수_만큼_차감() throws InterruptedException {
+/* 쿠폰 발급 분산락 제거 */
 
-        //given
-        Coupon coupon = couponJpaRepository.save(CouponFixtures.발급수량으로_쿠폰_생성(20));
-
-        int threadCount = 20;
-        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
-
-        CouponCommand.CouponIssueCommand command = CouponCommand.CouponIssueCommand.of(coupon.getId());
-
-        AtomicInteger failureCount = new AtomicInteger();
-
-        //when
-        long startTime = System.currentTimeMillis();
-        for (int i = 0; i < threadCount; i++) {
-            executorService.execute(() -> {
-                User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
-
-                try {
-                    couponService.issueCoupon(user, command);
-                } catch (ObjectOptimisticLockingFailureException e) {
-                    failureCount.incrementAndGet();
-                }
-                countDownLatch.countDown();
-            });
-        }
-
-        countDownLatch.await();
-        long endTime = System.currentTimeMillis();
-
-        //then
-        System.out.println("실행 시간 == " + (endTime - startTime) + "ms");
-
-        Optional<Coupon> result = couponJpaRepository.findById(coupon.getId());
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getCount()).isEqualTo(failureCount.get());
-
-        System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result.get().getCount());
-    }
+//    @Test
+//    void 특정_쿠폰_발급_요청이_동시에_들어오는_경우_쿠폰_발급_개수가_요청_수_만큼_차감() throws InterruptedException {
+//
+//        //given
+//        Coupon coupon = couponJpaRepository.save(CouponFixtures.발급수량으로_쿠폰_생성(20));
+//
+//        int threadCount = 20;
+//        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+//        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+//
+//        AtomicInteger failureCount = new AtomicInteger();
+//
+//        //when
+//        long startTime = System.currentTimeMillis();
+//        for (int i = 0; i < threadCount; i++) {
+//            executorService.execute(() -> {
+//                User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+//
+//                try {
+//                    couponService.issueCoupon(user.getId(), coupon);
+//                } catch (ObjectOptimisticLockingFailureException e) {
+//                    failureCount.incrementAndGet();
+//                }
+//                countDownLatch.countDown();
+//            });
+//        }
+//
+//        countDownLatch.await();
+//        long endTime = System.currentTimeMillis();
+//
+//        //then
+//        System.out.println("실행 시간 == " + (endTime - startTime) + "ms");
+//
+//        Optional<Coupon> result = couponJpaRepository.findById(coupon.getId());
+//
+//        assertThat(result).isPresent();
+//        assertThat(result.get().getCount()).isEqualTo(failureCount.get());
+//
+//        System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result.get().getCount());
+//    }
 
     @Test
     void 특정_유저의_같은_쿠폰_발급_요청이_동시에_들어오는_경우_중복_발급_발생() throws InterruptedException {
@@ -101,8 +101,6 @@ public class CouponConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
-        CouponCommand.CouponIssueCommand command = CouponCommand.CouponIssueCommand.of(coupon.getId());
-
         AtomicInteger failureCount = new AtomicInteger();
 
         //when
@@ -110,7 +108,7 @@ public class CouponConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
                 try {
-                    couponService.issueCoupon(user, command);
+                    couponService.issueCoupon(user.getId(), coupon);
                 } catch (Exception e) {
                     failureCount.incrementAndGet();
                 }
