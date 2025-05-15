@@ -20,4 +20,12 @@ public interface CouponRepository {
     CouponIssue saveCouponIssue(CouponIssue couponIssue);
 
     Optional<Coupon> findCouponById(long couponId);
+
+    long getCouponStock(long couponId);
+
+    long countCouponIssueToken(long couponId);
+
+    void saveIssueToken(CouponIssueToken couponIssueToken);
+
+    void savePendingIssueCoupon(long couponId);
 }

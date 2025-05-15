@@ -44,4 +44,17 @@ public class CouponService {
 
         return couponRepository.saveCouponIssue(couponIssue);
     }
+
+    public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
+
+        long couponStock = couponRepository.getCouponStock(command.couponId());
+        long issueTokenCount = couponRepository.countCouponIssueToken(command.couponId());
+
+        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
+
+        if (couponStock > issueTokenCount) {
+            couponRepository.saveIssueToken(couponIssueToken);
+            couponRepository.savePendingIssueCoupon(command.couponId());
+        }
+    }
 }

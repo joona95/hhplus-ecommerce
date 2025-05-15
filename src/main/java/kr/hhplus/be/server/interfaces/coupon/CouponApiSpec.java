@@ -138,7 +138,7 @@ public interface CouponApiSpec {
                             """)
             }))
     })
-    ResponseEntity<UserCouponResponse> issueCoupon(@AuthUser User user, @RequestBody @Valid CouponIssueRequest request);
+    ResponseEntity<Void> issueCoupon(@AuthUser User user, @RequestBody @Valid CouponIssueRequest request);
 
 
 }
