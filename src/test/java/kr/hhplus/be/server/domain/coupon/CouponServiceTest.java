@@ -6,9 +6,12 @@ import kr.hhplus.be.server.fixtures.UserFixtures;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.redisson.api.RAtomicLong;
 
 import java.util.List;
 import java.util.Optional;
@@ -213,6 +216,31 @@ class CouponServiceTest {
                     .isInstanceOf(RuntimeException.class);
 
             verify(couponRepository, times(0)).saveCouponIssue(CouponIssue.of(user.getId(), coupon));
+        }
+    }
+
+    @Nested
+    class 쿠폰_발급_토큰_요청 {
+
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L, 4L})
+        void 쿠폰_발급_토큰_수량보다_발급량이_많거나_같은_경우_발급_요청되지_않음(long tokenCount) {
+
+            // given
+            User user = UserFixtures.식별자로_유저_생성(1L);
+            CouponIssueCommand command = CouponIssueCommand.of(1L);
+
+            when(couponRepository.getCouponStock(command.couponId()))
+                    .thenReturn(1L);
+            when(couponRepository.countCouponIssueToken(command.couponId()))
+                    .thenReturn(tokenCount);
+
+            // when
+            couponService.requestCouponIssue(user, command);
+
+            // then
+            verify(couponRepository, times(0)).saveIssueToken(CouponIssueToken.of(user, command.couponId()));
+            verify(couponRepository, times(0)).savePendingIssueCoupon(command.couponId());
         }
     }
 }

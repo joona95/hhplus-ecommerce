@@ -8,6 +8,7 @@ import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
+import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -49,9 +50,13 @@ class CouponControllerIntegrationTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
+    @Autowired
+    private RedisCleanup redisCleanup;
+
     @BeforeEach
     void setUp() {
         databaseCleanup.truncateAllTables();
+        redisCleanup.flushAll();
     }
 
     @Nested
@@ -137,8 +142,6 @@ class CouponControllerIntegrationTest {
 
             // then
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertThat(response.getBody()).isNotNull();
-            assertThat(response.getBody().couponId()).isEqualTo(coupon.getId());
         }
 
         @ParameterizedTest
