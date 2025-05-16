@@ -5,6 +5,7 @@ import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
+import kr.hhplus.be.server.infrastructure.store.RedisStoreRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 public class CouponConcurrencyTest {
 
+    private static final String COUPON_STOCK_KEY_PREFIX = "coupon-stock:";
+
     @Autowired
     private CouponService couponService;
 
@@ -38,6 +41,9 @@ public class CouponConcurrencyTest {
 
     @Autowired
     private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    private RedisStoreRepository redisStoreRepository;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -52,12 +58,11 @@ public class CouponConcurrencyTest {
 
         //given
         Coupon coupon = couponJpaRepository.save(CouponFixtures.발급수량으로_쿠폰_생성(20));
+        redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + coupon.getId(), 20);
 
         int threadCount = 20;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
-
-        CouponCommand.CouponIssueCommand command = CouponCommand.CouponIssueCommand.of(coupon.getId());
 
         AtomicInteger failureCount = new AtomicInteger();
 
@@ -68,7 +73,7 @@ public class CouponConcurrencyTest {
                 User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
 
                 try {
-                    couponService.issueCoupon(user, command);
+                    couponService.issueCoupon(user.getId(), coupon);
                 } catch (ObjectOptimisticLockingFailureException e) {
                     failureCount.incrementAndGet();
                 }
@@ -82,12 +87,11 @@ public class CouponConcurrencyTest {
         //then
         System.out.println("실행 시간 == " + (endTime - startTime) + "ms");
 
-        Optional<Coupon> result = couponJpaRepository.findById(coupon.getId());
+        long result = redisStoreRepository.getAtomicLong(COUPON_STOCK_KEY_PREFIX + coupon.getId());
 
-        assertThat(result).isPresent();
-        assertThat(result.get().getCount()).isEqualTo(failureCount.get());
+        assertThat(result).isEqualTo(failureCount.get());
 
-        System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result.get().getCount());
+        System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result);
     }
 
     @Test
@@ -101,8 +105,6 @@ public class CouponConcurrencyTest {
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
-        CouponCommand.CouponIssueCommand command = CouponCommand.CouponIssueCommand.of(coupon.getId());
-
         AtomicInteger failureCount = new AtomicInteger();
 
         //when
@@ -110,7 +112,7 @@ public class CouponConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
                 try {
-                    couponService.issueCoupon(user, command);
+                    couponService.issueCoupon(user.getId(), coupon);
                 } catch (Exception e) {
                     failureCount.incrementAndGet();
                 }
@@ -129,7 +131,7 @@ public class CouponConcurrencyTest {
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getCouponId()).isEqualTo(coupon.getId());
-        assertThat(result.get(0).getUser().getId()).isEqualTo(user.getId());
+        assertThat(result.get(0).getUserId()).isEqualTo(user.getId());
 
         System.out.println("실패 횟수 : " + failureCount.get());
     }

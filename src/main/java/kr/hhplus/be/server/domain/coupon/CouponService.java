@@ -1,17 +1,18 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.common.lock.DistributedLock;
-import kr.hhplus.be.server.common.lock.LockType;
+import jakarta.transaction.Transactional;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
-import static kr.hhplus.be.server.domain.coupon.CouponCommand.*;
 import static kr.hhplus.be.server.domain.coupon.CouponCriteria.*;
 
 @Service
 public class CouponService {
+
+    private static final int BATCH_SIZE = 500;
 
     private final CouponRepository couponRepository;
 
@@ -28,20 +29,48 @@ public class CouponService {
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰을 보유하고 있지 않습니다."));
     }
 
-    @DistributedLock(lockType = LockType.COUPON, key = "#command.couponId")
-    public CouponIssue issueCoupon(User user, CouponIssueCommand command) {
+    @Transactional
+    public void issueCoupon(long userId, Coupon coupon) {
 
-        if (couponRepository.existsCouponIssueByUserAndCouponId(user, command.couponId())) {
+        if (couponRepository.existsCouponIssueByUserIdAndCouponId(userId, coupon.getId())) {
             throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
         }
 
-        Coupon coupon = couponRepository.findCouponById(command.couponId())
-                .orElseThrow(() -> new RuntimeException("쿠폰이 존재하지 않습니다."));
-
         coupon.issue();
 
-        CouponIssue couponIssue = CouponIssue.of(user, coupon);
+        couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
+        couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
+    }
 
-        return couponRepository.saveCouponIssue(couponIssue);
+    public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
+
+        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
+        couponRepository.saveIssueToken(couponIssueToken);
+
+        long couponStock = couponRepository.getCouponStock(command.couponId());
+        long issueTokenCount = couponRepository.countCouponIssueToken(command.couponId());
+
+        if (couponStock < issueTokenCount) {
+            couponRepository.removeIssueToken(couponIssueToken);
+            throw new RuntimeException("쿠폰 발급 가능한 수량을 초과하였습니다.");
+        }
+        couponRepository.savePendingIssueCoupon(command.couponId());
+    }
+
+    public List<Coupon> popPendingCoupons() {
+
+        Set<Long> pendingCouponIds = couponRepository.popPendingIssueCouponIds();
+
+        return couponRepository.findCouponsByIdIn(pendingCouponIds);
+    }
+
+    public List<Long> popCouponIssueUserIds(Coupon coupon) {
+
+        long size = couponRepository.countCouponIssueToken(coupon.getId());
+        if (size > BATCH_SIZE) {
+            couponRepository.savePendingIssueCoupon(coupon.getId());
+        }
+
+        return couponRepository.popCouponIssueUserIds(coupon, BATCH_SIZE);
     }
 }

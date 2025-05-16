@@ -83,7 +83,7 @@ class OrderControllerIntegrationTest {
         Point point = pointJpaRepository.save(PointFixtures.유저와_금액으로_잔액_생성(user, 20000));
 
         Coupon coupon = couponJpaRepository.save(CouponFixtures.정액_할인_쿠폰_생성(1000));
-        couponIssueJpaRepository.save(CouponIssue.of(user, coupon));
+        couponIssueJpaRepository.save(CouponIssue.of(user.getId(), coupon));
 
         OrderCreateRequest request = new OrderCreateRequest(
                 coupon.getId(),

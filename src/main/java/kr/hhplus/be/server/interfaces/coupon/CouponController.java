@@ -38,10 +38,10 @@ public class CouponController implements CouponApiSpec {
 
     @PostMapping
     @Override
-    public ResponseEntity<UserCouponResponse> issueCoupon(User user, @RequestBody @Valid CouponIssueRequest request) {
+    public ResponseEntity<Void> issueCoupon(User user, @RequestBody @Valid CouponIssueRequest request) {
 
-        UserCouponResponse response = UserCouponResponse.from(couponService.issueCoupon(user, request.toCommand()));
+        couponService.requestCouponIssue(user, request.toCommand());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 }

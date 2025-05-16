@@ -42,9 +42,7 @@ public class CouponIssue {
 
     private int discountValue;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private User user;
+    private long userId;
 
     private LocalDateTime expiredAt;
 
@@ -53,11 +51,11 @@ public class CouponIssue {
     @CreatedDate
     private LocalDateTime issuedAt;
 
-    public static CouponIssue of(User user, Coupon coupon) {
-        return new CouponIssue(null, coupon.getId(), coupon.getCouponName(), coupon.getDiscountType(), coupon.getDiscountValue(), user, coupon.getValidFrom(), false, LocalDateTime.now());
+    public static CouponIssue of(long userId, Coupon coupon) {
+        return new CouponIssue(null, coupon.getId(), coupon.getCouponName(), coupon.getDiscountType(), coupon.getDiscountValue(), userId, coupon.getValidFrom(), false, LocalDateTime.now());
     }
 
-    public CouponIssue(Long id, long couponId, String couponName, DiscountType discountType, int discountValue, User user, LocalDateTime expiredAt, boolean isUsed, LocalDateTime issuedAt) {
+    public CouponIssue(Long id, long couponId, String couponName, DiscountType discountType, int discountValue, long userId, LocalDateTime expiredAt, boolean isUsed, LocalDateTime issuedAt) {
 
         if (couponId < 0) {
             throw new IllegalArgumentException("쿠폰식별자는 음수일 수 없습니다.");
@@ -71,8 +69,8 @@ public class CouponIssue {
         if (discountValue <= 0) {
             throw new IllegalArgumentException("할인율/금액은 양수여야 합니다.");
         }
-        if (user == null) {
-            throw new IllegalArgumentException("유저 정보가 필요합니다.");
+        if (userId < 0) {
+            throw new IllegalArgumentException("유저식별자는 음수일 수 없습니다.");
         }
         if (expiredAt == null) {
             throw new IllegalArgumentException("만료 일시 정보가 필요합니다.");
@@ -83,7 +81,7 @@ public class CouponIssue {
         this.couponName = couponName;
         this.discountType = discountType;
         this.discountValue = discountValue;
-        this.user = user;
+        this.userId = userId;
         this.expiredAt = expiredAt;
         this.isUsed = isUsed;
         this.issuedAt = issuedAt;
@@ -103,11 +101,11 @@ public class CouponIssue {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CouponIssue that = (CouponIssue) o;
-        return couponId == that.couponId && discountValue == that.discountValue && isUsed == that.isUsed && Objects.equals(id, that.id) && Objects.equals(couponName, that.couponName) && discountType == that.discountType && Objects.equals(user, that.user) && Objects.equals(expiredAt, that.expiredAt);
+        return couponId == that.couponId && discountValue == that.discountValue && userId == that.userId && isUsed == that.isUsed && Objects.equals(id, that.id) && Objects.equals(couponName, that.couponName) && discountType == that.discountType && Objects.equals(expiredAt, that.expiredAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, couponId, couponName, discountType, discountValue, user, expiredAt, isUsed);
+        return Objects.hash(id, couponId, couponName, discountType, discountValue, userId, expiredAt, isUsed);
     }
 }
