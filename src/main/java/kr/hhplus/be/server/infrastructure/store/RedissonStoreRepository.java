@@ -37,6 +37,12 @@ public class RedissonStoreRepository implements RedisStoreRepository {
     }
 
     @Override
+    public void removeInSortedSet(String key, long value) {
+        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(key);
+        zset.remove(value);
+    }
+
+    @Override
     public void addInSet(String key, long value) {
         RSet<Long> rSet = redissonClient.getSet(key, LongCodec.INSTANCE);
         rSet.add(value);

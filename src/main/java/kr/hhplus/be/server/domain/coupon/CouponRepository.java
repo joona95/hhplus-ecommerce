@@ -38,4 +38,6 @@ public interface CouponRepository {
     List<Long> popCouponIssueUserIds(Coupon coupon, int size);
 
     void saveCouponStock(long couponId, int count);
+
+    void removeIssueToken(CouponIssueToken couponIssueToken);
 }

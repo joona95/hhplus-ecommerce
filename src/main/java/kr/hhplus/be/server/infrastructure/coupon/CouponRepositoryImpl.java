@@ -102,4 +102,9 @@ public class CouponRepositoryImpl implements CouponRepository {
     public void saveCouponStock(long couponId, int count) {
         redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId, count);
     }
+
+    @Override
+    public void removeIssueToken(CouponIssueToken couponIssueToken) {
+        redisStoreRepository.removeInSortedSet(COUPON_ISSUE_TOKEN_KEY_PREFIX + couponIssueToken.couponId(), couponIssueToken.userId());
+    }
 }

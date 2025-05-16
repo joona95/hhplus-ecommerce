@@ -11,6 +11,8 @@ public interface RedisStoreRepository {
 
     List<Long> popSortedSetBatch(String key, int size);
 
+    void removeInSortedSet(String key, long value);
+
     void addInSet(String key, long value);
 
     Set<Long> popSetAll(String key);

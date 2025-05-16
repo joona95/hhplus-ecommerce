@@ -42,15 +42,17 @@ public class CouponService {
 
     public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
 
+        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
+        couponRepository.saveIssueToken(couponIssueToken);
+
         long couponStock = couponRepository.getCouponStock(command.couponId());
         long issueTokenCount = couponRepository.countCouponIssueToken(command.couponId());
 
-        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
-
-        if (couponStock > issueTokenCount) {
-            couponRepository.saveIssueToken(couponIssueToken);
-            couponRepository.savePendingIssueCoupon(command.couponId());
+        if (couponStock < issueTokenCount) {
+            couponRepository.removeIssueToken(couponIssueToken);
+            throw new RuntimeException("쿠폰 발급 가능한 수량을 초과하였습니다.");
         }
+        couponRepository.savePendingIssueCoupon(command.couponId());
     }
 
     public List<Coupon> getPendingCoupons() {
