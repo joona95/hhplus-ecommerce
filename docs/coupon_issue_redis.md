@@ -44,9 +44,19 @@
 - 발급 요청 저장 후, 특정 개수만큼 스케줄러로 발급 요청 정보를 꺼내서 DB에 넣어주는 방식으로 진행
 - `coupon-stock:{couponId}` 값에 발행된 개수만큼 차감 필요
 
+## Redis 자료 구조
+
+Key | 타입 | 설명                     | 기타
+-|-|------------------------|-
+coupon-stock:{couponId} | String | 특정 쿠폰의 쿠폰 발급 가능 수량 (재고) | 쿠폰 발급 시작 시점에 미리 기록 필요
+coupon-issue:{couponId} | Sorted Set | 특정 쿠폰의 선착순 발급 요청 유저 목록 | 유저식별자(userId)를 요청시점(timestamp) 기준으로 정렬하여 선착순 발급 가능
+coupon-issue-pending | Set | 발급 요청 대기 중인 쿠폰식별자 목록 | 스케줄러로 어떠한 쿠폰들에 쿠폰 발급 요청이 왔는지 확인 후 발급 내역 DB 저장 위해 필요한 정보
+
 ## 비즈니스 로직 설계
 
 ### 1) 선착순 쿠폰 발급 요청 Redis 저장
+
+![](img/coupon_issue_redis_1.png)
 
 1. `GET coupon-stock:{couponId}` → 쿠폰 발급 가능 수량(재고) 확보
 2. `ZADD NX coupon-issue:{couponId} <timestamp> <userId>` → 쿠폰 발급 요청 삽입  
@@ -58,6 +68,8 @@
 > 선착순 보장 + 재고 초과 X + 중복 방지
 
 ### 2) 스케줄러로 쿠폰 발급 내역 DB 저장
+
+![](img/coupon_issue_redis_2.png)
 
 1. `SPOP coupon-issue-pending COUNT n` → 쿠폰 ID 목록 추출  
 2. `ZPOPMIN coupon-issue:{couponId} n` → 발급 요청 토큰 (쿠폰별 발급 요청 유저 정보) 추출
