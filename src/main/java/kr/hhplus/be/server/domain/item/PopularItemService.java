@@ -1,11 +1,11 @@
 package kr.hhplus.be.server.domain.item;
 
-import kr.hhplus.be.server.domain.order.OrderItemStatistics;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +29,19 @@ public class PopularItemService {
     }
 
     @Transactional
-    public List<PopularItemStatistics> createPopularItems(OrderItemStatistics orderItemStatistics) {
+    public void createPopularItems() {
 
-        List<PopularItemStatistics> popularItemStatistics = orderItemStatistics.getItemIds().stream()
-                .map(itemId -> PopularItemStatistics.of(itemId, orderItemStatistics.getOrderDate(itemId), orderItemStatistics.getTotalOrderCount(itemId)))
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        List<PopularItem> popularItems = popularItemRepository.findPopularItemScore(yesterday);
+
+        List<PopularItemStatistics> popularItemStatistics = popularItems.stream()
+                .map(popularItem -> PopularItemStatistics.of(popularItem.getItemId(), yesterday, popularItem.getOrderCount()))
                 .toList();
 
-        return popularItemRepository.savePopularItems(popularItemStatistics);
+        popularItemRepository.savePopularItems(popularItemStatistics);
+    }
+
+    public void savePopularItemScore(Long itemId, int count) {
+        popularItemRepository.savePopularItemScore(new PopularItem(itemId, count));
     }
 }
