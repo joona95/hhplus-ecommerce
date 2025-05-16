@@ -166,8 +166,8 @@ class CouponServiceTest {
     class 쿠폰_발급_토큰_요청 {
 
         @ParameterizedTest
-        @ValueSource(longs = {1L, 2L, 3L, 4L})
-        void 쿠폰_발급_토큰_수량보다_발급량이_많거나_같은_경우_발급_요청되지_않음(long tokenCount) {
+        @ValueSource(longs = {2L, 3L, 4L})
+        void 쿠폰_발급_가능_수량보다_발급량이_많은_경우_토큰_제거_후_RuntimeException_발생(long tokenCount) {
 
             // given
             User user = UserFixtures.식별자로_유저_생성(1L);
@@ -178,12 +178,35 @@ class CouponServiceTest {
             when(couponRepository.countCouponIssueToken(command.couponId()))
                     .thenReturn(tokenCount);
 
-            // when
+            // when, then
+            assertThatThrownBy(() -> couponService.requestCouponIssue(user, command))
+                    .isInstanceOf(RuntimeException.class)
+                            .hasMessageContaining("쿠폰 발급 가능한 수량을 초과하였습니다.");
+
+            verify(couponRepository, times(1)).removeIssueToken(any());
+            verify(couponRepository, times(0)).savePendingIssueCoupon(command.couponId());
+        }
+
+        @ParameterizedTest
+        @ValueSource(longs = {1L, 2L, 3L})
+        void 쿠폰_발급_가능_수량보다_발급량이_작거나_같은_경우_토큰_등록_및_발급_대기_쿠폰식별자_등록(long tokenCount) {
+
+            // given
+            User user = UserFixtures.식별자로_유저_생성(1L);
+            CouponIssueCommand command = CouponIssueCommand.of(1L);
+
+            when(couponRepository.getCouponStock(command.couponId()))
+                    .thenReturn(3L);
+            when(couponRepository.countCouponIssueToken(command.couponId()))
+                    .thenReturn(tokenCount);
+
+            //when
             couponService.requestCouponIssue(user, command);
 
-            // then
-            verify(couponRepository, times(0)).saveIssueToken(CouponIssueToken.of(user, command.couponId()));
-            verify(couponRepository, times(0)).savePendingIssueCoupon(command.couponId());
+            // when, then
+            verify(couponRepository, times(1)).saveIssueToken(any());
+            verify(couponRepository, times(0)).removeIssueToken(any());
+            verify(couponRepository, times(1)).savePendingIssueCoupon(command.couponId());
         }
     }
 }
