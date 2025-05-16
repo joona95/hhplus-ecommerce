@@ -5,11 +5,7 @@ import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponIssueToken;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.user.User;
-import org.redisson.api.RAtomicLong;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RSet;
-import org.redisson.api.RedissonClient;
-import org.redisson.client.codec.LongCodec;
+import kr.hhplus.be.server.infrastructure.store.RedisStoreRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -26,12 +22,12 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     private final CouponJpaRepository couponJpaRepository;
     private final CouponIssueJpaRepository couponIssueJpaRepository;
-    private final RedissonClient redissonClient;
+    private final RedisStoreRepository redisStoreRepository;
 
-    public CouponRepositoryImpl(CouponJpaRepository couponJpaRepository, CouponIssueJpaRepository couponIssueJpaRepository, RedissonClient redissonClient) {
+    public CouponRepositoryImpl(CouponJpaRepository couponJpaRepository, CouponIssueJpaRepository couponIssueJpaRepository, RedisStoreRepository redisStoreRepository) {
         this.couponJpaRepository = couponJpaRepository;
         this.couponIssueJpaRepository = couponIssueJpaRepository;
-        this.redissonClient = redissonClient;
+        this.redisStoreRepository = redisStoreRepository;
     }
 
     @Override
@@ -66,31 +62,30 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     @Override
     public long getCouponStock(long couponId) {
-        RAtomicLong rAtomicLong = redissonClient.getAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId);
-        return rAtomicLong.get();
+        return redisStoreRepository.getAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId);
     }
 
     @Override
     public long countCouponIssueToken(long couponId) {
-        return redissonClient.getScoredSortedSet(COUPON_ISSUE_TOKEN_KEY_PREFIX + couponId).size();
+        return redisStoreRepository.getSortedSetSize(COUPON_ISSUE_TOKEN_KEY_PREFIX + couponId);
     }
 
     @Override
     public void saveIssueToken(CouponIssueToken couponIssueToken) {
-        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(COUPON_ISSUE_TOKEN_KEY_PREFIX + couponIssueToken.couponId());
-        zset.addIfAbsent(couponIssueToken.requestTime(), couponIssueToken.userId());
+        redisStoreRepository.addInSortedSetIfAbsent(
+                COUPON_ISSUE_TOKEN_KEY_PREFIX + couponIssueToken.couponId(),
+                couponIssueToken.userId(),
+                couponIssueToken.requestTime());
     }
 
     @Override
     public void savePendingIssueCoupon(long couponId) {
-        RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUE_PENDING_KEY, LongCodec.INSTANCE);
-        rSet.add(couponId);
+        redisStoreRepository.addInSet(COUPON_ISSUE_PENDING_KEY, couponId);
     }
 
     @Override
     public Set<Long> getPendingIssueCouponIds() {
-        RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUE_PENDING_KEY, LongCodec.INSTANCE);
-        return rSet.readAll();
+        return redisStoreRepository.popSetAll(COUPON_ISSUE_PENDING_KEY);
     }
 
     @Override
@@ -100,13 +95,11 @@ public class CouponRepositoryImpl implements CouponRepository {
 
     @Override
     public List<Long> popCouponIssueUserIds(Coupon coupon, int size) {
-        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(COUPON_ISSUE_TOKEN_KEY_PREFIX + coupon.getId());
-        return zset.pollFirst(size).stream().toList();
+        return redisStoreRepository.popSortedSetBatch(COUPON_ISSUE_TOKEN_KEY_PREFIX + coupon.getId(), size);
     }
 
     @Override
     public void saveCouponStock(long couponId, int count) {
-        RAtomicLong rAtomicLong = redissonClient.getAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId);
-        rAtomicLong.set(count);
+        redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId, count);
     }
 }
