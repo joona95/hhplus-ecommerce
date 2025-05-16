@@ -12,6 +12,8 @@ import static kr.hhplus.be.server.domain.coupon.CouponCriteria.*;
 @Service
 public class CouponService {
 
+    private static final int BATCH_SIZE = 500;
+
     private final CouponRepository couponRepository;
 
     public CouponService(CouponRepository couponRepository) {
@@ -55,14 +57,20 @@ public class CouponService {
         couponRepository.savePendingIssueCoupon(command.couponId());
     }
 
-    public List<Coupon> getPendingCoupons() {
+    public List<Coupon> popPendingCoupons() {
 
-        Set<Long> pendingCouponIds = couponRepository.getPendingIssueCouponIds();
+        Set<Long> pendingCouponIds = couponRepository.popPendingIssueCouponIds();
 
         return couponRepository.findCouponsByIdIn(pendingCouponIds);
     }
 
     public List<Long> popCouponIssueUserIds(Coupon coupon) {
-        return couponRepository.popCouponIssueUserIds(coupon, 500);
+
+        long size = couponRepository.countCouponIssueToken(coupon.getId());
+        if (size > BATCH_SIZE) {
+            couponRepository.savePendingIssueCoupon(coupon.getId());
+        }
+
+        return couponRepository.popCouponIssueUserIds(coupon, BATCH_SIZE);
     }
 }

@@ -84,7 +84,7 @@ public class CouponRepositoryImpl implements CouponRepository {
     }
 
     @Override
-    public Set<Long> getPendingIssueCouponIds() {
+    public Set<Long> popPendingIssueCouponIds() {
         return redisStoreRepository.popSetAll(COUPON_ISSUE_PENDING_KEY);
     }
 

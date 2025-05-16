@@ -31,7 +31,7 @@ public interface CouponRepository {
 
     void savePendingIssueCoupon(long couponId);
 
-    Set<Long> getPendingIssueCouponIds();
+    Set<Long> popPendingIssueCouponIds();
 
     List<Coupon> findCouponsByIdIn(Collection<Long> pendingCouponIds);
 

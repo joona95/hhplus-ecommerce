@@ -17,7 +17,7 @@ public class CouponFacadeService {
 
     public void processCouponIssue() {
 
-        List<Coupon> pendingIssueCoupons = couponService.getPendingCoupons();
+        List<Coupon> pendingIssueCoupons = couponService.popPendingCoupons();
         for (Coupon coupon : pendingIssueCoupons) {
 
             List<Long> couponIssueUserIds = couponService.popCouponIssueUserIds(coupon);
