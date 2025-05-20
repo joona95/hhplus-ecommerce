@@ -1,10 +1,9 @@
 package kr.hhplus.be.server.interfaces.item;
 
 import kr.hhplus.be.server.domain.item.Item;
-import kr.hhplus.be.server.domain.item.PopularItemStatistics;
 import kr.hhplus.be.server.fixtures.ItemFixtures;
 import kr.hhplus.be.server.infrastructure.item.ItemJpaRepository;
-import kr.hhplus.be.server.infrastructure.item.PopularItemJpaRepository;
+import kr.hhplus.be.server.infrastructure.item.PopularItemStatisticsJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class ItemControllerIntegrationTest {
     private ItemJpaRepository itemJpaRepository;
 
     @Autowired
-    private PopularItemJpaRepository popularItemJpaRepository;
+    private PopularItemStatisticsJpaRepository popularItemStatisticsJpaRepository;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -89,7 +88,7 @@ class ItemControllerIntegrationTest {
         ));
 
         for (int i = 0; i < items.size(); i++) {
-            popularItemJpaRepository.saveAll(List.of(
+            popularItemStatisticsJpaRepository.saveAll(List.of(
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100),
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100)
             ));
