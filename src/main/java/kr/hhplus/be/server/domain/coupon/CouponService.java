@@ -29,19 +29,6 @@ public class CouponService {
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰을 보유하고 있지 않습니다."));
     }
 
-    @Transactional
-    public void issueCoupon(long userId, Coupon coupon) {
-
-        if (couponRepository.existsCouponIssueByUserIdAndCouponId(userId, coupon.getId())) {
-            throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
-        }
-
-        coupon.issue();
-
-        couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
-        couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
-    }
-
     public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
 
         CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
@@ -57,20 +44,31 @@ public class CouponService {
         couponRepository.savePendingIssueCoupon(command.couponId());
     }
 
-    public List<Coupon> popPendingCoupons() {
+    @Transactional
+    public void issuePendingCoupons() {
 
         Set<Long> pendingCouponIds = couponRepository.popPendingIssueCouponIds();
 
-        return couponRepository.findCouponsByIdIn(pendingCouponIds);
-    }
+        List<Coupon> pendingIssueCoupons = couponRepository.findCouponsByIdIn(pendingCouponIds);
+        for (Coupon coupon : pendingIssueCoupons) {
 
-    public List<Long> popCouponIssueUserIds(Coupon coupon) {
+            long size = couponRepository.countCouponIssueToken(coupon.getId());
+            if (size > BATCH_SIZE) {
+                couponRepository.savePendingIssueCoupon(coupon.getId());
+            }
 
-        long size = couponRepository.countCouponIssueToken(coupon.getId());
-        if (size > BATCH_SIZE) {
-            couponRepository.savePendingIssueCoupon(coupon.getId());
+            List<Long> couponIssueUserIds = couponRepository.popCouponIssueUserIds(coupon, BATCH_SIZE);
+            for (Long userId : couponIssueUserIds) {
+
+                if (couponRepository.existsCouponIssueByUserIdAndCouponId(userId, coupon.getId())) {
+                    throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");
+                }
+
+                coupon.issue();
+
+                couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
+                couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
+            }
         }
-
-        return couponRepository.popCouponIssueUserIds(coupon, BATCH_SIZE);
     }
 }
