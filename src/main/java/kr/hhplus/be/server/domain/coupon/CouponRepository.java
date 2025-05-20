@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.coupon;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,11 +14,15 @@ public interface CouponRepository {
 
     Optional<CouponIssue> findCouponIssueByUserAndCouponId(User user, long couponId);
 
-    boolean existsCouponIssueByUserAndCouponId(User user, long couponId);
+    boolean existsCouponIssueByUserIdAndCouponId(long userId, long couponId);
 
     Optional<Coupon> findCouponByIdWithLock(long couponId);
 
     CouponIssue saveCouponIssue(CouponIssue couponIssue);
 
-    Optional<Coupon> findCouponById(long couponId);
+    long getCouponStock(long couponId);
+
+    List<Coupon> findCouponsByIdIn(Collection<Long> pendingCouponIds);
+
+    void saveCouponStock(long couponId, int count);
 }

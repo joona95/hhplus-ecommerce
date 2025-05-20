@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,24 +16,27 @@ public class CouponRepositoryImpl implements CouponRepository {
     private final CouponJpaRepository couponJpaRepository;
     private final CouponIssueJpaRepository couponIssueJpaRepository;
 
-    public CouponRepositoryImpl(CouponJpaRepository couponJpaRepository, CouponIssueJpaRepository couponIssueJpaRepository) {
+    private final CouponCacheRepository couponCacheRepository;
+
+    public CouponRepositoryImpl(CouponJpaRepository couponJpaRepository, CouponIssueJpaRepository couponIssueJpaRepository, CouponCacheRepository couponCacheRepository) {
         this.couponJpaRepository = couponJpaRepository;
         this.couponIssueJpaRepository = couponIssueJpaRepository;
+        this.couponCacheRepository = couponCacheRepository;
     }
 
     @Override
     public List<CouponIssue> findCouponIssueByUser(User user) {
-        return couponIssueJpaRepository.findByUser(user);
+        return couponIssueJpaRepository.findByUserId(user.getId());
     }
 
     @Override
     public Optional<CouponIssue> findCouponIssueByUserAndCouponId(User user, long couponId) {
-        return couponIssueJpaRepository.findByUserAndCouponId(user, couponId);
+        return couponIssueJpaRepository.findByUserIdAndCouponId(user.getId(), couponId);
     }
 
     @Override
-    public boolean existsCouponIssueByUserAndCouponId(User user, long couponId) {
-        return couponIssueJpaRepository.existsByUserAndCouponId(user, couponId);
+    public boolean existsCouponIssueByUserIdAndCouponId(long userId, long couponId) {
+        return couponIssueJpaRepository.existsByUserIdAndCouponId(userId, couponId);
     }
 
     @Override
@@ -45,8 +49,23 @@ public class CouponRepositoryImpl implements CouponRepository {
         return couponIssueJpaRepository.save(couponIssue);
     }
 
+
     @Override
-    public Optional<Coupon> findCouponById(long couponId) {
-        return couponJpaRepository.findById(couponId);
+    public List<Coupon> findCouponsByIdIn(Collection<Long> couponIds) {
+        return couponJpaRepository.findAllById(couponIds);
+    }
+
+    @Override
+    public long getCouponStock(long couponId) {
+        if (couponCacheRepository.hasCouponStock(couponId)) {
+            return couponCacheRepository.getCouponStock(couponId);
+        }
+        Coupon coupon = couponJpaRepository.findById(couponId).orElse(null);
+        return coupon == null ? 0 : coupon.getCount();
+    }
+
+    @Override
+    public void saveCouponStock(long couponId, int count) {
+        couponCacheRepository.saveCouponStock(couponId, count);
     }
 }
