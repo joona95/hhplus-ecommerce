@@ -5,8 +5,10 @@ import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.coupon.CouponCacheRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
+import kr.hhplus.be.server.infrastructure.store.RedisStoreRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
@@ -35,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 class CouponControllerIntegrationTest {
 
+    private static final String COUPON_STOCK_KEY_PREFIX = "coupon-stock:";
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -46,6 +50,9 @@ class CouponControllerIntegrationTest {
 
     @Autowired
     private UserJpaRepository userJpaRepository;
+
+    @Autowired
+    private CouponCacheRepository couponCacheRepository;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -125,6 +132,7 @@ class CouponControllerIntegrationTest {
             // given
             User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
             Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
+            couponCacheRepository.saveCouponStock(coupon.getId(), 1);
 
             CouponIssueRequest request = new CouponIssueRequest(coupon.getId());
 

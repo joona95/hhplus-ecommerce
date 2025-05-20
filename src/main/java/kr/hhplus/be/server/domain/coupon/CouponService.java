@@ -12,10 +12,14 @@ import static kr.hhplus.be.server.domain.coupon.CouponCriteria.*;
 @Service
 public class CouponService {
 
-    private final CouponRepository couponRepository;
+    private static final int BATCH_SIZE = 500;
 
-    public CouponService(CouponRepository couponRepository) {
+    private final CouponRepository couponRepository;
+    private final CouponIssueTokenRepository couponIssueTokenRepository;
+
+    public CouponService(CouponRepository couponRepository, CouponIssueTokenRepository couponIssueTokenRepository) {
         this.couponRepository = couponRepository;
+        this.couponIssueTokenRepository = couponIssueTokenRepository;
     }
 
     public List<CouponIssue> findByUser(User user) {
@@ -25,6 +29,48 @@ public class CouponService {
     public CouponIssue findIssuedCoupon(IssuedCouponCriteria command) {
         return couponRepository.findCouponIssueByUserAndCouponId(command.user(), command.couponId())
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰을 보유하고 있지 않습니다."));
+    }
+
+    public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
+
+        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
+        couponIssueTokenRepository.enqueueIssueToken(couponIssueToken);
+
+        if (couponIssueTokenRepository.isAlreadyIssued(couponIssueToken)) {
+            throw new RuntimeException("이미 쿠폰 발급 요청한 유저입니다.");
+        }
+
+        long couponStock = couponRepository.getCouponStock(command.couponId());
+        long issueTokenRank = couponIssueTokenRepository.getTokenRank(couponIssueToken);
+        if (couponStock < issueTokenRank) {
+            couponIssueTokenRepository.removeIssueToken(couponIssueToken);
+            throw new RuntimeException("쿠폰 발급 가능한 수량을 초과하였습니다.");
+        }
+
+        couponIssueTokenRepository.enqueuePendingCouponId(command.couponId());
+        couponIssueTokenRepository.saveCouponIssuedUser(couponIssueToken);
+    }
+
+    @Transactional
+    public void issuePendingCoupons() {
+
+        Set<Long> pendingCouponIds = couponIssueTokenRepository.popPendingCouponIds(BATCH_SIZE);
+        List<Coupon> pendingIssueCoupons = couponRepository.findCouponsByIdIn(pendingCouponIds);
+        for (Coupon coupon : pendingIssueCoupons) {
+
+            List<Long> couponIssueUserIds = couponIssueTokenRepository.popIssueTokenUserIds(coupon, BATCH_SIZE);
+            for (Long userId : couponIssueUserIds) {
+
+                coupon.issue();
+
+                couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
+                couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
+
+                if (couponIssueTokenRepository.hasIssueTokens(coupon)) {
+                    couponIssueTokenRepository.enqueuePendingCouponId(coupon.getId());
+                }
+            }
+        }
     }
 
     @Transactional
@@ -38,29 +84,5 @@ public class CouponService {
 
         couponRepository.saveCouponIssue(CouponIssue.of(userId, coupon));
         couponRepository.saveCouponStock(coupon.getId(), coupon.getCount());
-    }
-
-    public void requestCouponIssue(User user, CouponCommand.CouponIssueCommand command) {
-
-        long couponStock = couponRepository.getCouponStock(command.couponId());
-        long issueTokenCount = couponRepository.countCouponIssueToken(command.couponId());
-
-        CouponIssueToken couponIssueToken = CouponIssueToken.of(user, command.couponId());
-
-        if (couponStock > issueTokenCount) {
-            couponRepository.saveIssueToken(couponIssueToken);
-            couponRepository.savePendingIssueCoupon(command.couponId());
-        }
-    }
-
-    public List<Coupon> getPendingCoupons() {
-
-        Set<Long> pendingCouponIds = couponRepository.getPendingIssueCouponIds();
-
-        return couponRepository.findCouponsByIdIn(pendingCouponIds);
-    }
-
-    public List<Long> popCouponIssueUserIds(Coupon coupon) {
-        return couponRepository.popCouponIssueUserIds(coupon, 500);
     }
 }
