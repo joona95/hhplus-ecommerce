@@ -1,12 +1,16 @@
 package kr.hhplus.be.server.infrastructure.store;
 
+import kr.hhplus.be.server.domain.item.PopularItem;
 import org.redisson.api.RAtomicLong;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.LongCodec;
+import org.redisson.client.protocol.ScoredEntry;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -64,5 +68,17 @@ public class RedissonStoreRepository implements RedisStoreRepository {
     public void setAtomicLong(String key, long value) {
         RAtomicLong rAtomicLong = redissonClient.getAtomicLong(key);
         rAtomicLong.set(value);
+    }
+
+    @Override
+    public void addScoreInSoredSet(String key, long value, double score) {
+        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(key);
+        zset.addScore(value, score);
+    }
+
+    @Override
+    public List<ScoredEntry<Long>> getSoredSet(String key) {
+        RScoredSortedSet<Long> zset = redissonClient.getScoredSortedSet(key);
+        return zset.entryRange(0, -1).stream().toList();
     }
 }

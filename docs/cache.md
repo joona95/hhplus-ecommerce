@@ -340,7 +340,7 @@ public class ItemFacadeService {
         ));
 
         for (int i = 0; i < items.size(); i++) {
-            popularItemJpaRepository.saveAll(List.of(
+            popularItemStatisticsJpaRepository.saveAll(List.of(
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100),
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100)
             ));
@@ -352,7 +352,7 @@ public class ItemFacadeService {
         popularItemService.findPopularItems();
 
         //then
-        verify(popularItemJpaRepository, times(1)).findPopularItems();
+        verify(popularItemStatisticsJpaRepository, times(1)).findPopularItems();
     }
 ```
 
@@ -384,7 +384,7 @@ public class ItemFacadeService {
         ));
 
         for (int i = 0; i < items.size(); i++) {
-            popularItemJpaRepository.saveAll(List.of(
+            popularItemStatisticsJpaRepository.saveAll(List.of(
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100),
                     ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100)
             ));
@@ -396,7 +396,7 @@ public class ItemFacadeService {
         itemFacadeService.findPopularItemDetails();
 
         //then
-        verify(popularItemJpaRepository, times(1)).findPopularItems();
+        verify(popularItemStatisticsJpaRepository, times(1)).findPopularItems();
         verify(itemJpaRepository, times(5)).findById(any());
     }
 ```

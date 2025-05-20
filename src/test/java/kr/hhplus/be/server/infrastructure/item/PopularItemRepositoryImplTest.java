@@ -24,7 +24,7 @@ public class PopularItemRepositoryImplTest {
     private PopularItemRepositoryImpl popularItemRepository;
 
     @Autowired
-    private PopularItemJpaRepository popularItemJpaRepository;
+    private PopularItemStatisticsJpaRepository popularItemStatisticsJpaRepository;
 
     @Autowired
     private ItemJpaRepository itemJpaRepository;
@@ -70,7 +70,7 @@ public class PopularItemRepositoryImplTest {
             PopularItemStatistics yesterday = ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(1), 100 * i);
             PopularItemStatistics recent = ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(3), 100 * i);
             PopularItemStatistics old = ItemFixtures.상품식별자와_주문날짜와_주문수량으로_인기_상품_통계_생성(items.get(i).getId(), LocalDate.now().minusDays(4), 100 * i);
-            popularItemJpaRepository.saveAll(List.of(today, yesterday, recent, old));
+            popularItemStatisticsJpaRepository.saveAll(List.of(today, yesterday, recent, old));
         }
 
         // when

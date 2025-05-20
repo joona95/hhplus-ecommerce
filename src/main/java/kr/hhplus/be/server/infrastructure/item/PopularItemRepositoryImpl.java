@@ -5,22 +5,30 @@ import kr.hhplus.be.server.domain.item.PopularItemRepository;
 import kr.hhplus.be.server.domain.item.PopularItemStatistics;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public class PopularItemRepositoryImpl implements PopularItemRepository {
 
-    private final PopularItemJpaRepository popularItemJpaRepository;
+    private final PopularItemStatisticsJpaRepository popularItemStatisticsJpaRepository;
     private final PopularItemQuerydslRepository popularItemQuerydslRepository;
+    private final PopularItemCacheRepository popularItemCacheRepository;
 
-    public PopularItemRepositoryImpl(PopularItemJpaRepository popularItemJpaRepository, PopularItemQuerydslRepository popularItemQuerydslRepository) {
-        this.popularItemJpaRepository = popularItemJpaRepository;
+    public PopularItemRepositoryImpl(PopularItemStatisticsJpaRepository popularItemStatisticsJpaRepository, PopularItemQuerydslRepository popularItemQuerydslRepository, PopularItemCacheRepository popularItemCacheRepository) {
+        this.popularItemStatisticsJpaRepository = popularItemStatisticsJpaRepository;
         this.popularItemQuerydslRepository = popularItemQuerydslRepository;
+        this.popularItemCacheRepository = popularItemCacheRepository;
     }
 
     @Override
     public List<PopularItemStatistics> savePopularItems(List<PopularItemStatistics> popularItemStatistics) {
-        return popularItemJpaRepository.saveAll(popularItemStatistics);
+        return popularItemStatisticsJpaRepository.saveAll(popularItemStatistics);
+    }
+
+    @Override
+    public void savePopularItemScore(PopularItem popularItem) {
+        popularItemCacheRepository.savePopularItemScore(popularItem);
     }
 
     @Override
@@ -28,4 +36,8 @@ public class PopularItemRepositoryImpl implements PopularItemRepository {
         return popularItemQuerydslRepository.findPopularItems();
     }
 
+    @Override
+    public List<PopularItem> findPopularItemScore(LocalDate date) {
+        return popularItemCacheRepository.findPopularItemScore(date);
+    }
 }
