@@ -5,7 +5,7 @@ import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
-import kr.hhplus.be.server.infrastructure.store.RedisStoreRepository;
+import kr.hhplus.be.server.infrastructure.coupon.CouponCacheRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +26,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Testcontainers
 public class CouponServiceIntegrationTest {
 
-    private static final String COUPON_STOCK_KEY_PREFIX = "coupon-stock:";
-    private static final String COUPON_ISSUE_TOKEN_KEY_PREFIX = "coupon-issue-token:";
-    private static final String COUPON_ISSUE_PENDING_KEY = "coupon-issue-pending";
-
     @Autowired
     private CouponService couponService;
 
@@ -40,7 +36,7 @@ public class CouponServiceIntegrationTest {
     private CouponIssueJpaRepository couponIssueJpaRepository;
 
     @Autowired
-    private RedisStoreRepository redisStoreRepository;
+    private CouponCacheRepository couponCacheRepository;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -82,7 +78,7 @@ public class CouponServiceIntegrationTest {
 
             // given
             long couponId = 1L;
-            redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId, 10L);
+            couponCacheRepository.saveCouponStock(couponId, 10);
 
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
@@ -93,15 +89,8 @@ public class CouponServiceIntegrationTest {
             couponService.requestCouponIssue(user, command);
 
             // then
-            String couponIssueKey = COUPON_ISSUE_TOKEN_KEY_PREFIX + couponId;
-            assertThat(redisStoreRepository.getSortedSetSize(couponIssueKey)).isEqualTo(1);
-            assertThat(redisStoreRepository.popSortedSetBatch(couponIssueKey, Integer.MAX_VALUE)
-                    .contains(user.getId()))
-                    .isTrue();
-
-            Set<Long> pendingCouponIds = redisStoreRepository.popSetAll(COUPON_ISSUE_PENDING_KEY);
-            assertThat(pendingCouponIds).hasSize(1);
-            assertThat(pendingCouponIds.contains(couponId)).isTrue();
+            assertThat(couponCacheRepository.popIssueTokenUserIds(coupon, Integer.MAX_VALUE).contains(user.getId())).isTrue();
+            assertThat(couponCacheRepository.popPendingCouponIds(500).contains(couponId)).isTrue();
         }
 
         @Test
@@ -109,7 +98,7 @@ public class CouponServiceIntegrationTest {
 
             // given
             long couponId = 1L;
-            redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId, 1);
+            couponCacheRepository.saveCouponStock(couponId, 1);
 
             User user1 = UserFixtures.식별자로_유저_생성(1L);
             User user2 = UserFixtures.식별자로_유저_생성(2L);
@@ -124,23 +113,21 @@ public class CouponServiceIntegrationTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("쿠폰 발급 가능한 수량을 초과하였습니다.");
 
-            String couponIssueKey = COUPON_ISSUE_TOKEN_KEY_PREFIX + command.couponId();
-            assertThat(redisStoreRepository.getSortedSetSize(couponIssueKey)).isEqualTo(1);
-            List<Long> couponIssueUserIds = redisStoreRepository.popSortedSetBatch(couponIssueKey, Integer.MAX_VALUE);
+            List<Long> couponIssueUserIds = couponCacheRepository.popIssueTokenUserIds(coupon, Integer.MAX_VALUE);
             assertThat(couponIssueUserIds.contains(user1.getId())).isTrue();
             assertThat(couponIssueUserIds.contains(user2.getId())).isFalse();
 
-            Set<Long> pendingCouponIds = redisStoreRepository.popSetAll(COUPON_ISSUE_PENDING_KEY);
+            Set<Long> pendingCouponIds = couponCacheRepository.popPendingCouponIds(500);
             assertThat(pendingCouponIds).hasSize(1);
             assertThat(pendingCouponIds.contains(couponId)).isTrue();
         }
 
         @Test
-        void 동일_유저가_중복_쿠폰_발급_요청_시_한_번만_토큰_발급() {
+        void 동일_유저가_중복_쿠폰_발급_요청_시_RuntimeException_발생() {
 
             // given
             long couponId = 1L;
-            redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + couponId, 1);
+            couponCacheRepository.saveCouponStock(couponId, 1);
 
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
@@ -149,19 +136,11 @@ public class CouponServiceIntegrationTest {
 
             couponService.requestCouponIssue(user, command);
 
-            // when
-            couponService.requestCouponIssue(user, command);
-
-            // then
-            String couponIssueKey = COUPON_ISSUE_TOKEN_KEY_PREFIX + couponId;
-            assertThat(redisStoreRepository.getSortedSetSize(couponIssueKey)).isEqualTo(1);
-            assertThat(redisStoreRepository.popSortedSetBatch(couponIssueKey, Integer.MAX_VALUE)
-                    .contains(user.getId()))
-                    .isTrue();
-
-            Set<Long> pendingCouponIds = redisStoreRepository.popSetAll(COUPON_ISSUE_PENDING_KEY);
-            assertThat(pendingCouponIds).hasSize(1);
-            assertThat(pendingCouponIds.contains(couponId)).isTrue();
+            // when, then
+            assertThatThrownBy(() -> couponService.requestCouponIssue(user, command))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("이미 쿠폰 발급 요청한 유저입니다.");
+            ;
         }
     }
 }

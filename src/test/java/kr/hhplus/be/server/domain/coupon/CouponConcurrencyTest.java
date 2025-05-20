@@ -3,9 +3,9 @@ package kr.hhplus.be.server.domain.coupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
+import kr.hhplus.be.server.infrastructure.coupon.CouponCacheRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
-import kr.hhplus.be.server.infrastructure.store.RedisStoreRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 public class CouponConcurrencyTest {
 
-    private static final String COUPON_STOCK_KEY_PREFIX = "coupon-stock:";
-
     @Autowired
     private CouponService couponService;
 
@@ -43,7 +41,7 @@ public class CouponConcurrencyTest {
     private UserJpaRepository userJpaRepository;
 
     @Autowired
-    private RedisStoreRepository redisStoreRepository;
+    private CouponCacheRepository couponCacheRepository;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -54,11 +52,12 @@ public class CouponConcurrencyTest {
     }
 
     @Test
-    void 특정_쿠폰_발급_요청이_동시에_들어오는_경우_쿠폰_발급_개수가_요청_수_만큼_차감() throws InterruptedException {
+    void 특정_쿠폰_발급_요청이_동시에_들어오는_경우_쿠폰_발급_개수가_요청_수_만큼_큐에_삽입() throws InterruptedException {
 
         //given
         Coupon coupon = couponJpaRepository.save(CouponFixtures.발급수량으로_쿠폰_생성(20));
-        redisStoreRepository.setAtomicLong(COUPON_STOCK_KEY_PREFIX + coupon.getId(), 20);
+        CouponCommand.CouponIssueCommand command = new CouponCommand.CouponIssueCommand(coupon.getId());
+        couponCacheRepository.saveCouponStock(coupon.getId(), 20);
 
         int threadCount = 20;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
@@ -73,7 +72,7 @@ public class CouponConcurrencyTest {
                 User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
 
                 try {
-                    couponService.issueCoupon(user.getId(), coupon);
+                    couponService.requestCouponIssue(user, command);
                 } catch (ObjectOptimisticLockingFailureException e) {
                     failureCount.incrementAndGet();
                 }
@@ -87,9 +86,9 @@ public class CouponConcurrencyTest {
         //then
         System.out.println("실행 시간 == " + (endTime - startTime) + "ms");
 
-        long result = redisStoreRepository.getAtomicLong(COUPON_STOCK_KEY_PREFIX + coupon.getId());
+        long result = couponCacheRepository.popIssueTokenUserIds(coupon, Integer.MAX_VALUE).size();
 
-        assertThat(result).isEqualTo(failureCount.get());
+        assertThat(result).isEqualTo(20);
 
         System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result);
     }
