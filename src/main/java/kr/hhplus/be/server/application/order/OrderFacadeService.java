@@ -1,10 +1,11 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.application.client.DataPlatformClient;
 import kr.hhplus.be.server.domain.coupon.CouponIssue;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemService;
+import kr.hhplus.be.server.domain.order.OrderCompleteEvent;
+import kr.hhplus.be.server.domain.order.OrderEventPublisher;
 import kr.hhplus.be.server.domain.order.OrderInfo;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.point.PointService;
@@ -24,14 +25,14 @@ public class OrderFacadeService {
     private final PointService pointService;
     private final OrderService orderService;
     private final CouponService couponService;
-    private final DataPlatformClient dataPlatformClient;
+    private final OrderEventPublisher orderEventPublisher;
 
-    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService, CouponService couponService, DataPlatformClient dataPlatformClient) {
+    public OrderFacadeService(ItemService itemService, PointService pointService, OrderService orderService, CouponService couponService, OrderEventPublisher orderEventPublisher) {
         this.itemService = itemService;
         this.pointService = pointService;
         this.orderService = orderService;
         this.couponService = couponService;
-        this.dataPlatformClient = dataPlatformClient;
+        this.orderEventPublisher = orderEventPublisher;
     }
 
     @Transactional
@@ -50,7 +51,7 @@ public class OrderFacadeService {
 
         pointService.use(user, command.toPointUseCommand(orderInfo.order()));
 
-        dataPlatformClient.sendOrderDate(orderInfo);
+        orderEventPublisher.send(new OrderCompleteEvent(orderInfo));
 
         return OrderCreateResult.from(orderInfo);
     }
