@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class FakeDataPlatformClient implements DataPlatformClient {
 
     @Override
-    public void sendOrderDate(OrderInfo orderInfo) {
+    public void sendOrderData(OrderInfo orderInfo) {
         System.out.println("주문 데이터 전송:" + orderInfo);
     }
 }
