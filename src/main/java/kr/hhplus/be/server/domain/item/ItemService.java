@@ -12,11 +12,9 @@ import static kr.hhplus.be.server.domain.item.ItemCommand.*;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final ApplicationEventPublisher publisher;
 
-    public ItemService(ItemRepository itemRepository, ApplicationEventPublisher publisher) {
+    public ItemService(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
-        this.publisher = publisher;
     }
 
     @Cacheable(value = "cache:item", key = "#id")
@@ -29,8 +27,6 @@ public class ItemService {
 
         Item item = itemRepository.findByIdWithLock(command.itemId());
         item.decreaseStock(command.count());
-
-        publisher.publishEvent(new ItemEvent.StockDecreasedEvent(command.itemId(), command.count()));
 
         return item;
     }
