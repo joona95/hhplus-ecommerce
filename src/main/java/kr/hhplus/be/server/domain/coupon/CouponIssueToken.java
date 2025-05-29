@@ -10,7 +10,11 @@ public record CouponIssueToken(
         long requestTime
 ) {
     public static CouponIssueToken of(User user, long couponId) {
-        return new CouponIssueToken(user.getId(), couponId, System.currentTimeMillis());
+        return CouponIssueToken.of(user.getId(), couponId);
+    }
+
+    public static CouponIssueToken of(long userId, long couponId) {
+        return new CouponIssueToken(userId, couponId, System.currentTimeMillis());
     }
 
     @Override

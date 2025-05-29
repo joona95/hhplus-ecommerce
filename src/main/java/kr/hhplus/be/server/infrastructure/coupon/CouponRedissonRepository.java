@@ -98,4 +98,10 @@ public class CouponRedissonRepository implements CouponCacheRepository {
         RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUED_PREFIX + couponIssueToken.couponId(), LongCodec.INSTANCE);
         rSet.add(couponIssueToken.userId());
     }
+
+    @Override
+    public long countCouponIssuedUser(CouponIssueToken couponIssueToken) {
+        RSet<Long> rSet = redissonClient.getSet(COUPON_ISSUED_PREFIX + couponIssueToken.couponId(), LongCodec.INSTANCE);
+        return rSet.size();
+    }
 }

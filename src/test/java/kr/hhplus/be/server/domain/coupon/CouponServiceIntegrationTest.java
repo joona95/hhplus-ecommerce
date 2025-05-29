@@ -61,7 +61,7 @@ public class CouponServiceIntegrationTest {
             Coupon coupon = couponJpaRepository.save(CouponFixtures.정상_쿠폰_생성());
 
             // when
-            couponService.issueCoupon(user.getId(), coupon);
+            couponService.issueCoupon(user.getId(), coupon.getId());
 
             // then
             assertThat(couponIssueJpaRepository.findAll()).hasSize(1);

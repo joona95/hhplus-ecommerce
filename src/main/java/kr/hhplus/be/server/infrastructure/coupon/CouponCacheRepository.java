@@ -31,4 +31,6 @@ public interface CouponCacheRepository {
     boolean isAlreadyIssued(CouponIssueToken couponIssueToken);
 
     void saveCouponIssuedUser(CouponIssueToken couponIssueToken);
+
+    long countCouponIssuedUser(CouponIssueToken couponIssueToken);
 }

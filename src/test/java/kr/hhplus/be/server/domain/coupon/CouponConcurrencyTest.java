@@ -116,7 +116,7 @@ public class CouponConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
                 try {
-                    couponService.issueCoupon(user.getId(), coupon);
+                    couponService.issueCoupon(user.getId(), coupon.getId());
                 } catch (Exception e) {
                     failureCount.incrementAndGet();
                 }
@@ -139,4 +139,6 @@ public class CouponConcurrencyTest {
 
         System.out.println("실패 횟수 : " + failureCount.get());
     }
+
+
 }
