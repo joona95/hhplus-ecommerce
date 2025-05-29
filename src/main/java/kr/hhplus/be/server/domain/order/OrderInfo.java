@@ -6,18 +6,15 @@ import java.util.List;
 
 public record OrderInfo(
         Order order,
-        OrderItems orderItems
+        List<OrderItem> orderItems
 ) {
 
     public static OrderInfo of(Order order, OrderItems orderItems) {
-        return new OrderInfo(order, orderItems);
+        return new OrderInfo(order, orderItems.orderItems());
     }
 
     public void applyCoupon(CouponIssue couponIssue) {
         order.applyCoupon(couponIssue);
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems.orderItems();
-    }
 }

@@ -7,6 +7,6 @@ public record OrderCompleteEvent(
 ) {
 
     public List<OrderItem> getOrderItems() {
-        return orderInfo.getOrderItems();
+        return orderInfo.orderItems();
     }
 }
