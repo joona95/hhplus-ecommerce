@@ -21,6 +21,8 @@ import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import kr.hhplus.be.server.interfaces.order.OrderEventListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -33,6 +35,7 @@ import java.util.List;
 import static kr.hhplus.be.server.application.order.OrderFacadeCommand.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Testcontainers
 public class OrderFacadeServiceTest {

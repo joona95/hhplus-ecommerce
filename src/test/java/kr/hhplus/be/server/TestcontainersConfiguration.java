@@ -28,8 +28,7 @@ class TestcontainersConfiguration {
                 .withUsername("test")
                 .withPassword("test");
         KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(KAFKA_IMAGE))
-                .withKraft()
-                .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true");
+                .withKraft();
 
         REDIS_CONTAINER.start();
         MYSQL_CONTAINER.start();
