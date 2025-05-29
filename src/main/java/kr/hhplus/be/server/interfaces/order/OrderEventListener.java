@@ -1,12 +1,10 @@
-package kr.hhplus.be.server.application.order;
+package kr.hhplus.be.server.interfaces.order;
 
 import kr.hhplus.be.server.application.client.DataPlatformClient;
 import kr.hhplus.be.server.domain.order.OrderCompleteEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
@@ -18,8 +16,7 @@ public class OrderEventListener {
         this.dataPlatformClient = dataPlatformClient;
     }
 
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @KafkaListener(topics = "order-complete", groupId = "order", concurrency = "3")
     public void handleOrderCompleteEvent(OrderCompleteEvent event) {
         try {
             dataPlatformClient.sendOrderData(event.orderInfo());

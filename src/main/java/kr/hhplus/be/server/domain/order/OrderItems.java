@@ -1,10 +1,11 @@
 package kr.hhplus.be.server.domain.order;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public record OrderItems(List<OrderItem> orderItems) {
+public record OrderItems(List<OrderItem> orderItems) implements Serializable {
 
     public OrderItems(List<OrderItem> orderItems) {
 

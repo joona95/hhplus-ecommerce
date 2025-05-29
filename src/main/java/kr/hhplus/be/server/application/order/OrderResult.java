@@ -23,7 +23,7 @@ public class OrderResult {
 
         public static OrderCreateResult from(OrderInfo orderInfo) {
 
-            List<OrderItemCreateResult> itemResults = orderInfo.getOrderItems().stream()
+            List<OrderItemCreateResult> itemResults = orderInfo.orderItems().stream()
                     .map(OrderItemCreateResult::from)
                     .toList();
 

@@ -3,14 +3,12 @@ package kr.hhplus.be.server.infrastructure.order;
 import kr.hhplus.be.server.domain.order.OrderCompleteEvent;
 import kr.hhplus.be.server.domain.order.OrderEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 
-@Component
-public class OrderEventPublisherImpl implements OrderEventPublisher {
+public class OrderApplicationEventPublisher implements OrderEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public OrderEventPublisherImpl(ApplicationEventPublisher applicationEventPublisher) {
+    public OrderApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 

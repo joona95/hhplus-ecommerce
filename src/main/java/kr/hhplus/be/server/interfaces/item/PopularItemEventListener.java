@@ -1,8 +1,9 @@
-package kr.hhplus.be.server.application.item;
+package kr.hhplus.be.server.interfaces.item;
 
 import kr.hhplus.be.server.domain.item.PopularItemService;
 import kr.hhplus.be.server.domain.order.OrderCompleteEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -18,8 +19,7 @@ public class PopularItemEventListener {
         this.popularItemService = popularItemService;
     }
 
-    @Async
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @KafkaListener(topics = "order-complete", groupId = "popular-item", concurrency = "3")
     public void handleOrderCompleteEvent(OrderCompleteEvent event) {
 
         try {
