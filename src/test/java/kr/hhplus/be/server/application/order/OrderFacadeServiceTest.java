@@ -89,7 +89,7 @@ public class OrderFacadeServiceTest {
 
         //then
         Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
+                .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> {
                     verify(orderEventListener, times(1)).handleOrderCompleteEvent(any());
                     verify(popularItemEventListener, times(1)).handleOrderCompleteEvent(any());

@@ -7,6 +7,7 @@ import kr.hhplus.be.server.infrastructure.coupon.CouponCacheRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponIssueJpaRepository;
 import kr.hhplus.be.server.infrastructure.coupon.CouponJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
+import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,9 +47,13 @@ public class CouponConcurrencyTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
+    @Autowired
+    private RedisCleanup redisCleanup;
+
     @BeforeEach
     void setUp() {
         databaseCleanup.truncateAllTables();
+        redisCleanup.flushAll();
     }
 
     @Test
