@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import kr.hhplus.be.server.application.coupon.CouponFacadeService;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.fixtures.CouponFixtures;
 import kr.hhplus.be.server.fixtures.UserFixtures;
@@ -13,11 +14,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
+import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,12 +28,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @SpringBootTest
 @Testcontainers
+@EmbeddedKafka
 public class CouponConcurrencyTest {
 
     @Autowired
     private CouponService couponService;
+
+    @Autowired
+    private CouponFacadeService couponFacadeService;
 
     @Autowired
     private CouponJpaRepository couponJpaRepository;
@@ -140,5 +148,47 @@ public class CouponConcurrencyTest {
         System.out.println("실패 횟수 : " + failureCount.get());
     }
 
+    @Test
+    void 특정_쿠폰_발급_요청이_동시에_들어오는_경우_쿠폰_발급_개수가_요청_수_만큼_발급() throws InterruptedException {
 
+        //given
+        Coupon coupon = couponJpaRepository.save(CouponFixtures.발급수량으로_쿠폰_생성(20));
+        CouponCommand.CouponIssueCommand command = new CouponCommand.CouponIssueCommand(coupon.getId());
+        couponCacheRepository.saveCouponStock(coupon.getId(), 20);
+
+        int threadCount = 20;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+
+        AtomicInteger failureCount = new AtomicInteger();
+
+        //when
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < threadCount; i++) {
+            executorService.execute(() -> {
+                User user = userJpaRepository.save(UserFixtures.정상_유저_생성());
+
+                try {
+                    couponFacadeService.requestCouponIssue(user, command);
+                } catch (ObjectOptimisticLockingFailureException e) {
+                    failureCount.incrementAndGet();
+                }
+                countDownLatch.countDown();
+            });
+        }
+
+        countDownLatch.await();
+        long endTime = System.currentTimeMillis();
+
+        //then
+        System.out.println("실행 시간 == " + (endTime - startTime) + "ms");
+
+        Awaitility.await()
+                .atMost(Duration.ofMinutes(1))
+                .untilAsserted(() -> {
+                    long result = couponIssueJpaRepository.countByCouponId(coupon.getId());
+                    assertThat(result).isEqualTo(20);
+                    System.out.println("실패 횟수 : " + failureCount.get() + ", 수량 : " + result);
+                });
+    }
 }
