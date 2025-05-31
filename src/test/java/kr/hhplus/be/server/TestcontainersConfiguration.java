@@ -3,7 +3,6 @@ package kr.hhplus.be.server;
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -17,7 +16,7 @@ class TestcontainersConfiguration {
 
     private static final GenericContainer REDIS_CONTAINER;
     private static final MySQLContainer<?> MYSQL_CONTAINER;
-    private static final KafkaContainer KAFKA_CONTAINER;
+//    private static final KafkaContainer KAFKA_CONTAINER;
 
     static {
         REDIS_CONTAINER = new GenericContainer<>(REDIS_IMAGE)
@@ -27,12 +26,14 @@ class TestcontainersConfiguration {
                 .withDatabaseName("hhplus")
                 .withUsername("test")
                 .withPassword("test");
-        KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(KAFKA_IMAGE))
-                .withKraft();
+//        KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse(KAFKA_IMAGE))
+//                .withKraft()
+//                .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
+//                .withEnv("KAFKA_NUM_PARTITIONS", "3");
 
         REDIS_CONTAINER.start();
         MYSQL_CONTAINER.start();
-        KAFKA_CONTAINER.start();
+//        KAFKA_CONTAINER.start();
 
         System.setProperty("spring.datasource.password", MYSQL_CONTAINER.getPassword());
         System.setProperty("spring.datasource.url", MYSQL_CONTAINER.getJdbcUrl() + "?characterEncoding=UTF-8&serverTimezone=UTC");
@@ -41,8 +42,8 @@ class TestcontainersConfiguration {
 
         System.setProperty("spring.data.redis.host", REDIS_CONTAINER.getHost());
         System.setProperty("spring.data.redis.port", REDIS_CONTAINER.getMappedPort(REDIS_PORT).toString());
-
-        System.setProperty("spring.kafka.bootstrap-servers", KAFKA_CONTAINER.getBootstrapServers());
+//
+//        System.setProperty("spring.kafka.bootstrap-servers", KAFKA_CONTAINER.getBootstrapServers());
     }
 
     @PreDestroy
@@ -54,9 +55,9 @@ class TestcontainersConfiguration {
         if (REDIS_CONTAINER.isRunning()) {
             REDIS_CONTAINER.stop();
         }
-
-        if (KAFKA_CONTAINER.isRunning()) {
-            KAFKA_CONTAINER.stop();
-        }
+//
+//        if (KAFKA_CONTAINER.isRunning()) {
+//            KAFKA_CONTAINER.stop();
+//        }
     }
 }

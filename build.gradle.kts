@@ -58,6 +58,7 @@ dependencies {
 	testImplementation("org.testcontainers:mysql")
 	testImplementation("com.redis.testcontainers:testcontainers-redis-junit:1.6.4")
 	testImplementation("org.testcontainers:kafka:1.20.1")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	// lombok

@@ -61,4 +61,9 @@ public class CouponIssueTokenRepositoryImpl implements CouponIssueTokenRepositor
     public void saveCouponIssuedUser(CouponIssueToken couponIssueToken) {
         couponCacheRepository.saveCouponIssuedUser(couponIssueToken);
     }
+
+    @Override
+    public long countCouponIssuedUser(CouponIssueToken couponIssueToken) {
+        return couponCacheRepository.countCouponIssuedUser(couponIssueToken);
+    }
 }

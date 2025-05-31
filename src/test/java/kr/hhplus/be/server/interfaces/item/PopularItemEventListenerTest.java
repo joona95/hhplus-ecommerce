@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.item;
+package kr.hhplus.be.server.interfaces.item;
 
 import kr.hhplus.be.server.domain.item.PopularItemService;
 import kr.hhplus.be.server.domain.order.Order;

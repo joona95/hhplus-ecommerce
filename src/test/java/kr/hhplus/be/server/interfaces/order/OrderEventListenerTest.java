@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application.order;
+package kr.hhplus.be.server.interfaces.order;
 
 import kr.hhplus.be.server.application.client.DataPlatformClient;
 import kr.hhplus.be.server.domain.order.Order;
