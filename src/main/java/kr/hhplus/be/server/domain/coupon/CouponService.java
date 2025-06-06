@@ -73,8 +73,29 @@ public class CouponService {
         }
     }
 
+    public void handleCouponIssueRequest(long userId, long couponId) {
+
+        CouponIssueToken couponIssueToken = CouponIssueToken.of(userId, couponId);
+
+        if (couponIssueTokenRepository.isAlreadyIssued(couponIssueToken)) {
+            throw new RuntimeException("이미 쿠폰 발급 요청한 유저입니다.");
+        }
+
+        long couponStock = couponRepository.getCouponStock(couponId);
+        long issuedSize = couponIssueTokenRepository.countCouponIssuedUser(couponIssueToken);
+        if (couponStock < issuedSize) {
+            throw new RuntimeException("쿠폰 발급 가능한 수량을 초과하였습니다.");
+        }
+
+        couponIssueTokenRepository.saveCouponIssuedUser(couponIssueToken);
+
+        issueCoupon(userId, couponId);
+    }
+
     @Transactional
-    public void issueCoupon(long userId, Coupon coupon) {
+    public void issueCoupon(long userId, long couponId) {
+
+        Coupon coupon = couponRepository.findCouponById(couponId).orElseThrow(() -> new RuntimeException("존재하지 않는 쿠폰입니다."));
 
         if (couponRepository.existsCouponIssueByUserIdAndCouponId(userId, coupon.getId())) {
             throw new RuntimeException("쿠폰을 이미 발급 받았습니다.");

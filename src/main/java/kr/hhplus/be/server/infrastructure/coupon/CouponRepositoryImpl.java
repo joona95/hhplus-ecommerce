@@ -68,4 +68,9 @@ public class CouponRepositoryImpl implements CouponRepository {
     public void saveCouponStock(long couponId, int count) {
         couponCacheRepository.saveCouponStock(couponId, count);
     }
+
+    @Override
+    public Optional<Coupon> findCouponById(long couponId) {
+        return couponJpaRepository.findById(couponId);
+    }
 }

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.interfaces.coupon;
 
 import jakarta.validation.Valid;
+import kr.hhplus.be.server.application.coupon.CouponFacadeService;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.user.User;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import static kr.hhplus.be.server.interfaces.coupon.CouponResponse.*;
 @RequestMapping("/api/v1/coupons")
 public class CouponController implements CouponApiSpec {
 
+    private final CouponFacadeService couponFacadeService;
     private final CouponService couponService;
 
-    public CouponController(CouponService couponService) {
+    public CouponController(CouponFacadeService couponFacadeService, CouponService couponService) {
+        this.couponFacadeService = couponFacadeService;
         this.couponService = couponService;
     }
 
@@ -40,7 +43,7 @@ public class CouponController implements CouponApiSpec {
     @Override
     public ResponseEntity<Void> issueCoupon(User user, @RequestBody @Valid CouponIssueRequest request) {
 
-        couponService.requestCouponIssue(user, request.toCommand());
+        couponFacadeService.requestCouponIssue(user, request.toCommand());
 
         return ResponseEntity.ok().build();
     }

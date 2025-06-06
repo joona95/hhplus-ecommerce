@@ -102,11 +102,13 @@ class CouponServiceTest {
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
+            when(couponRepository.findCouponById(coupon.getId()))
+                    .thenReturn(Optional.of(coupon));
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(user.getId(), coupon.getId()))
                     .thenReturn(true);
 
             //when, then
-            assertThatThrownBy(() -> couponService.issueCoupon(user.getId(), coupon))
+            assertThatThrownBy(() -> couponService.issueCoupon(user.getId(), coupon.getId()))
                     .isInstanceOf(RuntimeException.class)
                     .hasMessageContaining("쿠폰을 이미 발급 받았습니다.");
         }
@@ -118,11 +120,13 @@ class CouponServiceTest {
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
+            when(couponRepository.findCouponById(coupon.getId()))
+                    .thenReturn(Optional.of(coupon));
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(user.getId(), coupon.getId()))
                     .thenReturn(false);
 
             //when
-            couponService.issueCoupon(user.getId(), coupon);
+            couponService.issueCoupon(user.getId(), coupon.getId());
 
             //then
             verify(couponRepository, times(1)).saveCouponIssue(CouponIssue.of(user.getId(), coupon));
@@ -136,11 +140,13 @@ class CouponServiceTest {
             Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
             int stock = coupon.getCount();
 
+            when(couponRepository.findCouponById(coupon.getId()))
+                    .thenReturn(Optional.of(coupon));
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(user.getId(), coupon.getId()))
                     .thenReturn(false);
 
             //when
-            couponService.issueCoupon(user.getId(), coupon);
+            couponService.issueCoupon(user.getId(), coupon.getId());
 
             //then
             verify(couponRepository, times(1)).saveCouponStock(coupon.getId(), stock - 1);
@@ -153,11 +159,13 @@ class CouponServiceTest {
             User user = UserFixtures.식별자로_유저_생성(1L);
             Coupon coupon = CouponFixtures.식별자로_쿠폰_생성(1L);
 
+            when(couponRepository.findCouponById(coupon.getId()))
+                    .thenReturn(Optional.of(coupon));
             when(couponRepository.existsCouponIssueByUserIdAndCouponId(user.getId(), 1L))
                     .thenReturn(true);
 
             //when, then
-            assertThatThrownBy(() -> couponService.issueCoupon(user.getId(), coupon))
+            assertThatThrownBy(() -> couponService.issueCoupon(user.getId(), coupon.getId()))
                     .isInstanceOf(RuntimeException.class);
 
             verify(couponRepository, times(0)).saveCouponIssue(CouponIssue.of(user.getId(), coupon));
