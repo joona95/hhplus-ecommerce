@@ -5,8 +5,8 @@ export const options = {
     executor: 'ramping-arrival-rate',
     startRate: 0,
     stages: [
-        { duration: "1m", target: 215 },
-        { duration: "3m", target: 215 },
+        { duration: "1m", target: 325 },
+        { duration: "3m", target: 325 },
         { duration: "1m", target: 0 }
     ],
     thresholds: {
