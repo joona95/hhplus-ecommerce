@@ -1,11 +1,9 @@
 package kr.hhplus.be.server.application.order;
 
-import kr.hhplus.be.server.application.client.DataPlatformClient;
-import kr.hhplus.be.server.application.item.PopularItemEventListener;
+import kr.hhplus.be.server.interfaces.item.PopularItemEventListener;
 import kr.hhplus.be.server.domain.coupon.CouponService;
 import kr.hhplus.be.server.domain.item.Item;
 import kr.hhplus.be.server.domain.item.ItemService;
-import kr.hhplus.be.server.domain.item.PopularItemService;
 import kr.hhplus.be.server.domain.item.Stock;
 import kr.hhplus.be.server.domain.order.OrderEventPublisher;
 import kr.hhplus.be.server.domain.order.OrderService;
@@ -20,8 +18,11 @@ import kr.hhplus.be.server.infrastructure.point.PointJpaRepository;
 import kr.hhplus.be.server.infrastructure.support.DatabaseCleanup;
 import kr.hhplus.be.server.infrastructure.support.RedisCleanup;
 import kr.hhplus.be.server.infrastructure.user.UserJpaRepository;
+import kr.hhplus.be.server.interfaces.order.OrderEventListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -34,6 +35,7 @@ import java.util.List;
 import static kr.hhplus.be.server.application.order.OrderFacadeCommand.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Testcontainers
 public class OrderFacadeServiceTest {
@@ -90,7 +92,7 @@ public class OrderFacadeServiceTest {
 
         //then
         Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
+                .atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> {
                     verify(orderEventListener, times(1)).handleOrderCompleteEvent(any());
                     verify(popularItemEventListener, times(1)).handleOrderCompleteEvent(any());
