@@ -26,7 +26,7 @@ public class OrderFacadeCommand {
 
         public OrderCommand.OrderCreateCommand toOrderCreateCommand(User user, List<Item> items) {
 
-            Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity()));
+            Map<Long, Item> itemMap = items.stream().collect(Collectors.toMap(Item::getId, Function.identity(), (o1, o2) -> o1));
 
             List<OrderCommand.OrderItemCreateCommand> orderItemCreateCommands = orderItemCommands.stream()
                     .map(orderItem -> orderItem.toOrderItemCreateCommand(itemMap.get(orderItem.itemId)))

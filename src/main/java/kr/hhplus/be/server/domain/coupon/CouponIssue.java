@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
@@ -37,7 +38,7 @@ public class CouponIssue {
 
     private String couponName;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private DiscountType discountType;
 
     private int discountValue;
