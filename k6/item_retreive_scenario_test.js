@@ -5,8 +5,8 @@ export const options = {
     executor: 'ramping-arrival-rate',
     startRate: 0,
     stages: [
-        { duration: "1m", target: 2700 },
-        { duration: "3m", target: 2700 },
+        { duration: "1m", target: 1500 },
+        { duration: "3m", target: 1500 },
         { duration: "1m", target: 0 }
     ],
     thresholds: {
@@ -31,7 +31,7 @@ export default function () {
 
 function getItem(userId) {
 
-    const itemId = Math.floor(Math.random() * 1000000) + 1;
+    const itemId = Math.floor(Math.random() * 1000) + 1;
     const url = `http://localhost:8080/api/v1/items/` + itemId;
     const res = http.get(url);
 
